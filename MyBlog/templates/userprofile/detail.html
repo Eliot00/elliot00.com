@@ -1,0 +1,12 @@
+{% extends "base.html" %} {% load staticfiles %}
+{% block title %} 用户信息 {% endblock title %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <br>
+            <div class="col-md-4">用户名: {{ user.username }}</div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

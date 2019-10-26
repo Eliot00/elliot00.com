@@ -1,0 +1,11 @@
+/MyBlog/MyBlog/env.json
+/MyBlog/media/
+/MyBlog/logs/
+/MyBlog/db.sqlite3
+env/
+.idea/
+
+
+__pycache__/
+*.py[cod]
+*$py.class
