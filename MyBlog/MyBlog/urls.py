@@ -24,7 +24,7 @@ from article.views import article_list
 urlpatterns = [
     path('', article_list, name='home'),
     path('article/', include('article.urls', namespace='article')),
-    path('account/', include('userprofile.urls', namespace='userprofile')),
+    path('accounts/', include('userprofile.urls', namespace='userprofile')),
     path('comment/', include('comment.urls', namespace='comment')),
     path('notice/', include('notice.urls', namespace='notice')),
     path('password-reset/', include('password_reset.urls')),
