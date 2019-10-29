@@ -5,7 +5,7 @@
 <html lang="zh-cn">
 <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js">
 </head>
 
 <body>
@@ -25,9 +25,9 @@
     <!-- 提交按钮 -->
     <button onclick="confirm_submit({{ article_id }}, {{ parent_comment_id }})" class="btn btn-primary">发送</button>
 
-    <script src="{% static 'jquery/jquery-3.4.1.js' %}"></script>
-    <script src="{% static 'popper/popper-1.14.4.js' %}"></script>
-    <script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <!-- csrf token -->
     <script src="{% static 'csrf.js' %}"></script>
