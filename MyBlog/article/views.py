@@ -44,7 +44,7 @@ def article_list(request):
     if order == 'total_views':
         article_list = article_list.order_by('-total_views')
 
-    paginator = Paginator(article_list, 3)
+    paginator = Paginator(article_list, 20)
     page = request.GET.get('page')
     articles = paginator.get_page(page)
 

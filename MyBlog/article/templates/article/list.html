@@ -5,7 +5,7 @@
 
 <!-- 写入 base.html 中定义的 title -->
 {% block title %}
-    首页
+    公子政的个人网站
 {% endblock title %}
 
 <!-- 写入 base.html 中定义的 content -->
@@ -17,12 +17,20 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
                 <a href="{% url 'article:article_list' %}?search={{ search }}&column={{ column }}&tag={{ tag }}">
+                {% if order == 'total_views' %}
+                    <cite>最新</cite>
+                {% else %}
                     最新
+                {% endif %}
                 </a>
             </li>
             <li class="breadcrumb-item">
                 <a href="{% url 'article:article_list' %}?order=total_views&search={{ search }}&column={{ column }}&tag={{ tag }}">
-                    最热
+                 {% if order == 'total_views' %}
+                     最热
+                 {% else %}
+                     <cite>最热</cite>
+                 {% endif %}
                 </a>
             </li>
         </ol>
@@ -68,19 +76,20 @@
             <div class="col">
                 <!-- 栏目 -->
                 {% if article.column %}
-                    <button type="button"
+                    <a role="button"
+		       href="{% url 'article:article_list' %}?column={{ article.column.id }}"
                         class="btn btn-sm mb-2
-                            {% if article.column.title == 'Django' %}
+                            {% if article.column.title == '编程' %}
                                 btn-success
-                            {% elif article.column.title == 'Java' %}
+                            {% elif article.column.title == '网络安全' %}
                                 btn-danger
-                            {% elif article.column.title == 'Python' %}
+                            {% elif article.column.title == '杂谈' %}
                                 btn-warning
                             {% endif %}
                         "
                     >
                         {{ article.column }}
-                    </button>
+                    </a>
                 {% endif %}
                 <span>
                     {% for tag in article.tags.all %}
@@ -104,7 +113,7 @@
                 <!-- 摘要 -->
                 <div>
                     <p style="color: gray;">
-                        {{ article.body|slice:'100' }}...
+                        {{ article.body|safe|slice:'100' }}...
                     </p>
                 </div>
                 <!-- 注脚 -->
@@ -114,6 +123,10 @@
                         <i class="fas fa-eye" style="color: lightskyblue;"></i>
                         {{ article.total_views }}&nbsp;&nbsp;&nbsp;
                     </span>
+		    <span>
+			<i class="fas fa-heart" style="color: #FF6767;"></i>
+			{{ article.likes }}&nbsp;&nbsp;&nbsp;
+		    </span>
                     <span>
                         <i class="fas fa-comments" style="color: yellowgreen;"></i>
                         <!-- 修改为评论的计数 -->
@@ -124,8 +137,7 @@
                         {{ article.created|timesince_zh }}
                     </span>
                 </p>
-                <hr>
-            </div>
+	    </div>
             <hr style="width: 100%;"/>
         {% endfor %}
     </div>
