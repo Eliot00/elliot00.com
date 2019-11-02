@@ -1,10 +1,50 @@
 {% load staticfiles %}
-<!-- Footer -->
-<div>
-    <br><br><br>
-</div>
-<footer class="py-3 bg-dark" id="footer">
-    <div class="container">
-        <p class="m-0 text-center text-white">Copyright &copy; 公子政的宅日常 2019</p>
+<nav class="navbar navbar-light bg-light mb-0" id="nav-footer">
+    <div class="row col justify-content-center">
+        <h3 class="mr-3">
+            <a href="mailto:elliot00@qq.com" class="hvr-icon-grow no-underline">
+                <i class="fas fa-envelope hvr-icon" style="color: lightskyblue;" id="layer_email"></i>
+            </a>
+        </h3>
+        <h3>
+            <a href="https://github.com/Eliot00" style="color: #f0c674;" target="_blank" class="hvr-icon-grow no-underline">
+                <i class="fab fa-github hvr-icon" id="layer_github"></i>
+            </a>
+        </h3>
     </div>
-</footer>
+
+    <div class="row col-12 justify-content-center">
+        <div style="text-align: center; color: lightgrey;">
+            <p class="mb-0">CopyRight &copy; 2019 公子政的个人网站</p>
+            <p class="mb-0">Powered by
+                <a href="https://www.djangoproject.com/" target="_blank">
+                    Django
+                </a> &
+                <a target="_blank" href="https://getbootstrap.com/">
+                    Bootstrap
+                </a>
+            </p>
+        </div>
+    </div>
+</nav>
+<script>
+    $('#layer_email').on('mouseenter', function () {
+        this.index = layer.tips('给博主发邮件', this, {
+            time: -1,
+            maxWidth: 280,
+            tips: [1, 'lightskyblue']
+        });
+    }).on('mouseleave', function () {
+        layer.close(this.index);
+    });
+
+    $('#layer_github').on('mouseenter', function () {
+        this.index = layer.tips('在GitHub查看博主代码', this, {
+            time: -1,
+            maxWidth: 280,
+            tips: [1, '#f0c674']
+        });
+    }).on('mouseleave', function () {
+        layer.close(this.index);
+    });
+</script>

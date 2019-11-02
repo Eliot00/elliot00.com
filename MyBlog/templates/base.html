@@ -16,6 +16,13 @@
 </head>
 
 <body>
+    <!-- bootstrap.js 依赖 jquery.js 和popper.js，因此在这里引入 -->
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js"></script>
+    <!-- 引入layer.js -->
+    <script src="{% static 'layer/layer.js' %}"></script>
+    <!-- 引入bootstrap的js文件 -->
+    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <!-- 引入导航栏 -->
     {% include 'header.html' %}
     <!-- 预留具体页面的位置 -->
@@ -25,13 +32,6 @@
     </div>
     <!-- 引入注脚 -->
     {% include 'footer.html' %}
-    <!-- bootstrap.js 依赖 jquery.js 和popper.js，因此在这里引入 -->
-    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://cdn.bootcss.com/popper.js/1.15.0/umd/popper.min.js"></script>
-    <!-- 引入layer.js -->
-    <script src="{% static 'layer/layer.js' %}"></script>
-    <!-- 引入bootstrap的js文件 -->
-    <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
     {% block script %}{% endblock script %}
     {% include 'back_to_top_func.html' %}
     <!-- 增加样式 -->
