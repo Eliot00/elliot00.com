@@ -23,24 +23,16 @@
     <script src="{% static 'layer/layer.js' %}"></script>
     <!-- 引入bootstrap的js文件 -->
     <script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
-    <!-- 引入导航栏 -->
+    {% include 'back_to_top_func.html' %}
     {% include 'header.html' %}
     <!-- 预留具体页面的位置 -->
     <div class="container" id="wrapper">
-	<div class="row">
-            <div class="col-12 col-lg-9">
-                {% block content %}{% endblock content %}
-            </div>
-	    <div class="col-3 d-none d-lg-block">
-		{% include 'rightslider.html' %}
-            </div>
-	</div>
+    {% block content %}{% endblock content %}
         <div id="push"></div>
     </div>
     <!-- 引入注脚 -->
     {% include 'footer.html' %}
     {% block script %}{% endblock script %}
-    {% include 'back_to_top_func.html' %}
     <!-- 增加样式 -->
     <style>
         html, body {

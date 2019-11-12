@@ -1,0 +1,34 @@
+{% load staticfiles %}
+<div class="card-body" style="padding: 10px 0 0 0;">
+
+    <div id="sidebar" style="overflow: hidden">
+        <div class="markdown-body editormd-preview-container" id="custom-toc-container">
+            {{ article.toc|safe }}
+        </div>
+    </div>
+</div>
+<style>
+    #sidebar a {
+        color: #b8b8b8;
+    }
+
+    #sidebar ul {
+        list-style-type: none;
+    }
+
+    #sidebar div div > ul {
+        padding-left: 0;
+    }
+
+    #sidebar div div ul ul {
+        padding-left: 1em;
+    }
+</style>
+
+{% block script %}
+    <script>
+        $(() => {
+            $('div.toc a').addClass('hvr-forward no-underline')
+        })
+    </script>
+{% endblock %}

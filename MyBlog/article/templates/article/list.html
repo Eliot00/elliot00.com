@@ -5,7 +5,7 @@
 
 <!-- 写入 base.html 中定义的 title -->
 {% block title %}
-    公子政的个人网站
+    公子政的宅日常
 {% endblock title %}
 
 <!-- 写入 base.html 中定义的 content -->
@@ -113,7 +113,7 @@
                 <!-- 摘要 -->
                 <div>
                     <p style="color: gray;">
-                        {{ article.body|safe|slice:'100' }}...
+                        {{ article.body|slice:'100'|safe }}...
                     </p>
                 </div>
                 <!-- 注脚 -->

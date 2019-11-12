@@ -1,10 +1,10 @@
 <!-- extends表明此页面继承自 base.html 文件 -->
-{% extends "base.html" %}
+{% extends "base_without_rslider.html" %}
 {% load staticfiles %}
 
 <!-- 写入 base.html 中定义的 title -->
 {% block title %}
-文章详情
+{{ article.title }} - 公子政的宅日常
 {% endblock title %}
 
 <!-- 写入 base.html 中定义的 content -->
@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="{% static 'prism/prism.css' %}">
 
 <!-- 文章详情 -->
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-9">
             <!-- 标题及作者 -->
@@ -209,17 +209,15 @@
                 {% endrecursetree %}
             </div>
         </div>
-
-        <!-- 目录 -->
-        <div class="col-3 mt-4" id="sidebar" class="sidebar">
-            <div class="sidebar__inner">
-                <h4><strong>目录</strong></h4>
-                <hr>
-                <div>
-                    {{ toc|safe }}
+        {% if article.toc %}
+            <div class="col-3 col-lg-2 card d-none d-md-block" id="left-sidebar">
+                <div class="sidebar" id="sidebar">
+                    <div class="sidebar__inner">
+                        {% include 'article/slider.html' %}
+                    </div>
                 </div>
             </div>
-        </div>
+	{% endif %}
     </div>
 </div>
 

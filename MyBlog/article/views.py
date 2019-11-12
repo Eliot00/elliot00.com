@@ -10,6 +10,7 @@ from .models import ArticlePost, ArticleColumn
 from .forms import ArticlePostForm
 from comment.models import Comment
 from comment.forms import CommentForm
+import re
 
 
 # Create your views here.
@@ -84,9 +85,10 @@ def article_detail(request, id):
         ]
     )
     article.body = md.convert(article.body)
+    m = re.search(r'<div class="toc">\s*<ul>(.*)</ul>\s*</div>', md.toc, re.S)
+    article.toc = m.group(1) if m is not None else ''
     comment_form = CommentForm()
     context = {'article': article,
-               'toc': md.toc,
                'comments': comments,
                'comment_form': comment_form,
                'pre_article': pre_article,
