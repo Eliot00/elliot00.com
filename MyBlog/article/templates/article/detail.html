@@ -118,7 +118,7 @@
             {% else %}
                 <br>
                 <h5 class="row justify-content-center">
-                    请<a href="{% url 'userprofile:login' %}">登录</a>后回复
+                    请<a href="{% url 'account_login' %}">登录</a>后回复
                 </h5>
                 <br>
             {% endif %}
@@ -173,7 +173,7 @@
                                     </button>
                                 {% else %}
                                     <a class="btn btn-light btn-sm text-muted"
-                                        href="{% url 'userprofile:login' %}"
+                                        href="{% url 'account_login' %}"
                                     >
                                         回复
                                     </a>
