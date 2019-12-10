@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'userprofile.apps.UserprofileConfig',
     'comment.apps.CommentConfig',
     'notice.apps.NoticeConfig',
+    'extras.apps.ExpandConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

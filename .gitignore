@@ -4,6 +4,7 @@
 /MyBlog/db.sqlite3
 env/
 .idea/
+.vscode/
 
 
 __pycache__/

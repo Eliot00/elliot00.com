@@ -1,5 +1,6 @@
 <!-- 载入静态文件 -->
 {% load staticfiles %}
+{% load sidebar_tags %}
 
 <!DOCTYPE html>
 <!-- 网站主语言 -->
@@ -31,8 +32,8 @@
             <div class="col-12 col-lg-9">
                 {% block content %}{% endblock content %}
             </div>
-	    <div class="col-3 d-none d-lg-block">
-		{% include 'rightslider.html' %}
+	        <div class="col-3 d-none d-lg-block">
+		        {% show_friend_links %}
             </div>
 	</div>
         <div id="push"></div>
