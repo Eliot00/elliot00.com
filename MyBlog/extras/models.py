@@ -9,3 +9,14 @@ class FriendLink(TimeStampedModel):
 
     def __str__(self):
         return self.site_name
+
+
+class SiteMessage(TimeStampedModel):
+    content = models.TextField(verbose_name="正文")
+    
+    class Meta:
+        verbose_name_plural = '通知'
+
+    def __str__(self):
+        return self.content[:20]
+
