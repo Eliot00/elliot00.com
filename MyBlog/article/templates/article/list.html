@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 {% load staticfiles %}
 {% load my_filters_and_tags %}
+{% load sidebar_tags %}
 
 <!-- 写入 base.html 中定义的 title -->
 {% block title %}
     公子政的宅日常
 {% endblock title %}
 
-<!-- 写入 base.html 中定义的 content -->
 {% block content %}
-
-<!-- 定义放置文章标题的div容器 -->
+<div class="row">
+    <div class="col-12 col-lg-9">
 <div class="container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -34,7 +34,6 @@
             </li>
         </ol>
     </nav>
-     <!-- 新增，搜索栏 -->
     <div class="row">
         <div class="col-auto mr-auto">
             <form class="form-inline" >
@@ -174,6 +173,12 @@
                 {% endif %}
             </span>
         </div>
+    </div>
+</div>
+    </div>
+    <div class="col-3 d-none d-lg-block">
+        {% show_site_message %}
+        {% show_friend_links %}
     </div>
 </div>
 {% endblock content %}

@@ -1,13 +1,11 @@
-{% load staticfiles %}
-<div class="card-body" style="padding: 10px 0 0 0;">
-
+<div class="card mb-4 hvr-glow" style="display: flex">
+  <div class="card-body">
     <div id="sidebar" style="overflow: hidden">
-        <div class="markdown-body editormd-preview-container" id="custom-toc-container">
-					<div class="toc">
-            {{ article.toc|safe }}
-					</div>
-        </div>
+      <div class="toc">
+        {{ article.toc|safe }}
+      </div>
     </div>
+  </div>
 </div>
 <style>
     #sidebar a {
@@ -28,9 +26,9 @@
 </style>
 
 {% block script %}
-    <script>
-        $(() => {
-            $('div.toc a').addClass('hvr-forward no-underline')
-        })
-    </script>
+  <script>
+    $(() => {
+      $('div.toc a').addClass('hvr-forward no-underline')
+    })
+  </script>
 {% endblock %}
