@@ -19,4 +19,3 @@ class SiteMessage(TimeStampedModel):
 
     def __str__(self):
         return self.content[:20]
-

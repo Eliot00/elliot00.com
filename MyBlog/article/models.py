@@ -5,7 +5,7 @@ from django.urls import reverse
 from taggit.managers import TaggableManager
 from PIL import Image
 
-# Create your models here.
+
 class ArticleColumn(models.Model):
     """
     栏目的Model
@@ -17,8 +17,13 @@ class ArticleColumn(models.Model):
         return self.title
 
 class ArticlePost(models.Model):
+    course_set = (
+        (0, "普通文章"),
+        (1, "Django+React全栈开发"),
+    )
     objects = models.Manager()
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.IntegerField(default=0, choices=course_set)
     avatar = models.ImageField(upload_to='article/%Y%m%d/', blank=True)
     title = models.CharField(max_length=100)
     column = models.ForeignKey(
