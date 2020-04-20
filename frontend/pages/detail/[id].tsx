@@ -6,52 +6,28 @@ import hljs from 'highlight.js'
 import { Affix } from "antd";
 import Tocify from "../../components/tocify";
 import 'highlight.js/styles/monokai-sublime.css'
+import axios from 'axios'
+import {APIRoot} from "../../utils/auth";
 
-let markdown = '# P01:课程介绍和环境搭建\n\n' +
-  '[ **M** ] arkdown + E [ **ditor** ] = **Mditor**  \n' +
-  '> Mditor 是一个简洁、易于集成、方便扩展、期望舒服的编写 markdown 的编辑器，仅此而已... \n\n' +
-  '# P01:课程介绍和环境搭建\n\n' +
-  '**这是加粗的文字**\n\n' +
-  '*这是倾斜的文字*`\n\n' +
-  '***这是斜体加粗的文字***\n\n' +
-  '~~这是加删除线的文字~~ \n\n'+
-  '\`console.log(111)\` \n\n'+
-  '# p02:来个Hello World 初始Vue3.0\n' +
-  '> aaaaaaaaa\n' +
-  '>> bbbbbbbbb\n' +
-  '>>> cccccccccc\n'+
-  '***\n\n\n' +
-  '# p03:Vue3.0基础知识讲解\n' +
-  '> aaaaaaaaa\n' +
-  '>> bbbbbbbbb\n' +
-  '>>> cccccccccc\n\n'+
-  '# p04:Vue3.0基础知识讲解\n' +
-  '> aaaaaaaaa\n' +
-  '>> bbbbbbbbb\n' +
-  '>>> cccccccccc\n\n'+
-  '#5 p05:Vue3.0基础知识讲解\n' +
-  '> aaaaaaaaa\n' +
-  '>> bbbbbbbbb\n' +
-  '>>> cccccccccc\n\n'+
-  '# p06:Vue3.0基础知识讲解\n' +
-  '> aaaaaaaaa\n' +
-  '>> bbbbbbbbb\n' +
-  '>>> cccccccccc\n\n'+
-  '# p07:Vue3.0基础知识讲解\n' +
-  '> aaaaaaaaa\n' +
-  '>> bbbbbbbbb\n' +
-  '>>> cccccccccc\n\n'+
-  `
-  \`\`\` 
-  import React from 'react';
-  var a=11; 
-  class Ex extends Component {
-  }
-  \`\`\`
-  `
+
 const tocify = new Tocify()
 
-const Article = () => {
+interface ArticleData {
+  id: Number,
+  author: string,
+  series: Number,
+  title: string,
+  body: string,
+  created: string,
+  updated: string
+}
+
+interface Props {
+  detail: ArticleData
+}
+
+const Article = props => {
+  const {series, title, body, created, updated} = props.source
   const renderer = new marked.Renderer()
   // @ts-ignore
   renderer.heading = function (text, level, raw) {
@@ -75,15 +51,15 @@ const Article = () => {
     <div>
       <div>
         <div className="detail-title">
-          React实战视频教程-技术胖Blog开发(更新08集)
+          {title}
         </div>
 
         <div className="detail-icon center">
-          <span><FieldTimeOutlined /> 2019-06-28</span>
+          <span><FieldTimeOutlined /> {created}</span>
           <span><FireTwoTone twoToneColor="#ff471a" /> 5498人</span>
         </div>
 
-        <div className="detail-content" dangerouslySetInnerHTML={{__html: marked(markdown)}}></div>
+        <div className="detail-content" dangerouslySetInnerHTML={{__html: marked(body)}}></div>
       </div>
       <style jsx global>{`
         .detail-title {
@@ -183,12 +159,21 @@ const ArticleNav = () => (
   </Affix>
 )
 
-const Detail = () => (
-  <MyLayout
-    title="详情"
-    leftContent={<Article />}
-    rightContent={<ArticleNav />}
+const Detail = (props: Props) => {
+  return (
+    <MyLayout
+      title="详情"
+      leftContent={<Article source={props.detail}/>}
+      rightContent={<ArticleNav/>}
     />
-)
+  )
+}
+
+Detail.getInitialProps = async context => {
+  const { id } = context.query
+  const response = await axios.get(APIRoot + `articles/${id}`)
+  const detail = await response.data
+  return {detail: detail}
+}
 
 export default Detail

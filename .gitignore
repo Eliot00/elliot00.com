@@ -6,6 +6,8 @@ env/
 .idea/
 .vscode/
 venv/
+/backend/db.sqlite3
+/backend/env.json
 
 
 __pycache__/

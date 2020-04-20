@@ -1,28 +1,31 @@
-import { List } from 'antd'
-import { useState } from "react";
+import { List, Empty } from 'antd'
+import React, { useState } from "react";
 import { FieldTimeOutlined, FireOutlined } from "@ant-design/icons/lib";
 import Link from "next/link";
 
-const ArticleList = () => {
+interface ArticleItem {
+  id: Number,
+  author: string,
+  series: Number,
+  title: string,
+  body: string,
+  created: string,
+  updated: string
+}
 
-  const [articles, setArticles] = useState([
-    {
-      "id": 2,
-      "author": "elliot",
-      "title": "现在时间",
-      "body": "时间测试",
-      "created": "2020-04-05T11:47:49.087547+08:00",
-      "updated": "2020-04-05T11:47:49.087580+08:00"
-    },
-    {
-      "id": 1,
-      "author": "elliot",
-      "title": "第一天",
-      "body": "现在是4月5日11点10分",
-      "created": "2020-04-05T11:10:56.880622+08:00",
-      "updated": "2020-04-05T11:10:56.880674+08:00"
-    }
-  ])
+interface Props {
+  initialList: Array<ArticleItem>
+}
+
+const ArticleList = (props: Props) => {
+
+  const [articles, setArticles] = useState(props.initialList)
+
+  if (articles.length === 0) {
+    return (
+      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+    )
+  }
 
   return (
     <div>
