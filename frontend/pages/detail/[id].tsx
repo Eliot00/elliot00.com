@@ -18,6 +18,8 @@ interface ArticleData {
   series: Number,
   title: string,
   body: string,
+  views: Number,
+  summary: string,
   created: string,
   updated: string
 }
@@ -27,7 +29,7 @@ interface Props {
 }
 
 const Article = props => {
-  const {series, title, body, created, updated} = props.source
+  const {series, title, body, views, created, updated} = props.source
   const renderer = new marked.Renderer()
   // @ts-ignore
   renderer.heading = function (text, level, raw) {
@@ -55,8 +57,8 @@ const Article = props => {
         </div>
 
         <div className="detail-icon center">
-          <span><FieldTimeOutlined /> {created}</span>
-          <span><FireTwoTone twoToneColor="#ff471a" /> 5498人</span>
+          <span><FieldTimeOutlined /> {created.slice(0, 10)}</span>
+          <span><FireTwoTone twoToneColor="#ff471a" /> {views}</span>
         </div>
 
         <div className="detail-content" dangerouslySetInnerHTML={{__html: marked(body)}}></div>

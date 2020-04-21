@@ -1,7 +1,8 @@
 import { List, Empty } from 'antd'
 import React, { useState } from "react";
-import { FieldTimeOutlined, FireOutlined } from "@ant-design/icons/lib";
+import { FieldTimeOutlined, FireTwoTone } from "@ant-design/icons/lib";
 import Link from "next/link";
+import { timeInterval } from "../utils/time";
 
 interface ArticleItem {
   id: Number,
@@ -9,6 +10,8 @@ interface ArticleItem {
   series: Number,
   title: string,
   body: string,
+  views: Number,
+  summary: string,
   created: string,
   updated: string
 }
@@ -39,10 +42,10 @@ const ArticleList = (props: Props) => {
               <Link href="/detail/[id]" as={`/detail/${item.id}`}><a>{item.title}</a></Link>
             </div>
             <div className="list-icon">
-              <span><FieldTimeOutlined />{item.created}</span>
-              <span><FireOutlined />100</span>
+              <span><FieldTimeOutlined />{timeInterval(item.created)}</span>
+              <span><FireTwoTone twoToneColor="#ff471a" />{item.views}</span>
             </div>
-            <div className="list-content">{item.body}</div>
+            <div className="list-content">{item.summary}</div>
           </List.Item>
         )}
         />
