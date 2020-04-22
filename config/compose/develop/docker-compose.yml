@@ -1,0 +1,48 @@
+version: "3"
+services:
+  frontend:
+    restart: always
+    container_name: frontend
+    build:
+      context: ../../../frontend
+      dockerfile: Dockerfile-dev
+    command: "npm run dev"
+    volumes:
+      - ../../../frontend:/usr/src/frontend
+    networks:
+      - web_network
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - nginx
+  backend:
+    restart: always
+    container_name: backend
+    build:
+      context: ../../../backend
+      dockerfile: Dockerfile-dev
+    command: "python3 manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ../../../backend:/code
+    networks:
+      - web_network
+    ports:
+      - "8000:8000"
+  nginx:
+    restart: always
+    container_name: proxy
+    image: nginx:latest
+    volumes:
+      - ../../nginx:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+    networks:
+     - web_network
+
+networks:
+  web_network:
+    driver: bridge

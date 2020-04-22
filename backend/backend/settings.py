@@ -29,10 +29,10 @@ SECRET_KEY = ENV.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 if ENV.get('ENV') == 'dev':
     DEBUG = True
+    ALLOWED_HOSTS = ['*', ]
 else:
     DEBUG = False
-
-ALLOWED_HOSTS = [ENV.get('IP'), 'localhost', '.elliot00.com']
+    ALLOWED_HOSTS = [ENV.get('IP'), 'localhost', '.elliot00.com', '0.0.0.0']
 
 
 # Application definition
