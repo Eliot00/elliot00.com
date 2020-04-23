@@ -32,7 +32,7 @@ if ENV.get('ENV') == 'dev':
     ALLOWED_HOSTS = ['*', ]
 else:
     DEBUG = False
-    ALLOWED_HOSTS = [ENV.get('IP'), 'localhost', '.elliot00.com', '0.0.0.0']
+    ALLOWED_HOSTS = [ENV.get('IP'), 'localhost', '.elliot00.com']
 
 
 # Application definition

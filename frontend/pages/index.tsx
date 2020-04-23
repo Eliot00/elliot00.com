@@ -10,10 +10,14 @@ const Home = props => (
     rightContent="右边"/>
 )
 
-Home.getInitialProps = async () => {
+export async function getStaticProps() {
   const response = await axios.get(APIRoot + 'articles/')
   const data = await response.data
-  return {data: data}
+  return {
+    props: {
+      data,
+    },
+  }
 }
 
 export default Home

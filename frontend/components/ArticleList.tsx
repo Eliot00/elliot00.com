@@ -1,16 +1,16 @@
-import { List, Empty } from 'antd'
+import { List, Empty, Tag } from 'antd'
 import React, { useState } from "react";
-import { FieldTimeOutlined, FireTwoTone } from "@ant-design/icons/lib";
+import {ClockCircleTwoTone, EditTwoTone, FireTwoTone, BookTwoTone} from "@ant-design/icons/lib";
 import Link from "next/link";
 import { timeInterval } from "../utils/time";
 
 interface ArticleItem {
-  id: Number,
+  id: number,
   author: string,
-  series: Number,
+  series: number,
   title: string,
   body: string,
-  views: Number,
+  views: number,
   summary: string,
   created: string,
   updated: string
@@ -21,6 +21,10 @@ interface Props {
 }
 
 const ArticleList = (props: Props) => {
+  const seriesName = [
+    "",
+    "Django+React全栈开发"
+  ]
 
   const [articles, setArticles] = useState(props.initialList)
 
@@ -42,8 +46,12 @@ const ArticleList = (props: Props) => {
               <Link href="/detail/[id]" as={`/detail/${item.id}`}><a>{item.title}</a></Link>
             </div>
             <div className="list-icon">
-              <span><FieldTimeOutlined />{timeInterval(item.created)}</span>
+              <span><ClockCircleTwoTone twoToneColor="#ff6666" />{timeInterval(item.created)}</span>
+              <span><EditTwoTone twoToneColor="#8c1aff"/>{timeInterval(item.updated)}</span>
               <span><FireTwoTone twoToneColor="#ff471a" />{item.views}</span>
+              {item.series !== 0
+                ? <span><BookTwoTone twoToneColor="#00cccc" />{seriesName[item.series]}</span>
+                : ''}
             </div>
             <div className="list-content">{item.summary}</div>
           </List.Item>

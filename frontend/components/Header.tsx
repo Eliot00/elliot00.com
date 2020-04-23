@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from "next/link";
 import {Row,Col, Menu} from 'antd'
 import {HomeOutlined, GroupOutlined, InfoCircleOutlined} from '@ant-design/icons'
 
@@ -6,7 +7,7 @@ const Header = () => (
   <div className="header">
     <Row justify="center">
         <Col  xs={24} sm={24} md={10} lg={15} xl={12}>
-            <span className="header-logo">公子政</span>
+            <span className="header-logo"><Link href="/"><a>公子政</a></Link></span>
             <span className="header-txt">致虚极&nbsp;守静笃</span>
         </Col>
 
@@ -14,7 +15,7 @@ const Header = () => (
             <Menu  mode="horizontal">
                 <Menu.Item key="home">
                     <HomeOutlined />
-                    首页
+                    <Link href="/"><a>首页</a></Link>
                 </Menu.Item>
                 <Menu.Item key="video">
                     <GroupOutlined />

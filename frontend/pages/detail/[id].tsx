@@ -13,12 +13,12 @@ import {APIRoot} from "../../utils/auth";
 const tocify = new Tocify()
 
 interface ArticleData {
-  id: Number,
+  id: number,
   author: string,
-  series: Number,
+  series: number,
   title: string,
   body: string,
-  views: Number,
+  views: number,
   summary: string,
   created: string,
   updated: string
@@ -162,9 +162,10 @@ const ArticleNav = () => (
 )
 
 const Detail = (props: Props) => {
+  const {title} = props.detail
   return (
     <MyLayout
-      title="详情"
+      title={title}
       leftContent={<Article source={props.detail}/>}
       rightContent={<ArticleNav/>}
     />
