@@ -11,7 +11,7 @@ const Home = props => (
 )
 
 export async function getStaticProps() {
-  const response = await axios.get(APIRoot + 'articles/')
+  const response = await axios.get(APIRoot + 'articles/?omit=author,body')
   const data = await response.data
   return {
     props: {

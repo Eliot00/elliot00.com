@@ -1,6 +1,6 @@
 import React from 'react'
 import MyLayout from "../../components/MyLayout";
-import { FieldTimeOutlined, FireTwoTone } from "@ant-design/icons/lib"
+import { ClockCircleTwoTone, FireTwoTone } from "@ant-design/icons/lib"
 import marked from 'marked'
 import hljs from 'highlight.js'
 import { Affix } from "antd";
@@ -14,14 +14,11 @@ const tocify = new Tocify()
 
 interface ArticleData {
   id: number,
-  author: string,
   series: number,
   title: string,
   body: string,
   views: number,
-  summary: string,
   created: string,
-  updated: string
 }
 
 interface Props {
@@ -40,7 +37,6 @@ const Article = props => {
     renderer: renderer,
     gfm: true,
     pedantic: false,
-    sanitize: true,
     breaks: false,
     smartLists: true,
     smartypants: false,
@@ -57,7 +53,7 @@ const Article = props => {
         </div>
 
         <div className="detail-icon center">
-          <span><FieldTimeOutlined /> {created.slice(0, 10)}</span>
+          <span><ClockCircleTwoTone twoToneColor="#ff6666" /> {created.slice(0, 10)}发布</span>
           <span><FireTwoTone twoToneColor="#ff471a" /> {views}</span>
         </div>
 
@@ -172,11 +168,20 @@ const Detail = (props: Props) => {
   )
 }
 
-Detail.getInitialProps = async context => {
-  const { id } = context.query
-  const response = await axios.get(APIRoot + `articles/${id}`)
-  const detail = await response.data
-  return {detail: detail}
+export async function getStaticPaths() {
+  const response = await axios.get(APIRoot + 'articles/?fields=id')
+  const idList = await response.data
+  const paths = idList.map(item => `/detail/${item.id}`)
+
+  return { paths, fallback: false }
 }
+
+export async function getStaticProps({ params }) {
+  const response = await axios.get(APIRoot +
+    `articles/${params.id}?omit=author,summary,updated`)
+  const detail = await response.data
+  return { props: { detail } }
+}
+
 
 export default Detail
