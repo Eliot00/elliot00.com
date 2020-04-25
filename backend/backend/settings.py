@@ -34,7 +34,7 @@ else:
     DEBUG = False
     ALLOWED_HOSTS = [ENV.get('IP'), 'localhost', '.elliot00.com']
 
-
+ADMIN_BACK = ENV.get('ADMIN_URL')
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,7 +46,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'article.apps.ArticleConfig',
     'rest_framework',
+    'taggit',
+    'taggit_serializer',
+    'django_filters',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -141,6 +148,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'common_static')
 
 EMAIL_HOST = 'smtp.qq.com'
 EMAIL_HOST_USER = 'elliot00@qq.com'

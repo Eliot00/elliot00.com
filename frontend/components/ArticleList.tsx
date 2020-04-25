@@ -1,11 +1,15 @@
-import { List, Empty, Tag } from 'antd'
-import React from "react";
+import {List, Empty, Tag, Button} from 'antd'
+import React, {Dispatch, useState} from "react";
 import {ClockCircleTwoTone, EditTwoTone, FireTwoTone, BookTwoTone} from "@ant-design/icons/lib";
 import Link from "next/link";
 import { timeInterval } from "../utils/time";
+import axios from "axios";
+import {APIRoot} from "../utils/auth";
 
 interface ArticleItem {
   id: number,
+  column: string,
+  tags: Array<string>,
   series: number,
   title: string,
   views: number,
@@ -15,7 +19,8 @@ interface ArticleItem {
 }
 
 interface Props {
-  initialList: Array<ArticleItem>
+  initialList: Array<ArticleItem>,
+  setArticles: Dispatch<any>,
 }
 
 const ArticleList = (props: Props) => {
@@ -23,8 +28,15 @@ const ArticleList = (props: Props) => {
     "",
     "Django+React全栈开发"
   ]
+  const { setArticles } = props
 
   const articles = props.initialList
+
+  const filterArticles = async (key, value) => {
+    const response = await axios.get(APIRoot + `articles/?omit=author,body&${key}=${value}`)
+    const data = await response.data
+    setArticles(await data)
+  }
 
   if (articles.length === 0) {
     return (
@@ -43,6 +55,18 @@ const ArticleList = (props: Props) => {
             <div className="list-title">
               <Link href="/detail/[id]" as={`/detail/${item.id}`}><a>{item.title}</a></Link>
             </div>
+            <div className="list-classify">
+              <Button
+                style={{margin: "0 .3rem"}}
+                size={"small"}
+                onClick={event => filterArticles("column", item.column)}
+              >{item.column}</Button>
+              {item.tags.map(tag => (
+                <Tag color="volcano"
+                  key={item.id+tag}
+                  onClick={event => filterArticles("tags", tag)}>{tag}</Tag>
+              ))}
+            </div>
             <div className="list-icon">
               <span><ClockCircleTwoTone twoToneColor="#ff6666" /> {timeInterval(item.created)}</span>
               <span><EditTwoTone twoToneColor="#8c1aff"/> {timeInterval(item.updated)}</span>
@@ -56,22 +80,25 @@ const ArticleList = (props: Props) => {
         )}
         />
         <style jsx>{`
-        .list-title{
-            font-size:1.3rem;
-            color: #1e90ff;
-            padding: 0 0.5rem;
+        .list-title {
+          font-size: 1.3rem;
+          color: #1e90ff;
+          padding: 0 0.5rem;
         }
-        .list-content{
-            color:#777;
-            padding:.5rem;
+        .list-classify{
+          padding: .3rem .2rem;
+        }
+        .list-content {
+          color: #777;
+          padding:.5rem;
         }
         .list-icon{
-            padding:.5rem 0;
-            color:#AAA;
+          padding:.5rem 0;
+          color: #AAA;
         }
         .list-icon span{
-            display: inline-block;
-            padding: 0 10px;
+          display: inline-block;
+          padding: 0 10px;
         }
         `}</style>
     </div>

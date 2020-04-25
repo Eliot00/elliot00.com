@@ -8,6 +8,7 @@ import Tocify from "../../components/tocify";
 import 'highlight.js/styles/monokai-sublime.css'
 import axios from 'axios'
 import {APIRoot} from "../../utils/auth";
+import { GetStaticProps, GetStaticPaths } from "next";
 
 
 const tocify = new Tocify()
@@ -26,7 +27,7 @@ interface Props {
 }
 
 const Article = props => {
-  const {series, title, body, views, created, updated} = props.source
+  const {series, title, body, views, created} = props.source
   const renderer = new marked.Renderer()
   // @ts-ignore
   renderer.heading = function (text, level, raw) {
@@ -168,7 +169,7 @@ const Detail = (props: Props) => {
   )
 }
 
-export async function getStaticPaths() {
+export const getStaticPaths: GetStaticPaths = async () => {
   const response = await axios.get(APIRoot + 'articles/?fields=id')
   const idList = await response.data
   const paths = idList.map(item => `/detail/${item.id}`)
@@ -176,9 +177,9 @@ export async function getStaticPaths() {
   return { paths, fallback: false }
 }
 
-export async function getStaticProps({ params }) {
+export const getStaticProps:GetStaticProps = async ({ params }) => {
   const response = await axios.get(APIRoot +
-    `articles/${params.id}?omit=author,summary,updated`)
+    `articles/${params.id}?omit=author,summary,updated,column,tags`)
   const detail = await response.data
   return { props: { detail } }
 }
