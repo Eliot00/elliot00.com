@@ -8,10 +8,8 @@ import Tocify from "../../components/tocify";
 import 'highlight.js/styles/monokai-sublime.css'
 import axios from 'axios'
 import {APIRoot} from "../../utils/auth";
-import { GetStaticProps, GetStaticPaths } from "next";
+import {GetServerSideProps} from "next";
 
-
-const tocify = new Tocify()
 
 interface ArticleData {
   id: number,
@@ -31,7 +29,7 @@ const Article = props => {
   const renderer = new marked.Renderer()
   // @ts-ignore
   renderer.heading = function (text, level, raw) {
-    const anchor = tocify.add(text, level)
+    const anchor = props.tocify.add(text, level)
     return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\\n`
   }
   marked.setOptions({
@@ -138,7 +136,7 @@ const Article = props => {
   )
 }
 
-const ArticleNav = () => (
+const ArticleNav = ({tocify}) => (
   <Affix offsetTop={5}>
     <div className="detail-nav common-box">
       <div className="nav-title">文章目录</div>
@@ -159,27 +157,21 @@ const ArticleNav = () => (
 )
 
 const Detail = (props: Props) => {
+  const tocify = new Tocify()
   const {title} = props.detail
   return (
     <MyLayout
       title={title}
-      leftContent={<Article source={props.detail}/>}
-      rightContent={<ArticleNav/>}
+      leftContent={<Article source={props.detail} tocify={tocify}/>}
+      rightContent={<ArticleNav tocify={tocify}/>}
     />
   )
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-  const response = await axios.get(APIRoot + 'articles/?fields=id')
-  const idList = await response.data
-  const paths = idList.map((item) => (`/detail/${item.id}`))
-
-  return { paths, fallback: false }
-}
-
-export const getStaticProps:GetStaticProps = async ({ params }) => {
+export const getServerSideProps:GetServerSideProps = async context => {
+  const {id} = context.query
   const response = await axios.get(APIRoot +
-    `articles/${params.id}/?omit=author,summary,updated,column,tags`)
+    `articles/${id}/?omit=author,summary,updated,column,tags`)
   const detail = await response.data
   return { props: { detail } }
 }

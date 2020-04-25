@@ -9,7 +9,7 @@ const MyLayout = props => (
     <Head>
       <title>{props.title}</title>
     </Head>
-    <Header resetHome={props.resetHome}/>
+    <Header />
     <Row className="common-main" justify="center">
       <Col className="common-left" xs={24} sm={24} md={16} lg={18} xl={14}>
         {props.leftContent}

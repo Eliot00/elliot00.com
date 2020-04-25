@@ -3,17 +3,17 @@ import Link from "next/link"
 import {Row,Col, Menu} from 'antd'
 import {HomeOutlined, GroupOutlined, InfoCircleOutlined} from '@ant-design/icons'
 
-const Header = ({resetHome}) => (
+const Header = () => (
   <div className="header">
     <Row justify="center">
         <Col  xs={24} sm={24} md={10} lg={15} xl={12}>
-            <span className="header-logo" onClick={resetHome}><Link href="/"><a>公子政</a></Link></span>
+            <span className="header-logo"><Link href="/"><a>公子政</a></Link></span>
             <span className="header-txt">致虚极&nbsp;守静笃</span>
         </Col>
 
         <Col className="memu-div" xs={0} sm={0} md={14} lg={8} xl={6}>
             <Menu  mode="horizontal">
-                <Menu.Item key="home" onClick={resetHome}>
+                <Menu.Item key="home">
                     <HomeOutlined />
                     <Link href="/"><a>首页</a></Link>
                 </Menu.Item>
