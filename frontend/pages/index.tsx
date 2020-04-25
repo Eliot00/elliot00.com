@@ -5,9 +5,13 @@ import axios from 'axios'
 import {useState} from "react";
 
 const Home = props => {
-  const originalArticles = props.data.slice()
   const [articles, setArticles] = useState(props.data)
-  const resetHome = () => setArticles(originalArticles)
+
+  const resetHome = async () => {
+    const response = await axios.get(APIRoot + 'articles/?omit=author,body')
+    const data = await response.data
+    setArticles(await data)
+  }
   return (
     <MyLayout
       title="公子政的宅日常"

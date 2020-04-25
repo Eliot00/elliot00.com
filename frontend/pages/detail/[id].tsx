@@ -172,14 +172,14 @@ const Detail = (props: Props) => {
 export const getStaticPaths: GetStaticPaths = async () => {
   const response = await axios.get(APIRoot + 'articles/?fields=id')
   const idList = await response.data
-  const paths = idList.map(item => `/detail/${item.id}`)
+  const paths = idList.map((item) => (`/detail/${item.id}`))
 
   return { paths, fallback: false }
 }
 
 export const getStaticProps:GetStaticProps = async ({ params }) => {
   const response = await axios.get(APIRoot +
-    `articles/${params.id}?omit=author,summary,updated,column,tags`)
+    `articles/${params.id}/?omit=author,summary,updated,column,tags`)
   const detail = await response.data
   return { props: { detail } }
 }
