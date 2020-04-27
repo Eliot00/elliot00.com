@@ -24,7 +24,7 @@ interface Props {
 }
 
 const ArticleList = (props: Props) => {
-  const seriesName = [
+  const seriesName: Array<string> = [
     "",
     "Django+React全栈开发"
   ]

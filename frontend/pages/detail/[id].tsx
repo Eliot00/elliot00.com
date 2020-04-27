@@ -30,19 +30,20 @@ const Article = props => {
   // @ts-ignore
   renderer.heading = function (text, level, raw) {
     const anchor = props.tocify.add(text, level)
-    return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\\n`
+    return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\n`
   }
   marked.setOptions({
     renderer: renderer,
     gfm: true,
     pedantic: false,
-    breaks: false,
+    breaks: true,
     smartLists: true,
     smartypants: false,
     highlight: function (code) {
       return hljs.highlightAuto(code).value;
     }
   })
+  const markedHtml = marked(body)
 
   return (
     <div>
@@ -56,7 +57,7 @@ const Article = props => {
           <span><FireTwoTone twoToneColor="#ff471a" /> {views}</span>
         </div>
 
-        <div className="detail-content" dangerouslySetInnerHTML={{__html: marked(body)}}></div>
+        <div className="detail-content" dangerouslySetInnerHTML={{__html: markedHtml}}></div>
       </div>
       <style jsx global>{`
         .detail-title {
