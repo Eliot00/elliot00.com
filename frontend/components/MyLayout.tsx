@@ -8,6 +8,7 @@ const MyLayout = props => (
   <Fragment>
     <Head>
       <title>{props.title}</title>
+      <script data-ad-client="ca-pub-4587152222007322" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
     </Head>
     <Header />
     <Row className="common-main" justify="center">
@@ -35,6 +36,13 @@ const MyLayout = props => (
       border-radius: .3rem;
       border-bottom:1px solid #eee;
     };
+    .common-box{
+      background-color: #FFF;
+      margin-left: .5rem;
+      padding:.3rem;
+      border-radius: .3rem;
+      border:1px solid #eee;
+    }
     .common-main{
       margin-top: .5rem;
     };
