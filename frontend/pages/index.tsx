@@ -1,12 +1,13 @@
 import MyLayout from "../components/MyLayout"
 import {APIRoot} from "../utils/auth"
 import axios from 'axios'
-import React, {Dispatch, useState} from "react";
-import {GetServerSideProps} from "next";
-import {Button, Empty, List, Tag} from "antd";
-import Link from "next/link";
-import {BookTwoTone, ClockCircleTwoTone, EditTwoTone, FireTwoTone} from "@ant-design/icons/lib";
-import {timeInterval} from "../utils/time";
+import React, {Dispatch, useState} from "react"
+import {GetServerSideProps} from "next"
+import {Button, Empty, List, Tag} from "antd"
+import Link from "next/link"
+import {BookTwoTone, ClockCircleTwoTone, EditTwoTone, FireTwoTone} from "@ant-design/icons/lib"
+import {timeInterval} from "../utils/time"
+import Social from '../components/Social'
 
 interface ArticleItem {
   id: number,
@@ -116,7 +117,7 @@ const Home = props => {
         initialList={articles}
         setArticles={setArticles}
       />}
-      rightContent={<div className="common-box">Hello World!</div>}/>
+      rightContent={<Social />}/>
   )
 }
 
