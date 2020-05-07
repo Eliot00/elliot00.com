@@ -8,7 +8,6 @@ const MyLayout = props => (
   <Fragment>
     <Head>
       <title>{props.title}</title>
-      <meta name="domain_verify" content="pmrgi33nmfuw4ir2ejswy3djn52dambomnxw2irmejtxk2leei5cezjugqzdgnrvhfrtqm3egrsgenjzmvrtgn3che2wkmtbga4tozlgeiwce5djnvsvgylwmurdumjvha4dimrxge4dqnzwhb6q"></meta>
     </Head>
     <Header />
     <Row className="common-main" justify="center">

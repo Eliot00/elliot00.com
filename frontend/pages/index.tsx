@@ -117,7 +117,8 @@ const Home = props => {
         initialList={articles}
         setArticles={setArticles}
       />}
-      rightContent={<Social />}/>
+      rightContent={<Social />}
+    />
   )
 }
 
