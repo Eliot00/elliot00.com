@@ -163,15 +163,20 @@ const ArticleNav = ({tocify}) => (
   </Affix>
 )
 
-const Copyright = ({id, title}) => (
-  <div>
-    <span>原文链接：<Link href="/detail/[id]" as={`/detail/${id}`}><a>{title}</a></Link></span>
-    <br />
-    <span>原文作者：<Link href="/about"><a>公子政</a></Link></span>
-    <br />
-    <span>许可协议：<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a></span>
-  </div>
-)
+const Copyright = ({id, title}) => {
+  const selfUrl = `https://www.elliot00.com/detail/${id}`
+  return (
+    <div>
+      <span>原文标题：<a href={selfUrl}>{title}</a></span>
+      <br />
+      <span>原文作者：<Link href="/about"><a>公子政</a></Link></span>
+      <br />
+      <span>原文链接：<a href={selfUrl}>{selfUrl}</a></span>
+      <br />
+      <span>许可协议：<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a></span>
+    </div>
+  )
+}
 
 const Detail = (props: Props) => {
   const tocify = new Tocify()
