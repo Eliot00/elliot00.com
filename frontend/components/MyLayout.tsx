@@ -1,11 +1,12 @@
 import Header from '../components/Header'
 import Head from "next/head"
 import { Fragment } from 'react'
-import { Row, Col } from 'antd'
+import { Row, Col, BackTop } from 'antd'
 import Footer from "../components/Footer";
 
 const MyLayout = props => (
   <Fragment>
+    <BackTop />
     <Head>
       <title>{props.title}</title>
     </Head>
