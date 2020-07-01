@@ -11,6 +11,7 @@ class ArticleViewSet(mixins.ListModelMixin,
     permission_classes = [IsOwnerOrReadOnly]
     queryset = Article.objects.all()
     serializer_class = ArticleSerializer
+    filterset_fields = ('column', 'tags')
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()

@@ -46,8 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'article.apps.ArticleConfig',
     'rest_framework',
-    'taggit',
-    'taggit_serializer',
     'django_filters',
 ]
 
