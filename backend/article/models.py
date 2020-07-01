@@ -3,17 +3,17 @@ from django.contrib.auth.models import User
 
 
 class Column(models.Model):
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
-        return self.name
+        return "%d:%s" % (self.id, self.name)
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=10)
+    name = models.CharField(max_length=10, unique=True)
 
     def __str__(self):
-        return self.name
+        return "%d:%s" % (self.id, self.name)
 
 
 class Article(models.Model):

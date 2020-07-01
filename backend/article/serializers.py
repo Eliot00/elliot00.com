@@ -5,6 +5,8 @@ from .models import Article
 
 class ArticleSerializer(FlexFieldsModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
+    column = serializers.StringRelatedField()
+    tags = serializers.StringRelatedField(many=True)
 
     class Meta:
         model = Article
