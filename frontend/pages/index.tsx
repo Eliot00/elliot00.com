@@ -47,6 +47,7 @@ const ArticleList = (props: Props) => {
     )
   }
 
+  // TODO: 组件重构拆分，减少重复代码
   return (
     <div>
       <List
@@ -62,12 +63,12 @@ const ArticleList = (props: Props) => {
               <Button
                 style={{margin: "0 .3rem"}}
                 size={"small"}
-                onClick={event => filterArticles("column", item.column)}
-              >{item.column}</Button>
+                onClick={event => filterArticles("column", item.column.split(":")[0])}
+              >{item.column.split(":")[1]}</Button>
               {item.tags.map(tag => (
                 <Tag color="volcano"
                      key={item.id+tag}
-                     onClick={event => filterArticles("tags", tag)}>{tag}</Tag>
+                     onClick={event => filterArticles("tags", tag.split(":")[0])}>{tag.split(":")[1]}</Tag>
               ))}
             </div>
             <div className="list-icon">
