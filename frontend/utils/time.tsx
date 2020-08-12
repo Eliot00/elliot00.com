@@ -1,25 +1,31 @@
-export function timeInterval(timeString: string) {
-  const last = new Date(timeString)
+const YEAR = 31536e6
+const MONTH = 2592e6
+const DAY = 864e5
+const HOUR = 36e5
+const MINUTE = 6e4
+
+function diff(start: string) {
+  const last = new Date(start)
   const now = new Date()
-  const interval = now.getTime() - last.getTime()
-  const year = 86400 * 1000 * 365
-  const month = 86400 * 1000 * 30
-  const day = 86400 * 1000
-  const hour = 60 * 60 * 1000
-  const minute = 60 * 1000
+  return  now.getTime() - last.getTime()
+}
+
+export function timeInterval(timeString: string) {
+  const interval = diff(timeString)
   let result = ''
-  if (interval >= year) {
-    result = `${Math.floor(interval/year)}年前`
-  } else if (interval < year && interval >= month) {
-    result = `${Math.floor(interval/month)}月前`
-  } else if (interval < month && interval >= day) {
-    result = `${Math.floor(interval/day)}天前`
-  } else if (interval < day && interval >= hour) {
-    result = `${Math.floor(interval/hour)}小时前`
-  } else if (interval < hour && interval >= minute) {
-    result = `${Math.floor(interval/minute)}分钟前`
-  } else if (interval < minute) {
+
+  if (interval < MINUTE) {
     result = '刚刚'
+  } else if (interval < HOUR && interval >= MINUTE) {
+    result = `${Math.floor(interval/MINUTE)}分钟前`
+  } else if (interval < DAY && interval >= HOUR) {
+    result = `${Math.floor(interval/HOUR)}小时前`
+  } else if (interval < MONTH && interval >= DAY) {
+    result = `${Math.floor(interval/DAY)}天前`
+  } else if (interval < YEAR && interval >= MONTH) {
+    result = `${Math.floor(interval/MONTH)}月前`
+  } else {
+    result = `${Math.floor(interval/YEAR)}年前`
   }
   return result
 }
