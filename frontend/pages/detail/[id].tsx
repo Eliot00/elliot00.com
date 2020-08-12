@@ -183,7 +183,7 @@ const Detail = (props: Props) => {
   const {title} = props.detail
   return (
     <MyLayout
-      title={title}
+      title={title + ' - 公子政的宅日常'}
       leftContent={<Article source={props.detail} tocify={tocify}/>}
       rightContent={<ArticleNav tocify={tocify}/>}
     />

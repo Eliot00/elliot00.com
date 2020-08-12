@@ -6,7 +6,7 @@ const {Title, Paragraph, Text} = Typography
 
 const About = () => (
   <MyLayout
-    title="关于-公子政的宅日常"
+    title="关于 - 公子政的宅日常"
     leftContent={
       <Typography>
         <Title>关于博客</Title>
