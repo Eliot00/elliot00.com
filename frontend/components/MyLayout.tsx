@@ -1,7 +1,9 @@
 import { Row, Col } from 'antd'
+import Head from "next/head";
 
 const MyLayout = props => (
   <Row className="common-main" justify="center">
+    <Head><title>{props.title}</title></Head>
     <Col className="common-left" xs={24} sm={24} md={16} lg={18} xl={14}>
       {props.leftContent}
     </Col>

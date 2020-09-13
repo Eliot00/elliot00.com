@@ -6,10 +6,8 @@ import Head from "next/head"
 import Footer from "../components/Footer"
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const { title } = pageProps
   return (
     <Fragment>
-      <Head><title>{title}</title></Head>
       <Header />
       <Component {...pageProps} />
       <Footer />
