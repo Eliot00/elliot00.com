@@ -5,18 +5,7 @@ import {Row,Col, Menu} from 'antd'
 import {HomeOutlined, GroupOutlined, InfoCircleOutlined} from '@ant-design/icons'
 
 const Header = () => {
-  const router = useRouter()
-  let menuKey = "home"
-  switch (router.pathname) {
-    case '/course':
-      menuKey = "course"
-      break
-    case '/about':
-      menuKey = "about"
-      break
-    default:
-      menuKey = "home"
-  }
+
   return (
     <div className="header">
       <Row justify="center" align="middle">
@@ -26,7 +15,7 @@ const Header = () => {
         </Col>
 
         <Col className="menu-div" xs={0} sm={0} md={14} lg={9} xl={6}>
-          <Menu mode="horizontal" selectedKeys={[menuKey]}>
+          <Menu mode="horizontal" defaultSelectedKeys={["home"]}>
             <Menu.Item key="home">
               <HomeOutlined/>
               <Link href="/"><a>首页</a></Link>
@@ -52,7 +41,7 @@ const Header = () => {
         }
         .header-logo{
             color:#1e90ff;
-            font-size: 1.4rem;
+            font-size: 1.6rem;
             text-align: left;
         }
         .header-txt{

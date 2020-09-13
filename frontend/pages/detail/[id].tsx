@@ -195,7 +195,6 @@ export const getServerSideProps:GetServerSideProps = async context => {
   const response = await axios.get(APIRoot +
     `articles/${id}/?omit=author,summary,updated,column,tags`)
   const detail = await response.data
-  detail.id = id
   return { props: { detail } }
 }
 
