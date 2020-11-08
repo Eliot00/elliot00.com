@@ -22,10 +22,12 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     router.events.on('routeChangeStart', startLoading)
     router.events.on('routeChangeComplete', stopLoading)
+    router.events.on('routeChangeError', stopLoading)
 
     return () => {
       router.events.off('routeChangeStart', startLoading)
       router.events.off('routeChangeComplete', stopLoading)
+      router.events.on('routeChangeError', stopLoading)
     }
 
   }, [])
