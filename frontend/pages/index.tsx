@@ -2,7 +2,7 @@ import MyLayout from "../components/MyLayout"
 import {APIRoot} from "../utils/auth"
 import axios from 'axios'
 import React, {Dispatch, useState} from "react"
-import {GetServerSideProps} from "next"
+import { GetStaticProps } from "next"
 import {Button, Empty, List, Tag} from "antd"
 import Link from "next/link"
 import {BookTwoTone, ClockCircleTwoTone, EditTwoTone, FireTwoTone} from "@ant-design/icons/lib"
@@ -123,7 +123,7 @@ const Home = props => {
   )
 }
 
-export const getServerSideProps:GetServerSideProps=  async () => {
+export const getStaticProps: GetStaticProps = async (context) => {
   const response = await axios.get(APIRoot + 'articles/?omit=author,body')
   const data = await response.data
   return {

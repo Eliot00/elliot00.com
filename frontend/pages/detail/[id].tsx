@@ -8,7 +8,7 @@ import Tocify from "../../components/tocify"
 import 'highlight.js/styles/monokai-sublime.css'
 import axios from 'axios'
 import {APIRoot} from "../../utils/auth"
-import {GetServerSideProps} from "next"
+import { GetStaticProps, GetStaticPaths } from "next"
 import Link from 'next/link'
 
 
@@ -190,13 +190,18 @@ const Detail = (props: Props) => {
   )
 }
 
-export const getServerSideProps:GetServerSideProps = async context => {
-  const {id} = context.query
-  const response = await axios.get(APIRoot +
-    `articles/${id}/?omit=author,summary,updated,column,tags`)
+export const getStaticPaths: GetStaticPaths = async () => {
+  const response = await axios.get(APIRoot + 'articles/?fields=id')
+  const idList = await response.data
+  const paths = idList.map((item) => (`/detail/${item.id}`))
+
+  return { paths, fallback: false }
+}
+
+export const getStaticProps: GetStaticProps = async ({params}) => {
+  const response = await axios.get(APIRoot + `articles/${params.id}/?omit=author,summary,updated,column,tags`)
   const detail = await response.data
   return { props: { detail } }
 }
-
 
 export default Detail
