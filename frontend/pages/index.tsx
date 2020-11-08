@@ -113,11 +113,14 @@ const Home = props => {
   const [articles, setArticles] = useState(props.data)
   return (
     <MyLayout
+      loading={props.loading}
       title="公子政的宅日常"
-      leftContent={<ArticleList
-        initialList={articles}
-        setArticles={setArticles}
-      />}
+      leftContent={
+        <ArticleList
+          initialList={articles}
+          setArticles={setArticles}
+        />
+      }
       rightContent={<Social />}
     />
   )

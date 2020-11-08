@@ -4,8 +4,9 @@ import {Typography} from "antd"
 
 const {Title, Paragraph, Text} = Typography
 
-const About = () => (
+const About = ({loading}) => (
   <MyLayout
+    loading={loading}
     title="关于 - 公子政的宅日常"
     leftContent={
       <Typography>

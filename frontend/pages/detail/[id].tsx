@@ -21,10 +21,6 @@ interface ArticleData {
   created: string,
 }
 
-interface Props {
-  detail: ArticleData
-}
-
 const Article = props => {
   const {id, series, title, body, views, created} = props.source
   const renderer = new marked.Renderer()
@@ -178,11 +174,13 @@ const Copyright = ({id, title}) => {
   )
 }
 
-const Detail = (props: Props) => {
+const Detail = props => {
   const tocify = new Tocify()
+  const { loading } = props
   const {title} = props.detail
   return (
     <MyLayout
+      loading={loading}
       title={title + ' - 公子政的宅日常'}
       leftContent={<Article source={props.detail} tocify={tocify}/>}
       rightContent={<ArticleNav tocify={tocify}/>}

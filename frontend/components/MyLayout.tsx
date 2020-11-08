@@ -1,11 +1,11 @@
-import { Row, Col } from 'antd'
+import { Row, Col, Skeleton } from 'antd'
 import Head from "next/head";
 
 const MyLayout = props => (
   <Row className="common-main" justify="center">
     <Head><title>{props.title}</title></Head>
     <Col className="common-left" xs={24} sm={24} md={16} lg={18} xl={14}>
-      {props.leftContent}
+      <Skeleton loading={props.loading} active>{props.leftContent}</Skeleton>
     </Col>
     <Col className="common-right" xs={0} sm={0} md={7} lg={5} xl={5}>
       {props.rightContent}
