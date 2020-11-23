@@ -1,28 +1,18 @@
+import { ClockCircleTwoTone, FireTwoTone } from "@ant-design/icons/lib"
+import { Affix, Alert, Divider } from "antd"
+import { gql, request } from 'graphql-request'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/monokai-sublime.css'
+import marked from 'marked'
+import { GetStaticPaths, GetStaticProps } from "next"
+import Link from 'next/link'
 import React from 'react'
 import MyLayout from "../../components/MyLayout"
-import { ClockCircleTwoTone, FireTwoTone } from "@ant-design/icons/lib"
-import marked from 'marked'
-import hljs from 'highlight.js'
-import { Affix, Alert, Divider } from "antd"
 import Tocify from "../../components/tocify"
-import 'highlight.js/styles/monokai-sublime.css'
-import axios from 'axios'
-import {APIRoot} from "../../utils/auth"
-import { GetStaticProps, GetStaticPaths } from "next"
-import Link from 'next/link'
-
-
-interface ArticleData {
-  id: number,
-  series: number,
-  title: string,
-  body: string,
-  views: number,
-  created: string,
-}
+import { GraphQLEndpoint } from "../../utils/auth"
 
 const Article = props => {
-  const {id, series, title, body, views, created} = props.source
+  const { id, title, body, views, created } = props.source
   const renderer = new marked.Renderer()
   // @ts-ignore
   renderer.heading = function (text, level, raw) {
@@ -53,7 +43,7 @@ const Article = props => {
         <span><FireTwoTone twoToneColor="#ff471a" /> {views}</span>
       </div>
 
-      <div className="detail-content" dangerouslySetInnerHTML={{__html: markedHtml}}></div>
+      <div className="detail-content" dangerouslySetInnerHTML={{ __html: markedHtml }}></div>
       <Divider>全文完</Divider>
       <Alert
         message="版权声明"
@@ -139,7 +129,7 @@ const Article = props => {
   )
 }
 
-const ArticleNav = ({tocify}) => (
+const ArticleNav = ({ tocify }) => (
   <Affix offsetTop={5}>
     <div className="detail-nav common-box">
       <div className="nav-title">文章目录</div>
@@ -159,7 +149,7 @@ const ArticleNav = ({tocify}) => (
   </Affix>
 )
 
-const Copyright = ({id, title}) => {
+const Copyright = ({ id, title }) => {
   const selfUrl = `https://www.elliot00.com/detail/${id}`
   return (
     <div>
@@ -177,28 +167,51 @@ const Copyright = ({id, title}) => {
 const Detail = props => {
   const tocify = new Tocify()
   const { loading } = props
-  const {title} = props.detail
+  const { title } = props.detail
   return (
     <MyLayout
       loading={loading}
       title={title + ' - 公子政的宅日常'}
-      leftContent={<Article source={props.detail} tocify={tocify}/>}
-      rightContent={<ArticleNav tocify={tocify}/>}
+      leftContent={<Article source={props.detail} tocify={tocify} />}
+      rightContent={<ArticleNav tocify={tocify} />}
     />
   )
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const response = await axios.get(APIRoot + 'articles/?fields=id')
-  const idList = await response.data
+  const query = gql`
+    query GetId {
+      article {
+        id
+      }
+    }
+  `
+  const response = await request(GraphQLEndpoint, query)
+  const idList = response.article
   const paths = idList.map((item) => (`/detail/${item.id}`))
 
   return { paths, fallback: false }
 }
 
-export const getStaticProps: GetStaticProps = async ({params}) => {
-  const response = await axios.get(APIRoot + `articles/${params.id}/?omit=author,summary,updated,column,tags`)
-  const detail = await response.data
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const query = gql`
+    query GetArticle($articleId: Int!) {
+      article_by_pk(id: $articleId) {
+        id
+        title
+        body
+        views
+        created
+      }
+    }
+  `
+
+  const variables = {
+    articleId: params.id
+  }
+
+  const response = await request(GraphQLEndpoint, query, variables)
+  const detail = response.article_by_pk
   return { props: { detail } }
 }
 

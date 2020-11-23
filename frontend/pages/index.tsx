@@ -1,19 +1,33 @@
-import MyLayout from "../components/MyLayout"
-import {APIRoot} from "../utils/auth"
-import axios from 'axios'
-import React, {Dispatch, useState} from "react"
-import { GetStaticProps } from "next"
-import {Button, Empty, List, Tag} from "antd"
+import { BookTwoTone, ClockCircleTwoTone, EditTwoTone, FireTwoTone } from "@ant-design/icons/lib"
+import { Button, List, Tag as ITag } from "antd"
+import { gql, request } from 'graphql-request'
+import { GetStaticProps } from 'next'
 import Link from "next/link"
-import {BookTwoTone, ClockCircleTwoTone, EditTwoTone, FireTwoTone} from "@ant-design/icons/lib"
-import {timeInterval} from "../utils/time"
+import React from "react"
+import MyLayout from "../components/MyLayout"
 import Social from '../components/Social'
+import { GraphQLEndpoint } from "../utils/auth"
+import { timeInterval } from "../utils/time"
 
-interface ArticleItem {
+interface ITag {
+  tag: {
+    name: string
+  }
+}
+
+interface IColumn {
+  name: string
+}
+
+interface ISerie {
+  name: string
+}
+
+interface IArticleItem {
   id: number,
-  column: string,
-  tags: Array<string>,
-  series: number,
+  column: IColumn,
+  tags: Array<ITag>,
+  series: ISerie,
   title: string,
   views: number,
   summary: string,
@@ -21,63 +35,44 @@ interface ArticleItem {
   updated: string
 }
 
-interface Props {
-  initialList: Array<ArticleItem>,
-  setArticles: Dispatch<any>,
+interface IHomeProps {
+  loading: boolean,
+  articles: IArticleItem[]
 }
 
-const ArticleList = (props: Props) => {
-  const seriesName: Array<string> = [
-    "",
-    "Django+React全栈开发"
-  ]
-  const { setArticles } = props
+// TODO: optimize type declear
+const ArticleList = (props) => {
+  const articles: IArticleItem[] = props.articles
 
-  const articles = props.initialList
-
-  const filterArticles = async (key, value) => {
-    const response = await axios.get(APIRoot + `articles/?omit=author,body&${key}=${value}`)
-    const data = await response.data
-    setArticles(await data)
-  }
-
-  if (articles.length === 0) {
-    return (
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
-    )
-  }
-
-  // TODO: 组件重构拆分，减少重复代码
   return (
     <div>
       <List
         header={<div>最新文章</div>}
         itemLayout="vertical"
         dataSource={articles}
-        renderItem={item =>(
+        renderItem={item => (
           <List.Item>
             <div className="list-title">
               <Link href="/detail/[id]" as={`/detail/${item.id}`}><a>{item.title}</a></Link>
             </div>
             <div className="list-classify">
               <Button
-                style={{margin: "0 .3rem"}}
+                style={{ margin: "0 .3rem" }}
                 size={"small"}
-                onClick={event => filterArticles("column", item.column.split(":")[0])}
-              >{item.column.split(":")[1]}</Button>
+              >{item.column.name}</Button>
               {item.tags.map(tag => (
-                <Tag color="volcano"
-                     key={item.id+tag}
-                     onClick={event => filterArticles("tags", tag.split(":")[0])}>{tag.split(":")[1]}</Tag>
+                <ITag color="volcano"
+                  key={`${item.id} ${tag.tag.name}`}
+                >
+                  {tag.tag.name}
+                </ITag>
               ))}
             </div>
             <div className="list-icon">
               <span><ClockCircleTwoTone twoToneColor="#ff6666" /> {timeInterval(item.created)}</span>
-              <span><EditTwoTone twoToneColor="#8c1aff"/> {timeInterval(item.updated)}</span>
+              <span><EditTwoTone twoToneColor="#8c1aff" /> {timeInterval(item.updated)}</span>
               <span><FireTwoTone twoToneColor="#ff471a" /> {item.views}</span>
-              {item.series !== 0
-                ? <span><BookTwoTone twoToneColor="#00cccc" /> {seriesName[item.series]}</span>
-                : ''}
+              <span><BookTwoTone twoToneColor="#00cccc" /></span>
             </div>
             <div className="list-content">{item.summary}</div>
           </List.Item>
@@ -109,16 +104,16 @@ const ArticleList = (props: Props) => {
   )
 }
 
-const Home = props => {
-  const [articles, setArticles] = useState(props.data)
+const Home = (props: IHomeProps) => {
+  const { loading, articles } = props
+
   return (
     <MyLayout
-      loading={props.loading}
+      loading={loading}
       title="公子政的宅日常"
       leftContent={
         <ArticleList
-          initialList={articles}
-          setArticles={setArticles}
+          articles={articles}
         />
       }
       rightContent={<Social />}
@@ -127,11 +122,33 @@ const Home = props => {
 }
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const response = await axios.get(APIRoot + 'articles/?omit=author,body')
-  const data = await response.data
+  const query = gql`
+  {
+    article(order_by: {created: desc}) {
+      id
+      column {
+        name
+      }
+      serie {
+        name
+      }
+      tags {
+        tag {
+          name
+        }
+      }
+      title
+      views
+      summary
+      created
+      updated
+    }
+  }
+`
+  const response = await request(GraphQLEndpoint, query)
   return {
     props: {
-      data,
+      articles: response.article,
     },
   }
 }
