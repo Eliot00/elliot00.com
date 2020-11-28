@@ -21,7 +21,7 @@ const Header = () => {
             </Menu.Item>
             <Menu.Item key="course">
               <GroupOutlined/>
-              <Link href="/course"><a>教程</a></Link>
+              <Link href="/course"><a>归档</a></Link>
             </Menu.Item>
             <Menu.Item key="about">
               <InfoCircleOutlined/>

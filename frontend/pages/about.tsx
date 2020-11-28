@@ -1,10 +1,10 @@
+import { Space, Typography } from "antd"
 import MyLayout from "../components/MyLayout"
 import Social from "../components/Social"
-import {Typography} from "antd"
 
-const {Title, Paragraph, Text} = Typography
+const { Title, Paragraph, Text } = Typography
 
-const About = ({loading}) => (
+const About = ({ loading }) => (
   <MyLayout
     loading={loading}
     title="关于 - 公子政的宅日常"
@@ -15,11 +15,19 @@ const About = ({loading}) => (
           <Text strong>前端部分</Text>：<Text mark>NextJs</Text>、<Text mark>Ant Design</Text>
         </Paragraph>
         <Paragraph>
-          <Text strong>后端部分</Text>：<Text mark>Django</Text>、<Text mark>Django REST framework</Text>
+          <Text strong>管理后台</Text>：<Text mark>Blazor</Text>
+        </Paragraph>
+        <Paragraph>
+          <Text strong>后端部分</Text>：<Text mark>Hasura</Text>
         </Paragraph>
         <Paragraph><Text strong>源码地址</Text>：<a href="https://github.com/Eliot00/elliot00.com">https://github.com/Eliot00/elliot00.com</a></Paragraph>
         <Title level={2}>关于博主</Title>
-        <Paragraph>沉迷于技术海洋中的95后，喜欢尝试新鲜事物，目前在鼓捣<Text mark>deno</Text>。</Paragraph>
+        <Paragraph>沉迷于技术海洋中的95后，喜欢尝试新鲜事物，热爱文学，时空枢纽远刺玩家，围棋棋渣，不善社交</Paragraph>
+        <Space>
+          <img src="https://img.shields.io/badge/rust-%23000000.svg?&style=for-the-badge&logo=rust&logoColor=white" />
+          <img src="https://img.shields.io/badge/c%23%20-%23239120.svg?&style=for-the-badge&logo=c-sharp&logoColor=white" />
+          <img src="https://img.shields.io/badge/python%20-%2314354C.svg?&style=for-the-badge&logo=python&logoColor=white" />
+        </Space>
         <Title level={2}>友情链接</Title>
         <Paragraph>
           <ul>
