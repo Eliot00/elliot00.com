@@ -1,43 +1,13 @@
 import { gql, request } from 'graphql-request'
+import _ from 'lodash'
 import { GetStaticProps } from 'next'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from "react"
 import ArticleList from "../../components/ArticleList"
 import MyLayout from "../../components/MyLayout"
 import Social from '../../components/Social'
+import { IHomeProps } from "../../types/ArticleItem"
 import { GraphQLEndpoint } from "../../utils/auth"
-import _ from 'lodash'
-
-interface ITag {
-  tag: {
-    name: string
-  }
-}
-
-interface IColumn {
-  name: string
-}
-
-interface ISerie {
-  name: string
-}
-
-interface IArticleItem {
-  id: number,
-  column: IColumn,
-  tags: Array<ITag>,
-  serie: ISerie,
-  title: string,
-  views: number,
-  summary: string,
-  created: string,
-  updated: string
-}
-
-interface IHomeProps {
-  loading: boolean,
-  articles: IArticleItem[]
-}
 
 const Posts = (props: IHomeProps) => {
   const { loading, articles: sourceArticles } = props

@@ -2,33 +2,8 @@ import { BookTwoTone, ClockCircleTwoTone, EditTwoTone, FireTwoTone } from "@ant-
 import { Button, List, Tag, Tooltip } from "antd"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import { IArticleItem } from "../types/ArticleItem"
 import { timeInterval } from "../utils/time"
-
-interface ITag {
-  tag: {
-    name: string
-  }
-}
-
-interface IColumn {
-  name: string
-}
-
-interface ISerie {
-  name: string
-}
-
-interface IArticleItem {
-  id: number,
-  column: IColumn,
-  tags: Array<ITag>,
-  serie: ISerie,
-  title: string,
-  views: number,
-  summary: string,
-  created: string,
-  updated: string
-}
 
 const ArticleList = (props) => {
   const route = useRouter()
