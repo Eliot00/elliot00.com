@@ -50,10 +50,11 @@ const ArticleList = (props) => {
         header={<div>最新文章</div>}
         itemLayout="vertical"
         dataSource={articles}
+        pagination={{ pageSize: 20 }}
         renderItem={item => (
           <List.Item>
             <div className="list-title">
-              <Link href="/detail/[id]" as={`/detail/${item.id}`}><a>{item.title}</a></Link>
+              <Link href={`/posts/detail/${item.id}`}><a>{item.title}</a></Link>
             </div>
             <div className="list-classify">
               <Button
