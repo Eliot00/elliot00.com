@@ -150,7 +150,7 @@ const ArticleNav = ({ tocify }) => (
 )
 
 const Copyright = ({ id, title }) => {
-  const selfUrl = `https://www.elliot00.com/posts/detail/${id}`
+  const selfUrl = `https://www.elliot00.com/posts/${id}`
   return (
     <div>
       <span>原文标题：<a href={selfUrl}>{title}</a></span>

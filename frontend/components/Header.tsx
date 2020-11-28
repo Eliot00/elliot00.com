@@ -19,9 +19,9 @@ const Header = () => {
               <HomeOutlined/>
               <Link href="/"><a>首页</a></Link>
             </Menu.Item>
-            <Menu.Item key="course">
+            <Menu.Item key="series">
               <GroupOutlined/>
-              <Link href="/course"><a>归档</a></Link>
+              <Link href="/series"><a>归档</a></Link>
             </Menu.Item>
             <Menu.Item key="about">
               <InfoCircleOutlined/>
