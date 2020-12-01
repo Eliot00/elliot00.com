@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { useRouter } from "next/router"
 import React from 'react'
 import MyLayout from "../../components/MyLayout"
+import Social from "../../components/Social"
 import Tocify from "../../components/tocify"
 import { GraphQLEndpoint } from "../../utils/auth"
 
@@ -166,14 +167,24 @@ const Copyright = ({ id, title }) => {
 }
 
 const Detail = props => {
+  const route = useRouter()
+  if (route.isFallback) {
+    return (
+    <MyLayout
+      loading={true}
+      title={'加载中 - 公子政的宅日常'}
+      leftContent={<div>Loading</div>}
+      rightContent={<Social />}
+    />
+
+    )
+  }
   const tocify = new Tocify()
   const { loading } = props
   const { title } = props.detail
-  const route = useRouter()
-  const { isFallback } = route
   return (
     <MyLayout
-      loading={loading || isFallback}
+      loading={loading}
       title={title + ' - 公子政的宅日常'}
       leftContent={<Article source={props.detail} tocify={tocify} />}
       rightContent={<ArticleNav tocify={tocify} />}
