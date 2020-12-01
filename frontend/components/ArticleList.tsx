@@ -19,7 +19,7 @@ const ArticleList = (props) => {
         renderItem={item => (
           <List.Item>
             <div className="list-title">
-              <Link href={`/posts/detail/${item.id}`}><a>{item.title}</a></Link>
+              <Link href={`/posts/${item.id}`}><a>{item.title}</a></Link>
             </div>
             <div className="list-classify">
               <Button

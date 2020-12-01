@@ -6,6 +6,7 @@ import 'highlight.js/styles/monokai-sublime.css'
 import marked from 'marked'
 import { GetStaticPaths, GetStaticProps } from "next"
 import Link from 'next/link'
+import { useRouter } from "next/router"
 import React from 'react'
 import MyLayout from "../../components/MyLayout"
 import Tocify from "../../components/tocify"
@@ -168,9 +169,11 @@ const Detail = props => {
   const tocify = new Tocify()
   const { loading } = props
   const { title } = props.detail
+  const route = useRouter()
+  const { isFallback } = route
   return (
     <MyLayout
-      loading={loading}
+      loading={loading || isFallback}
       title={title + ' - 公子政的宅日常'}
       leftContent={<Article source={props.detail} tocify={tocify} />}
       rightContent={<ArticleNav tocify={tocify} />}
@@ -190,7 +193,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
   const idList = response.article
   const paths = idList.map((item) => ({ params: { id: item.id.toString() } }))
 
-  return { paths, fallback: false }
+  return { paths, fallback: true }
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
