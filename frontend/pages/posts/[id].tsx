@@ -7,9 +7,9 @@ import marked from 'marked'
 import { GetStaticPaths, GetStaticProps } from "next"
 import Link from 'next/link'
 import React from 'react'
-import MyLayout from "../../../components/MyLayout"
-import Tocify from "../../../components/tocify"
-import { GraphQLEndpoint } from "../../../utils/auth"
+import MyLayout from "../../components/MyLayout"
+import Tocify from "../../components/tocify"
+import { GraphQLEndpoint } from "../../utils/auth"
 
 const Article = props => {
   const { id, title, body, views, created } = props.source
@@ -150,7 +150,7 @@ const ArticleNav = ({ tocify }) => (
 )
 
 const Copyright = ({ id, title }) => {
-  const selfUrl = `https://www.elliot00.com/posts/detail/${id}`
+  const selfUrl = `https://www.elliot00.com/posts/${id}`
   return (
     <div>
       <span>原文标题：<a href={selfUrl}>{title}</a></span>
