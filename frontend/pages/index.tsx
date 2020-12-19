@@ -29,7 +29,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const query = gql`
   {
     article(order_by: {created: desc}) {
-      id
+      slug
       column {
         name
       }

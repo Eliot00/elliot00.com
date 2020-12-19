@@ -19,7 +19,7 @@ const ArticleList = (props) => {
         renderItem={item => (
           <List.Item>
             <div className="list-title">
-              <Link href={`/posts/${item.id}`}><a>{item.title}</a></Link>
+              <Link href={`/posts/${item.slug}`}><a>{item.title}</a></Link>
             </div>
             <div className="list-classify">
               <Button
@@ -30,7 +30,7 @@ const ArticleList = (props) => {
               {item.tags.map(tag => (
                 <Tag
                   color="volcano"
-                  key={`${item.id} ${tag.tag.name}`}
+                  key={`${item.slug} ${tag.tag.name}`}
                   onClick={() => route.push(`/posts?tag=${tag.tag.name}`, undefined, { shallow: true })}
                 >
                   {tag.tag.name}

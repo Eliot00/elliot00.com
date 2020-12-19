@@ -13,7 +13,7 @@ interface ISerie {
 }
 
 export interface IArticleItem {
-  id: number,
+  slug: string,
   column: IColumn,
   tags: Array<ITag>,
   serie: ISerie,

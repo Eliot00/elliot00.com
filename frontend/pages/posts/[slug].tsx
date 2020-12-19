@@ -12,9 +12,10 @@ import MyLayout from "../../components/MyLayout"
 import Social from "../../components/Social"
 import Tocify from "../../components/tocify"
 import { GraphQLEndpoint } from "../../utils/auth"
+import ErrorPage from "next/error"
 
 const Article = props => {
-  const { id, title, body, views, created } = props.source
+  const { slug, title, body, views, created } = props.source
   const renderer = new marked.Renderer()
   // @ts-ignore
   renderer.heading = function (text, level, raw) {
@@ -49,7 +50,7 @@ const Article = props => {
       <Divider>全文完</Divider>
       <Alert
         message="版权声明"
-        description={<Copyright id={id} title={title} />}
+        description={<Copyright slug={slug} title={title} />}
         type="warning"
         showIcon
       />
@@ -151,8 +152,8 @@ const ArticleNav = ({ tocify }) => (
   </Affix>
 )
 
-const Copyright = ({ id, title }) => {
-  const selfUrl = `https://www.elliot00.com/posts/${id}`
+const Copyright = ({ slug, title }) => {
+  const selfUrl = `https://www.elliot00.com/posts/${slug}`
   return (
     <div>
       <span>原文标题：<a href={selfUrl}>{title}</a></span>
@@ -166,66 +167,65 @@ const Copyright = ({ id, title }) => {
   )
 }
 
-const Detail = props => {
+const Detail = ({ detail, loading }) => {
   const route = useRouter()
-  if (route.isFallback) {
-    return (
-    <MyLayout
-      loading={true}
-      title={'加载中 - 公子政的宅日常'}
-      leftContent={<div>Loading</div>}
-      rightContent={<Social />}
-    />
-
-    )
+  if (!route.isFallback && !detail?.title) {
+    return <ErrorPage statusCode={404} />
   }
   const tocify = new Tocify()
-  const { loading } = props
-  const { title } = props.detail
   return (
-    <MyLayout
-      loading={loading}
-      title={title + ' - 公子政的宅日常'}
-      leftContent={<Article source={props.detail} tocify={tocify} />}
-      rightContent={<ArticleNav tocify={tocify} />}
-    />
+    route.isFallback
+      ?
+      <MyLayout
+        loading={true}
+        title={'加载中 - 公子政的宅日常'}
+        leftContent={<div>Loading</div>}
+        rightContent={<Social />}
+      />
+      :
+      <MyLayout
+        loading={loading || route.isFallback}
+        title={detail?.title + ' - 公子政的宅日常'}
+        leftContent={<Article source={detail} tocify={tocify} />}
+        rightContent={<ArticleNav tocify={tocify} />}
+      />
   )
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const query = gql`
-    query GetId {
+    query GetSlug {
       article {
-        id
+        slug
       }
     }
   `
   const response = await request(GraphQLEndpoint, query)
-  const idList = response.article
-  const paths = idList.map((item) => ({ params: { id: item.id.toString() } }))
+  const slugs = response.article
+  const paths = slugs.map((item) => ({ params: { slug: item.slug } }))
 
   return { paths, fallback: true }
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const query = gql`
-    query GetArticle($articleId: Int!) {
-      article_by_pk(id: $articleId) {
-        id
-        title
-        body
+    query GetArticle($articleSlug: String!) {
+      article(where: {slug: {_eq: $articleSlug}}) {
         views
+        title
+        slug
         created
+        body
       }
     }
   `
 
   const variables = {
-    articleId: params.id
+    articleSlug: params.slug
   }
 
   const response = await request(GraphQLEndpoint, query, variables)
-  const detail = response.article_by_pk
+  const detail = response.article[0]
   return { props: { detail } }
 }
 
