@@ -4,7 +4,7 @@ import { Fragment, useEffect, useState } from "react"
 import type { AppProps } from 'next/app'
 import Footer from "../components/Footer"
 import { useRouter } from "next/router"
-import 'antd/dist/antd.css'
+import '../styles/globals.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [loading, setLoading] = useState(false)
