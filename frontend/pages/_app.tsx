@@ -39,11 +39,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         <Component loading={loading} {...pageProps} />
       <Footer />
       <BackTop />
-      <style jsx global>{`
-        body {
-          background-color: #f6f6f6
-        };
-      `}</style>
     </Fragment>
   )
 }

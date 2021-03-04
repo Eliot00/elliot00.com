@@ -6,7 +6,7 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
-    <header className="relative z-10">
+    <header className="relative z-10 bg-white shadow-md">
       <nav className="mx-auto flex flex-wrap items-center justify-between px-4 sm:px-6 md:px-8 max-w-screen-lg lg:p-0">
         <Link href="/">
           <a className="flex items-center">
