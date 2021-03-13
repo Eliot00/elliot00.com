@@ -26,5 +26,5 @@ export interface IArticleItem {
 
 export interface IHomeProps {
   loading: boolean,
-  articles: IArticleItem[]
+  latestArticles: IArticleItem[]
 }

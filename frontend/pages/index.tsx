@@ -8,7 +8,7 @@ import { IHomeProps } from "../types/ArticleItem"
 import { GraphQLEndpoint } from "../utils/auth"
 
 const Home = (props: IHomeProps) => {
-  const { loading, articles } = props
+  const { loading, latestArticles } = props
 
 
   return (
@@ -16,9 +16,7 @@ const Home = (props: IHomeProps) => {
       loading={loading}
       title="公子政的宅日常"
       leftContent={
-        <ArticleList
-          articles={articles}
-        />
+        <ArticleList articles={latestArticles} />
       }
       rightContent={<Social />}
     />
@@ -28,7 +26,7 @@ const Home = (props: IHomeProps) => {
 export const getStaticProps: GetStaticProps = async (context) => {
   const query = gql`
   {
-    article(order_by: {created: desc}) {
+    article(limit: 5, order_by: {updated: desc}) {
       slug
       column {
         name
@@ -52,7 +50,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const response = await request(GraphQLEndpoint, query)
   return {
     props: {
-      articles: response.article,
+      latestArticles: response.article,
     },
     revalidate: 600,
   }
