@@ -8,9 +8,9 @@ const ArticleList = (props) => {
   return (
     <ul className="divide-y divide-gray-100 font-sans">
       {articles.map(article => (
-        <div className="block">
+        <li>
           <Link href={`/posts/${article.slug}`}>
-            <a className="text-gray-900 hover:text-gray-600 hover:underline font-semibold text-2xl">
+            <a className="text-gray-900 hover:text-gray-600 hover:underline transition duration-150 ease-in-out font-meduim text-2xl">
               <h2 className="p-2">{article.title}</h2>
             </a>
           </Link>
@@ -27,7 +27,7 @@ const ArticleList = (props) => {
             </time>
           </div>
           <p className="p-2 font-serif font-thin text-gray-500">{article.summary}</p>
-        </div>
+        </li>
       ))}
     </ul>
   )
