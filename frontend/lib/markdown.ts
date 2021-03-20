@@ -9,6 +9,9 @@ import "prismjs/components/prism-typescript"
 import "prismjs/components/prism-csharp"
 import "prismjs/components/prism-jsx"
 import "prismjs/components/prism-tsx"
+import "prismjs/components/prism-toml"
+import "prismjs/components/prism-json"
+import "prismjs/components/prism-yaml"
 
 interface MarkdownBody {
     firstPara

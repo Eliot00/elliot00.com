@@ -10,6 +10,7 @@ import Tocify from "../../components/tocify"
 import { GraphQLEndpoint } from "../../utils/auth"
 import ErrorPage from "next/error"
 import markdonw from "../../lib/markdown"
+import "prismjs/themes/prism.css"
 
 const Article = props => {
   const { slug, title, body, views, created, updated } = props.source
@@ -36,34 +37,6 @@ const Article = props => {
       .detail-content {
         padding: 1.3rem;
         font-size: 1rem;
-      }
-      pre {
-        display: block;
-        background-color:#f3f3f3;
-        padding: .5rem !important;
-        overflow-y: auto;
-        font-weight: 300;
-        font-family: Menlo, monospace;
-        border-radius: .3rem;
-      }
-      pre {
-        background-color: #283646 !important;
-      }
-      pre >code {
-        border:0px !important;
-        background-color: #283646 !important;
-        color:#FFF;
-      }
-      code {
-        display: inline-block ;
-        background-color:#f3f3f3;
-        border:1px solid #fdb9cc;
-        border-radius:3px;
-        font-size: 14px;
-        padding-left: 5px;
-        padding-right: 5px;
-        color:#4f4f4f;
-        margin: 0px 3px;
       }
       .title-anchor {
         color:#888 !important;
