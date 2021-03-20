@@ -4,9 +4,9 @@
 
 
 body {
-    @apply bg-gray-300
+    @apply bg-white
 }
 
-.nav-link {
-    @apply text-gray-500 hover:text-gray-900 transition duration-150 ease-in-out;
+.link {
+    @apply text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out;
 }

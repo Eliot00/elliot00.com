@@ -10,7 +10,7 @@ const ArticleList = (props) => {
       {articles.map(article => (
         <li>
           <Link href={`/posts/${article.slug}`}>
-            <a className="text-gray-900 hover:text-gray-600 hover:underline transition duration-150 ease-in-out font-meduim text-2xl">
+            <a className="link hover:underline font-meduim text-2xl">
               <h2 className="p-2">{article.title}</h2>
             </a>
           </Link>

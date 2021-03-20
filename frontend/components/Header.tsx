@@ -38,17 +38,17 @@ const Header = () => {
         <ul className="hidden lg:flex md:ml-10 items-end">
           <li>
             <Link href="/posts">
-              <a className="font-medium nav-link">Blog</a>
+              <a className="font-medium link">Blog</a>
             </Link>
           </li>
           <li>
             <Link href="/series">
-              <a className="ml-10 font-medium nav-link">Archive</a>
+              <a className="ml-10 font-medium link">Archive</a>
             </Link>
           </li>
           <li>
             <Link href="/about">
-              <a className="ml-10 font-medium nav-link">About</a>
+              <a className="ml-10 font-medium link">About</a>
             </Link>
           </li>
         </ul>

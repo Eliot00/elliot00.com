@@ -8,18 +8,10 @@ import { IHomeProps } from "../types/ArticleItem"
 import { GraphQLEndpoint } from "../utils/auth"
 
 const Home = (props: IHomeProps) => {
-  const { loading, latestArticles } = props
-
+  const { latestArticles } = props
 
   return (
-    <MyLayout
-      loading={loading}
-      title="公子政的宅日常"
-      leftContent={
-        <ArticleList articles={latestArticles} />
-      }
-      rightContent={<Social />}
-    />
+    <ArticleList articles={latestArticles} />
   )
 }
 

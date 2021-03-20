@@ -5,6 +5,7 @@ import type { AppProps } from 'next/app'
 import Footer from "../components/Footer"
 import { useRouter } from "next/router"
 import '../styles/globals.css'
+import MyLayout from "../components/MyLayout"
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [loading, setLoading] = useState(false)
@@ -34,12 +35,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [])
 
   return (
-    <Fragment>
-      <Header />
-        <Component loading={loading} {...pageProps} />
-      <Footer />
-      <BackTop />
-    </Fragment>
+    <MyLayout>
+      <Component loading={loading} {...pageProps} />
+    </MyLayout>
   )
 }
 
