@@ -1,9 +1,5 @@
-import { ClockCircleTwoTone, FireTwoTone } from "@ant-design/icons/lib"
 import { Affix, Alert, Divider } from "antd"
 import { gql, request } from 'graphql-request'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/monokai-sublime.css'
-import marked from 'marked'
 import { GetStaticPaths, GetStaticProps } from "next"
 import Link from 'next/link'
 import { useRouter } from "next/router"
@@ -13,40 +9,22 @@ import Social from "../../components/Social"
 import Tocify from "../../components/tocify"
 import { GraphQLEndpoint } from "../../utils/auth"
 import ErrorPage from "next/error"
+import markdonw from "../../lib/markdown"
 
 const Article = props => {
-  const { slug, title, body, views, created } = props.source
-  const renderer = new marked.Renderer()
-  // @ts-ignore
-  renderer.heading = function (text, level, raw) {
-    const anchor = props.tocify.add(text, level)
-    return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\n`
-  }
-  marked.setOptions({
-    renderer: renderer,
-    gfm: true,
-    pedantic: false,
-    breaks: true,
-    smartLists: true,
-    smartypants: false,
-    highlight: function (code) {
-      return hljs.highlightAuto(code).value;
-    }
-  })
-  const markedHtml = marked(body)
+  const { slug, title, body, views, created, updated } = props.source
 
   return (
-    <div>
-      <div className="detail-title">
-        {title}
-      </div>
+    <article>
+      <header>
+        <h1 className="font-sans text-center text-3xl p-4">{title}</h1>
+        <div className="text-center text-gray-400">
+          <span className="px-2">创建于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(created))}</time></span>
+          <span className="px-2">更新于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(updated))}</time></span>
+        </div>
+      </header>
 
-      <div className="detail-icon center">
-        <span><ClockCircleTwoTone twoToneColor="#ff6666" /> {created.slice(0, 10)}发布</span>
-        <span><FireTwoTone twoToneColor="#ff471a" /> {views}</span>
-      </div>
-
-      <div className="detail-content" dangerouslySetInnerHTML={{ __html: markedHtml }}></div>
+      <div className="detail-content" dangerouslySetInnerHTML={{ __html: body }}></div>
       <Divider>全文完</Divider>
       <Alert
         message="版权声明"
@@ -55,22 +33,6 @@ const Article = props => {
         showIcon
       />
       <style jsx global>{`
-      .detail-title {
-        font-size: 1.8rem;
-        text-align: center;
-        padding: 1rem;
-      }
-      .detail-icon {
-        padding:.5rem 0;
-        color:#AAA;
-      }
-      .detail-icon span {
-        display: inline-block;
-        padding: 0 10px;
-      }
-      .center {
-        text-align: center;
-      }
       .detail-content {
         padding: 1.3rem;
         font-size: 1rem;
@@ -128,7 +90,7 @@ const Article = props => {
         border:1px solid #f3f3f3;
       }
     `}</style>
-    </div>
+    </article>
   )
 }
 
@@ -215,6 +177,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         title
         slug
         created
+        updated
         body
       }
     }
@@ -226,6 +189,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
 
   const response = await request(GraphQLEndpoint, query, variables)
   const detail = response.article[0]
+  detail.body = markdonw(detail.body)
   return { props: { detail } }
 }
 
