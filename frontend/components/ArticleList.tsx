@@ -8,7 +8,7 @@ const ArticleList = (props) => {
   return (
     <ul className="divide-y divide-gray-100 font-sans">
       {articles.map(article => (
-        <li>
+        <li key={article.slug}>
           <Link href={`/posts/${article.slug}`}>
             <a className="link hover:underline font-meduim text-2xl">
               <h2 className="p-2">{article.title}</h2>
