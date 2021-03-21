@@ -1,4 +1,4 @@
-import { Affix, Alert, Divider } from "antd"
+import { Alert, Divider } from "antd"
 import { gql, request } from 'graphql-request'
 import { GetStaticPaths, GetStaticProps } from "next"
 import Link from 'next/link'
@@ -8,59 +8,63 @@ import { GraphQLEndpoint } from "../../utils/auth"
 import ErrorPage from "next/error"
 import markdonw from "../../lib/markdown"
 import "prismjs/themes/prism.css"
+import SEO from "../../components/SEO"
 
 const Article = props => {
-  const { slug, title, body, views, created, updated } = props.source
+  const { slug, title, body, created, updated } = props.source
 
   return (
-    <article>
-      <header>
-        <h1 className="font-sans text-center text-3xl p-4">{title}</h1>
-        <div className="text-center text-gray-400">
-          <span className="px-2">创建于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(created))}</time></span>
-          <span className="px-2">更新于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(updated))}</time></span>
-        </div>
-      </header>
+    <>
+      <SEO title={`${title} - 公子政的宅日常`} description={body.substring(0, 100)}/>
+      <article>
+        <header>
+          <h1 className="font-sans text-center text-3xl p-4">{title}</h1>
+          <div className="text-center text-gray-400">
+            <span className="px-2">创建于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(created))}</time></span>
+            <span className="px-2">更新于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(updated))}</time></span>
+          </div>
+        </header>
 
-      <div className="detail-content" dangerouslySetInnerHTML={{ __html: body }}></div>
-      <Divider>全文完</Divider>
-      <Alert
-        message="版权声明"
-        description={<Copyright slug={slug} title={title} />}
-        type="warning"
-        showIcon
-      />
-      <style jsx global>{`
-      .detail-content {
-        padding: 1.3rem;
-        font-size: 1rem;
-      }
-      .title-anchor {
-        color:#888 !important;
-        padding:4px !important;
-        margin: 0rem !important;
-        height: auto !important;
-        line-height: 1.2rem !important;
-        font-size: .7rem !important;
-        border-bottom: 1px dashed #eee;
-        overflow: hidden;
-        text-overflow:ellipsis;
-        white-space: nowrap;
-      }
-      .active {
-        color:rgb(30, 144, 255) !important;
-      }
-      .nav-title {
-        text-align: center;
-        color: #888;
-        border-bottom: 1px solid rgb(30, 144, 255);
-      }
-      .detail-content img {
-        width: 100%;
-        border:1px solid #f3f3f3;
-      }
-    `}</style>
-    </article>
+        <div className="detail-content" dangerouslySetInnerHTML={{ __html: body }}></div>
+        <Divider>全文完</Divider>
+        <Alert
+          message="版权声明"
+          description={<Copyright slug={slug} title={title} />}
+          type="warning"
+          showIcon
+        />
+        <style jsx global>{`
+        .detail-content {
+          padding: 1.3rem;
+          font-size: 1rem;
+        }
+        .title-anchor {
+          color:#888 !important;
+          padding:4px !important;
+          margin: 0rem !important;
+          height: auto !important;
+          line-height: 1.2rem !important;
+          font-size: .7rem !important;
+          border-bottom: 1px dashed #eee;
+          overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
+        }
+        .active {
+          color:rgb(30, 144, 255) !important;
+        }
+        .nav-title {
+          text-align: center;
+          color: #888;
+          border-bottom: 1px solid rgb(30, 144, 255);
+        }
+        .detail-content img {
+          width: 100%;
+          border:1px solid #f3f3f3;
+        }
+      `}</style>
+      </article>
+    </>
   )
 }
 
@@ -112,7 +116,6 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   const query = gql`
     query GetArticle($articleSlug: String!) {
       article(where: {slug: {_eq: $articleSlug}}) {
-        views
         title
         slug
         created

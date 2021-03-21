@@ -4,13 +4,17 @@ import React from "react"
 import ArticleList from "../../components/ArticleList"
 import { ArticleItem } from "../../types/ArticleItem"
 import { GraphQLEndpoint } from "../../utils/auth"
+import SEO from "../../components/SEO"
 
 const Posts = (props: { loading: boolean, articles: ArticleItem[] }) => {
   const { loading, articles } = props
   return (
-    <ArticleList
-      articles={articles}
-    />
+    <>
+      <SEO title="博客 - 公子政的宅日常" description="博客文章列表"/>
+      <ArticleList
+        articles={articles}
+      />
+    </>
   )
 }
 

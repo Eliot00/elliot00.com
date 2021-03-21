@@ -4,6 +4,7 @@ import React from "react"
 import ArticleList from "../components/ArticleList"
 import { GraphQLEndpoint } from "../utils/auth"
 import { ArticleItem } from "../types/ArticleItem"
+import SEO from "../components/SEO"
 
 interface Props {
   latestArticles: ArticleItem
@@ -13,7 +14,10 @@ const Home = (props: Props) => {
   const { latestArticles } = props
 
   return (
-    <ArticleList articles={latestArticles} />
+    <>
+      <SEO title="公子政的宅日常" description="公子政的宅日常" />
+      <ArticleList articles={latestArticles} />
+    </>
   )
 }
 
