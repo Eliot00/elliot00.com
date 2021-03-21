@@ -2,12 +2,14 @@ import { gql, request } from 'graphql-request'
 import { GetStaticProps } from 'next'
 import React from "react"
 import ArticleList from "../components/ArticleList"
-import MyLayout from "../components/MyLayout"
-import Social from '../components/Social'
-import { IHomeProps } from "../types/ArticleItem"
 import { GraphQLEndpoint } from "../utils/auth"
+import { ArticleItem } from "../types/ArticleItem"
 
-const Home = (props: IHomeProps) => {
+interface Props {
+  latestArticles: ArticleItem
+}
+
+const Home = (props: Props) => {
   const { latestArticles } = props
 
   return (

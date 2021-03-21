@@ -1,30 +1,25 @@
-interface ITag {
+interface Tag {
   tag: {
     name: string
   }
 }
 
-interface IColumn {
+interface Column {
   name: string
 }
 
-interface ISerie {
+interface Serie {
   name: string
 }
 
-export interface IArticleItem {
+export interface ArticleItem {
   slug: string,
-  column: IColumn,
-  tags: Array<ITag>,
-  serie: ISerie,
+  column: Column,
+  tags: Array<Tag>,
+  serie: Serie,
   title: string,
   views: number,
   summary: string,
   created: string,
   updated: string
-}
-
-export interface IHomeProps {
-  loading: boolean,
-  latestArticles: IArticleItem[]
 }

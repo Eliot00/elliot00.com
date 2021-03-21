@@ -2,10 +2,10 @@ import { gql, request } from 'graphql-request'
 import { GetStaticProps } from 'next'
 import React from "react"
 import ArticleList from "../../components/ArticleList"
-import { IArticleItem } from "../../types/ArticleItem"
+import { ArticleItem } from "../../types/ArticleItem"
 import { GraphQLEndpoint } from "../../utils/auth"
 
-const Posts = (props: { loading: boolean, articles: IArticleItem[] }) => {
+const Posts = (props: { loading: boolean, articles: ArticleItem[] }) => {
   const { loading, articles } = props
   return (
     <ArticleList

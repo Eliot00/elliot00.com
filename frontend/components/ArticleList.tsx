@@ -1,9 +1,10 @@
 import Link from "next/link"
-import { IArticleItem } from "../types/ArticleItem"
+import { ArticleItem } from "../types/ArticleItem"
 import { timeInterval } from "../utils/time"
+import Summary from "./Summary"
 
 const ArticleList = (props) => {
-  const articles: IArticleItem[] = props.articles
+  const articles: ArticleItem[] = props.articles
 
   return (
     <ul className="divide-y divide-gray-100 font-sans">
@@ -26,7 +27,7 @@ const ArticleList = (props) => {
               {timeInterval(article.updated)}
             </time>
           </div>
-          <p className="p-2 font-serif font-thin text-gray-500">{article.summary}</p>
+          <Summary raw={article.summary} />
         </li>
       ))}
     </ul>

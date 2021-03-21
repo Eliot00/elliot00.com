@@ -13,10 +13,6 @@ import "prismjs/components/prism-toml"
 import "prismjs/components/prism-json"
 import "prismjs/components/prism-yaml"
 
-interface MarkdownBody {
-    firstPara
-}
-
 function markdonw(raw: string): string {
     const md = MarkdownIt()
     md.use(prism)
