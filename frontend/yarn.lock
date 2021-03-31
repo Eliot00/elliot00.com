@@ -161,9 +161,9 @@
     to-fast-properties "^2.0.0"
 
 "@corex/deepmerge@^2.5.3":
-  version "2.4.24"
-  resolved "https://registry.npm.taobao.org/@corex/deepmerge/download/@corex/deepmerge-2.4.24.tgz#d02aa2bf1a5c7f3847d4227d6700419450909f63"
-  integrity sha1-0CqivxpcfzhH1CJ9ZwBBlFCQn2M=
+  version "2.5.6"
+  resolved "https://registry.yarnpkg.com/@corex/deepmerge/-/deepmerge-2.5.6.tgz#a5d26c6a0f4df1f65d17871c94f463d5097e349a"
+  integrity sha512-zvClQyrUGV4Hzr2zWnyD/MS0DrNWJ9jMKFLYA/abmsU4dObMuFXhragGqWpWHW6G/ghJpf09E+JumTo5jSb9rg==
 
 "@hapi/accept@5.0.1":
   version "5.0.1"
@@ -5190,9 +5190,9 @@ xtend@^4.0.0, xtend@~4.0.1:
   integrity sha1-u3J3n1+kZRhrH0OPZ0+jR/2121Q=
 
 y18n@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.npm.taobao.org/y18n/download/y18n-4.0.0.tgz?cache=0&sync_timestamp=1603637404399&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fy18n%2Fdownload%2Fy18n-4.0.0.tgz#95ef94f85ecc81d007c264e190a120f0a3c8566b"
-  integrity sha1-le+U+F7MgdAHwmThkKEg8KPIVms=
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/y18n/-/y18n-4.0.1.tgz#8db2b83c31c5d75099bb890b23f3094891e247d4"
+  integrity sha512-wNcy4NvjMYL8gogWWYAO7ZFWFfHcbdbE57tZO8e4cbpj8tfUcwrwqSl3ad8HxpYWCdXcJUCeKKZS62Av1affwQ==
 
 yallist@^3.0.2:
   version "3.1.1"
