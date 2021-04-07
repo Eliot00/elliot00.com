@@ -9,13 +9,14 @@ import ErrorPage from "next/error"
 import markdonw from "../../lib/markdown"
 import "prismjs/themes/prism.css"
 import SEO from "../../components/SEO"
+import MarkdownBody from "../../components/MarkdownBody"
 
 const Article = props => {
   const { slug, title, body, created, updated } = props.source
 
   return (
     <>
-      <SEO title={`${title} - 公子政的宅日常`} description={body.substring(0, 100)}/>
+      <SEO title={`${title} - 公子政的宅日常`} description={body.substring(0, 100)} />
       <article>
         <header>
           <h1 className="font-sans text-center text-3xl p-4">{title}</h1>
@@ -25,8 +26,8 @@ const Article = props => {
           </div>
         </header>
 
-        <div className="detail-content" dangerouslySetInnerHTML={{ __html: body }}></div>
-        <Divider>全文完</Divider>
+        <MarkdownBody content={body} />
+        <div className="divide-gray-900 divide-y"><div>EOF</div></div>
         <Alert
           message="版权声明"
           description={<Copyright slug={slug} title={title} />}
@@ -72,13 +73,13 @@ const Copyright = ({ slug, title }) => {
   const selfUrl = `https://www.elliot00.com/posts/${slug}`
   return (
     <div>
-      <span>原文标题：<a href={selfUrl}>{title}</a></span>
+      <span>原文标题：<a href={selfUrl} className="link">{title}</a></span>
       <br />
-      <span>原文作者：<Link href="/about"><a>公子政</a></Link></span>
+      <span>原文作者：<Link href="/about"><a className="link">公子政</a></Link></span>
       <br />
-      <span>原文链接：<a href={selfUrl}>{selfUrl}</a></span>
+      <span>原文链接：<a href={selfUrl} className="link">{selfUrl}</a></span>
       <br />
-      <span>许可协议：<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a></span>
+      <span>许可协议：<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" className="link">署名-非商业性使用-相同方式共享 4.0 国际</a></span>
     </div>
   )
 }
@@ -91,9 +92,9 @@ const Detail = ({ detail, loading }) => {
   return (
     route.isFallback
       ?
-        <div>Loading</div>
+      <div>Loading</div>
       :
-        <Article source={detail} />
+      <Article source={detail} />
   )
 }
 
