@@ -15,7 +15,7 @@ import "prismjs/components/prism-yaml"
 
 function markdonw(raw: string): string {
     const md = MarkdownIt()
-    md.use(prism)
+    md.use(prism, { defaultLanguageForUnknown: "python" })
     return md.render(raw)
 }
 
