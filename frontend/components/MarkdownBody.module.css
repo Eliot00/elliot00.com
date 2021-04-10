@@ -89,5 +89,3 @@
 .markdown :not(pre) > code.language-text {
   white-space: pre-line;
 }
-/* purgecss end ignore */
-
