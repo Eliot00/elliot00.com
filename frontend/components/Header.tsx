@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <header className="relative z-10 bg-white shadow-md">
-      <nav className="mx-auto flex flex-wrap items-center justify-between px-4 sm:px-6 md:px-8 max-w-screen-lg lg:p-0">
+      <nav className="mx-auto flex flex-wrap items-center justify-between p-4 sm:px-6 md:px-8 max-w-screen-lg lg:px-0">
         <Link href="/">
           <a className="flex items-center">
             <div className="font-thin font-sans text-gray-900 text-3xl ml-5">公子政</div>
