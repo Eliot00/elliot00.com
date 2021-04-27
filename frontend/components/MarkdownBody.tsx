@@ -1,13 +1,26 @@
-import react from "react"
+import react, { ReactNode } from "react"
 import style from "./MarkdownBody.module.css"
 
-interface Props {
-    content: string
+type Props = {
+    content: string,
+    children?: never
+} | {
+    content?: never,
+    children: ReactNode
 }
 
-const MarkdownBody: react.FC<Props> = ({content}) => {
+const MarkdownBody: react.FC<Props> = ({ content, children }) => {
+
+    if (content) {
+        return (
+            <div className={style.markdown} dangerouslySetInnerHTML={{ __html: content }}></div>
+        )
+
+    }
     return (
-        <div className={style.markdown} dangerouslySetInnerHTML={{ __html: content }}></div>
+        <div className={style.markdown}>
+            {children}
+        </div>
     )
 }
 

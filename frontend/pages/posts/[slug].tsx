@@ -1,4 +1,3 @@
-import { Alert, Divider } from "antd"
 import { gql, request } from 'graphql-request'
 import { GetStaticPaths, GetStaticProps } from "next"
 import { useRouter } from "next/router"
