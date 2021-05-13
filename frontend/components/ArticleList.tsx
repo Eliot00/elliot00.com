@@ -18,7 +18,7 @@ const ArticleList = (props) => {
           <div className="flex">
             <div className="px-2 text-gray-500">{article.column.name}</div>
             {article.tags.map(tag => (
-              <div className="px-2 text-gray-500">{tag.tag.name}</div>
+              <div className="px-2 text-gray-500" key={tag.tag.name}>{tag.tag.name}</div>
             ))}
             <time className="px-2 text-gray-500" title={article.created}>
               {timeInterval(article.created)}
