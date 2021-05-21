@@ -42,7 +42,7 @@ const Header = () => {
             </Link>
           </li>
           <li>
-            <Link href="/series">
+            <Link href="/archives">
               <a className="ml-10 font-medium link">Archive</a>
             </Link>
           </li>
@@ -99,7 +99,7 @@ const Header = () => {
                     Blog
                   </a>
                 </Link>
-                <Link href='/series'>
+                <Link href='/archives'>
                   <a className='block px-3 py-2 rounded-md text-base upppercase font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 focus:outline-none focus:text-gray-900 focus:bg-gray-50 transition duration-150 ease-in-out'>
                     Archive
                   </a>
