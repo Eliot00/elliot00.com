@@ -1,8 +1,0 @@
-FROM node:12
-
-WORKDIR /usr/src/frontend
-
-COPY . ./
-
-RUN npm config set registry https://registry.npm.taobao.org \
-  && npm install

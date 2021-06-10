@@ -1,16 +1,30 @@
-# Usage
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/zeit/next.js/tree/canary/packages/create-next-app).
 
-## 2020-11-28更新
+## Getting Started
 
-**Django已移除，最后可运行的Django+Next版本为bc94f7fc974c9f39e37f18a230059c580297a36a**
+First, run the development server:
 
-**本地调试：**
-
-注意开发环境调试，先检查本地环境变量`NODE_ENV`，不能为`production`。同时参考`Docker`官网安装`Docker`。
-
-```shell script
-cd 项目根目录/config/compose/develop/
-docker-compose up
+```bash
+npm run dev
+# or
+yarn dev
 ```
 
-浏览器访问`http://localhost`即可，按`Ctrl-C`可停止容器运行，`docker-compose down`删除容器。
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/zeit/next.js/) - your feedback and contributions are welcome!
+
+## Deploy on ZEIT Now
+
+The easiest way to deploy your Next.js app is to use the [ZEIT Now Platform](https://zeit.co/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
