@@ -36,7 +36,8 @@ export const getStaticProps: GetStaticProps = async (context) => {
       name
       id
       articles {
-      slug
+        slug
+      }
     }
   }
 `
