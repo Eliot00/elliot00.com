@@ -26,9 +26,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
   {
     article(limit: 5, order_by: {updated: desc}) {
       slug
-      column {
-        name
-      }
       serie {
         name
       }

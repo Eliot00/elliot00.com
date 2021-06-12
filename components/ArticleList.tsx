@@ -16,7 +16,6 @@ const ArticleList = (props) => {
             </a>
           </Link>
           <div className="flex">
-            <div className="px-2 text-gray-500">{article.column.name}</div>
             {article.tags.map(tag => (
               <div className="px-2 text-gray-500" key={tag.tag.name}>{tag.tag.name}</div>
             ))}
