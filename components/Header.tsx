@@ -67,7 +67,7 @@ const Header = () => {
             <div className='rounded-lg bg-white shadow-xs overflow-hidden'>
               <div className='px-5 pt-4 flex items-center justify-between'>
                 <Link href='/'>
-                  <a className='items-center font-bold text-gray-900 leading-tight text-2xl sm:text-3xl'>
+                  <a className='items-center font-thin font-sans text-gray-900 leading-tight text-2xl sm:text-3xl'>
                     公子政
                   </a>
                 </Link>{" "}
