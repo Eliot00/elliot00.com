@@ -7,7 +7,10 @@ const About = ({ loading }) => {
       <SEO title="关于 - 公子政的宅日常" />
       <MarkdownBody>
         <h2>关于博主</h2>
-        <p>全栈开发，喜欢研究技术，乐于开源。工科生但也喜欢读文学书籍，酷爱鲁迅。爱下围棋，小学生水平。偶尔打游戏，魔兽世界因为血精灵而叛变的前联盟玩家，风暴英雄刺客专精。</p>
+        <p>技术宅，爱好折腾各种新奇事物，积极的开源贡献者。</p>
+        <p>爱喝茶，早睡早起的养生90后。</p>
+        <p>棋力不如小学生，但还是爱下的围棋爱好者。</p>
+        <p>偶尔打游戏，因为血精灵而叛变的前联盟玩家，风暴英雄刺客专精。</p>
       </MarkdownBody>
       <div className="flex space-x-2">
         <img alt="Rust" src="https://img.shields.io/badge/rust-%23000000.svg?&style=for-the-badge&logo=rust&logoColor=white" />
