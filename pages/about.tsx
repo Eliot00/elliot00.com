@@ -19,7 +19,7 @@ const About = ({ loading }) => {
         <h2>关于博客</h2>
         <p>
           我的博客技术栈经过了很多次改动，经常遇到一些新技术都会在博客上试验一下，可以通过<a href="https://github.com/Eliot00/elliot00.com">Github代码仓库</a>查看变更历史。
-          </p>
+        </p>
         <h3>当前技术栈（2021-04）</h3>
         <ul>
           <li>前端：TypeScript、NextJS、TailwindCSS</li>
