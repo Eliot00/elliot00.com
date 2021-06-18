@@ -4,8 +4,8 @@ import Footer from "./Footer"
 const MyLayout = ({children}) => (
   <>
     <Header />
-    <main className="flex flex-col justify-center">
-      <div className="mt-2 max-w-screen-lg mx-auto px-4 sm:px-6 md:px-8">
+    <main className="grid grid-cols-1 lg:grid-cols-6">
+      <div className="mt-2 lg:col-start-2 lg:col-span-4">
         {children}
       </div>
     </main>
