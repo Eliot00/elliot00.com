@@ -2,13 +2,14 @@ import { gql, request } from 'graphql-request'
 import { GetStaticPaths, GetStaticProps } from "next"
 import { useRouter } from "next/router"
 import React from 'react'
-import { GraphQLEndpoint } from "../../utils/auth"
+import { GraphQLEndpoint, CusdisHost, CusdisAppID } from "../../utils/auth"
 import ErrorPage from "next/error"
 import markdonw from "../../lib/markdown"
 import "prismjs/themes/prism.css"
 import SEO from "../../components/SEO"
 import MarkdownBody from "../../components/MarkdownBody"
 import Copyright from "../../components/Copyright"
+import { ReactCusdis } from "react-cusdis"
 
 const Article = props => {
   const { slug, title, body, created, updated } = props.source
@@ -33,6 +34,17 @@ const Article = props => {
         </div>
         <Copyright slug={slug} title={title} />
       </article>
+      <div>
+        <ReactCusdis
+          attrs={{
+            host: CusdisHost,
+            appId: CusdisAppID,
+            pageId: slug,
+            pageTitle: title,
+            pageUrl: `https://elliot.com/posts/${slug}`
+          }}
+        />
+      </div>
     </>
   )
 }
