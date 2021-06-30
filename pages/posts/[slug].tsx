@@ -18,8 +18,8 @@ const Article = props => {
       <SEO title={`${title} - 公子政的宅日常`} description={body.substring(0, 100)} />
       <article>
         <header>
-          <h1 className="font-sans text-center text-3xl p-4">{title}</h1>
-          <div className="text-center text-gray-400">
+          <h1 className="font-sans text-center text-3xl">{title}</h1>
+          <div className="text-center text-gray-400 py-4">
             <span className="px-2">创建于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(created))}</time></span>
             <span className="px-2">更新于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(updated))}</time></span>
           </div>
