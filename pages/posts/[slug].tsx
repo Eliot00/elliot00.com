@@ -37,8 +37,8 @@ const Article = props => {
       <div>
         <ReactCusdis
           attrs={{
-            host: CusdisHost,
-            appId: CusdisAppID,
+            host: 'https://cusdis-p65vpouz7-eliot00.vercel.app',
+            appId: 'f73edaa5-cdc2-486e-9cda-6360f7d3b907',
             pageId: slug,
             pageTitle: title,
             pageUrl: `https://elliot.com/posts/${slug}`
