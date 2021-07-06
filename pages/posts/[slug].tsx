@@ -2,7 +2,7 @@ import { gql, request } from 'graphql-request'
 import { GetStaticPaths, GetStaticProps } from "next"
 import { useRouter } from "next/router"
 import React from 'react'
-import { GraphQLEndpoint, CusdisHost, CusdisAppID } from "../../utils/auth"
+import { GraphQLEndpoint } from "../../utils/auth"
 import ErrorPage from "next/error"
 import markdonw from "../../lib/markdown"
 import "prismjs/themes/prism.css"
