@@ -5,9 +5,10 @@ import ArticleList from "../components/ArticleList"
 import { GraphQLEndpoint } from "../utils/auth"
 import { ArticleItem } from "../types/ArticleItem"
 import SEO from "../components/SEO"
+import Link from 'next/link'
 
 interface Props {
-  latestArticles: ArticleItem
+  latestArticles: ArticleItem[]
 }
 
 const Home = (props: Props) => {
@@ -17,6 +18,7 @@ const Home = (props: Props) => {
     <>
       <SEO title="公子政的宅日常" description="公子政的宅日常" />
       <ArticleList articles={latestArticles} />
+      <Link href="/posts"><a className="link px-2">查看更多</a></Link>
     </>
   )
 }

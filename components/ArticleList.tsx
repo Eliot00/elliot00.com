@@ -3,10 +3,16 @@ import { ArticleItem } from "../types/ArticleItem"
 import { timeInterval } from "../utils/time"
 import Summary from "./Summary"
 
-const ArticleList = (props) => {
-  const articles: ArticleItem[] = props.articles
+interface Props {
+  articles: ArticleItem[],
+  title?: string,
+}
+
+const ArticleList: React.FC<Props> = ({articles, title = "最新文章"}) => {
 
   return (
+    <>
+    <h2 className="text-gray-800 px-2 text-2xl">{title}</h2>
     <ul className="divide-y divide-gray-100 font-sans">
       {articles.map(article => (
         <li key={article.slug} className="py-4">
@@ -30,6 +36,7 @@ const ArticleList = (props) => {
         </li>
       ))}
     </ul>
+    </>
   )
 }
 
