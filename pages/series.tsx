@@ -1,20 +1,21 @@
 import { gql, request } from 'graphql-request'
 import { GetStaticProps } from 'next'
-import React from "react"
+import React, {Fragment} from "react"
 import { GraphQLEndpoint } from "../utils/auth"
 import SEO from "../components/SEO"
 
 interface ArticleSlug {
-    slug: string,
+  slug: string,
+  title: string,
 }
 interface Serie {
-    id: number,
-    name: string,
-    articles: ArticleSlug[],
+  id: number,
+  name: string,
+  articles: ArticleSlug[],
 }
 
 interface Props {
-    series: Serie[],
+  series: Serie[],
 }
 
 const Series: React.FC<Props> = ({ series }) => {
@@ -22,9 +23,24 @@ const Series: React.FC<Props> = ({ series }) => {
   return (
     <>
       <SEO title="文集 - 公子政的宅日常" description="公子政的宅日常" />
-      {series.map(item => (
-          <div key={item.id}>{item.name}</div>
-      ))}
+      <div>
+      <ul className="text-center">
+        {series.map(item => (
+          <Fragment key={item.id}>
+            <li className="text-2xl py-2">{item.name}</li>
+            <ul>
+              {item.articles.map(a => {
+                return (
+                  <li key={a.slug}>
+                    <a href={`/posts/${a.slug}`} className="link">{a.title}</a>
+                  </li>
+                )
+              })}
+            </ul>
+          </Fragment>
+        ))}
+      </ul>
+      </div>
     </>
   )
 }
@@ -35,8 +51,9 @@ export const getStaticProps: GetStaticProps = async (context) => {
     serie {
       name
       id
-      articles {
+      articles(order_by: {created: asc}) {
         slug
+        title
       }
     }
   }
