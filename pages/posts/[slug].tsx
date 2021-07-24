@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { gql, request } from 'graphql-request'
 import { GetStaticPaths, GetStaticProps } from "next"
 import { useRouter } from "next/router"
@@ -12,7 +13,7 @@ import Copyright from "../../components/Copyright"
 import { ReactCusdis } from "react-cusdis"
 
 const Article = props => {
-  const { slug, title, body, created, updated } = props.source
+  const { slug, title, body, serie, created, updated } = props.source
 
   return (
     <>
@@ -23,6 +24,7 @@ const Article = props => {
           <div className="text-center text-gray-400 py-4">
             <span className="px-2">创建于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(created))}</time></span>
             <span className="px-2">更新于<time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(updated))}</time></span>
+            <span className="px-2">文集：<Link href="/series"><a className="link">{serie.name}</a></Link></span>
           </div>
         </header>
 
@@ -87,6 +89,10 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
         created
         updated
         body
+        serie {
+          id
+          name
+        }
       }
     }
   `
