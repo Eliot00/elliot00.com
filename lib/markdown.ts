@@ -1,22 +1,33 @@
-import MarkdownIt from "markdown-it"
-import prism from "markdown-it-prism"
+import marked from "marked"
+import prismjs from "prismjs"
 
-import "prismjs/components/prism-clike"
-import "prismjs/components/prism-rust"
-import "prismjs/components/prism-python"
-import "prismjs/components/prism-javascript"
-import "prismjs/components/prism-typescript"
-import "prismjs/components/prism-csharp"
-import "prismjs/components/prism-jsx"
-import "prismjs/components/prism-tsx"
-import "prismjs/components/prism-toml"
-import "prismjs/components/prism-json"
-import "prismjs/components/prism-yaml"
+const renderer = new marked.Renderer()
+renderer.code = function(code, lang, escaped) {
+  code = this.options.highlight(code, lang);
+  if (!lang) {
+    return `<pre><code>${code}</code></pre>`;
+  }
 
-function markdonw(raw: string): string {
-    const md = MarkdownIt()
-    md.use(prism, { defaultLanguageForUnknown: "python" })
-    return md.render(raw)
-}
+  var langClass = "language-" + lang;
+  return `<pre class="${langClass}"><code class="${langClass}">${code}</code></pre>`;
+};
 
-export default markdonw
+marked.setOptions({
+    renderer: renderer, 
+    gfm: true,
+    pedantic: false,
+    sanitize: false,
+    tables: true,
+    breaks: false,
+    smartLists: true,
+    smartypants: false,
+    highlight: function(code, lang) {
+        try {
+            return prismjs.highlight(code, prismjs.languages[lang], lang);
+        } catch {
+            return code;
+        }
+    }
+}); 
+
+export default marked
