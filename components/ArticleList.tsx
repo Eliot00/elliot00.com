@@ -13,7 +13,7 @@ const ArticleList: React.FC<Props> = ({articles, title = "最新文章"}) => {
   return (
     <>
     <h2 className="text-gray-800 px-2 text-2xl">{title}</h2>
-    <ul className="divide-y divide-gray-100 font-sans">
+    <ul className="divide-y divide-gray-100 font-serif">
       {articles.map(article => (
         <li key={article.slug} className="py-4">
           <Link href={`/posts/${article.slug}`}>

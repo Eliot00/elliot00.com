@@ -1,5 +1,5 @@
 .markdown {
-  @apply leading-relaxed text-sm tracking-wide;
+  @apply leading-relaxed text-sm tracking-wide font-serif;
 }
 
 @screen sm {
