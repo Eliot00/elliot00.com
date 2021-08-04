@@ -32,7 +32,7 @@ const ArticleList: React.FC<Props> = ({articles, title = "最新文章"}) => {
               {timeInterval(article.updated)}
             </time>
           </div>
-          <Summary raw={article.summary} />
+          <Summary summary={article.summary} />
         </li>
       ))}
     </ul>

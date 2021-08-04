@@ -6,6 +6,7 @@ import { GraphQLEndpoint } from "../utils/auth"
 import { ArticleItem } from "../types/ArticleItem"
 import SEO from "../components/SEO"
 import Link from 'next/link'
+import getFirstParagraph from '../utils/getFirstParagraph'
 
 interface Props {
   latestArticles: ArticleItem[]
@@ -37,17 +38,21 @@ export const getStaticProps: GetStaticProps = async (context) => {
         }
       }
       title
-      views
-      summary
+      body
       created
       updated
     }
   }
 `
   const response = await request(GraphQLEndpoint, query)
+  const latestArticles = response.article.map(
+    ({ slug, serie, tags, title, body, created, updated }) => ({
+      slug, serie, tags, title, summary: getFirstParagraph(body), created, updated
+    })
+  )
   return {
     props: {
-      latestArticles: response.article,
+      latestArticles,
     },
     revalidate: 600,
   }
