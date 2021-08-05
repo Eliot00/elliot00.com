@@ -1,19 +1,10 @@
 import marked from "marked"
 import prismjs from "prismjs"
+import loadLanguages from "prismjs/components/"
 
-const renderer = new marked.Renderer()
-renderer.code = function(code, lang, escaped) {
-  code = this.options.highlight(code, lang);
-  if (!lang) {
-    return `<pre><code>${code}</code></pre>`;
-  }
-
-  var langClass = "language-" + lang;
-  return `<pre class="${langClass}"><code class="${langClass}">${code}</code></pre>`;
-};
+loadLanguages(['javascript', 'jsx', 'css', 'markup', 'bash', 'json', 'rust', 'python', 'typescript']);
 
 marked.setOptions({
-    renderer: renderer, 
     gfm: true,
     pedantic: false,
     sanitize: false,
