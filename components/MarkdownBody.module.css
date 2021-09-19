@@ -82,6 +82,10 @@
   @apply mb-6;
 }
 
+.markdown img {
+  @apply shadow-md justify-self-center mx-auto;
+}
+
 /* Wrap any inline highlights `that are really long`, but don't modify
    the setting for codeblocks (inside ```), which are rendered in as:
    <pre><code>...
