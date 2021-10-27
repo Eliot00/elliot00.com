@@ -1,5 +1,6 @@
 import react, { ReactNode } from "react"
 import style from "./MarkdownBody.module.css"
+import "prismjs/themes/prism-solarizedlight.css";
 
 type Props = {
     content: string,

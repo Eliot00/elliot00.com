@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import type { AppProps } from 'next/app'
 import { useRouter } from "next/router"
 import MyLayout from "../components/MyLayout"
