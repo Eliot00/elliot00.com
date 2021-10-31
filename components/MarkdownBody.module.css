@@ -90,6 +90,21 @@
    the setting for codeblocks (inside ```), which are rendered in as:
    <pre><code>...
 */
-.markdown :not(pre) > code.language-text {
+.markdown :not(pre) > code {
+	background-color: #f7f7f7;
+	padding: .1em;
+	border-radius: .3em;
+}
+
+.markdown pre {
+	background-color: #f7f7f7;
+  display: block;
+  overflow-y: auto;
   white-space: pre-line;
+  padding: 1em;
+	border-radius: 0.5em;
+}
+
+.markdown code {
+  display: inline-block;
 }
