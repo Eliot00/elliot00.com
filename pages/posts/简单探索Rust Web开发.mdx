@@ -1,0 +1,363 @@
+## 摘要
+
+对`Rust`的web开发相关框架做个简单评测，同时在`WebAssembly`部分与微软的`Blazor`做个简单的对比。只是一次浅薄的评测，仅仅为了看看目前用`Rust`做web开发体验如何，性能方面Rust稳站顶端，因此不做评价。
+
+## 后端开发
+
+目前在`Rust`中最知名的两个web框架要数[Rocket](https://rocket.rs/)和[Actix](https://actix.rs)了，Rocket更注重易用性，内置大量开箱即用的功能，Actix则更注重性能，不过目前两个框架互相吸取长处，Rocket性能有所提升，Actix相关生态也更加丰富，并且背后有微软的支持，已经用在了Azure的生产环境中。
+
+这里我选择试试Actix，主要是Rockte必须保持使用`Rust nightly`（对Rust版本发布感兴趣可以看[这篇文章](https://kaisery.github.io/trpl-zh-cn/appendix-07-nightly-rust.html)），并且要一直保证使用最新版，好在Rust提供了强大的工具链，可以使用`rustup`这个工具覆盖某个文件夹的设置：
+
+```bash
+rustup override set nightly
+```
+
+这样我们仅在设置的目录下使用nightly版本的Rust，其它目录下使用的仍然是稳定版。不过个人不太喜欢一直使用超前版本，所以最后选择了Actix。
+
+### 从hello world开始
+
+首先创建项目：
+
+```bash
+cargo new hello_world && cd hello_world
+```
+
+在我们的`Cargo.toml`文件中写入依赖：
+
+```toml
+[dependencies]
+actix-web = "3"
+```
+
+写入以下内容到`src/main.rs`，并使用`cargo run`运行项目：
+
+```rust
+use actix_web::{get, App, HttpResponse, HttpServer, Responder};
+
+#[get("/")]
+async fn hello() -> impl Responder {
+    HttpResponse::Ok().body("Hello world!")
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .service(hello)
+    })
+    .bind("127.0.0.1:8080")?
+    .run()
+    .await
+}
+```
+
+### Handler与路由定义
+
+在Actix中，任何返回值实现了`Responder`这个`trait`的函数，都可以作为一个`handler`，相当于`MVC`中的`controller`。
+
+利用Rust的**宏机制**，在Actix中我们可以便捷地定义路由：
+
+```rust
+// 标记HTTP方法以及endpoint
+#[get("/")]
+async fn hello() -> impl Responder {
+    HttpResponse::Ok().body("Hello world!")
+}
+
+// Actix为Rust中一些基础类型实现了Responder，所以也可以这样
+#[get("/")]
+async fn hello() -> &'stattic str {
+    "Hello world"
+}
+
+// 或者也可以像这样在main函数中定义路由
+use actix_web::{web, App, HttpResponse, HttpServer, Responder};
+
+async fn hello() -> impl Responder {
+    HttpResponse::Ok().body("Hello world!")
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| {
+        App::new()
+            .route("/", web::get().to(hello))
+    })
+    .bind("127.0.0.1:8080")?
+    .run()
+    .await
+}
+```
+
+### Request
+
+这里仅仅简单讲讲`JSON Request`，`Rust`拥有非常强大的序列化crate（在Rust里我们一般不说库或者包），[serde](https://serde.rs/)，看看如何在Actix中使用它：
+
+```rust
+use actix_web::{web, App, HttpServer, Result};
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct Info {
+    username: String,
+}
+
+/// extract `Info` using serde
+async fn index(info: web::Json<Info>) -> Result<String> {
+    Ok(format!("Welcome {}!", info.username))
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(|| App::new().route("/", web::post().to(index)))
+        .bind("127.0.0.1:8080")?
+        .run()
+        .await
+}
+```
+
+这是来自官网的示例，现在可以使用`httpie`或者`Postman`等工具发送POST请求测试，如：
+
+```shell
+$ http POST 127.0.0.1:8080 name=bob
+HTTP/1.1 200 OK
+content-length: 12
+content-type: text/plain; charset=utf-8
+date: Sat, 21 Nov 2020 02:46:07 GMT
+
+Welcome bob!
+
+```
+
+
+
+使用`serde`可以轻松为我们自定义的数据结构实现序列化与反序列化：
+
+```rust
+use serde::{Serialize, Deserialize};
+
+#[derive(Serialize, Deserialize, Debug)]
+struct Point {
+    x: i32,
+    y: i32,
+}
+```
+
+### Response
+
+Actix默认会使用内置的中间件自动压缩数据，支持`gzip`等多种编码。与Request一样，可以借助`serde`轻松序列化数据，返回`JSON`响应。代码这里就不讲了，官网有详细示例。
+
+这里稍微介绍一下Rust的`trait`机制，Rust更加拥抱函数式编程范式，但也支持面向对象的一些特性，但可能令一些从`JAVA`、`C#`之类语言入门的程序员来说，Rust可能会使他们感到不适，Rust没有`class`这个概念，也没有继承机制。与众不同的是，Rust实现了一套`trait`机制。
+
+面向对象的继承，主要为了两个目的，一是复用代码，子类可以沿用父类的方法，而Rust可以通过默认`trait`方法来达到这一点，注意`trait`的主要思想是基于组合的，但可以表现得像继承；继承的另一点作用则是为了多态，子类型可以在父类型被使用的地方使用，而在Rust的泛型系统中，可以通过`trait bounds`来实现多态，甚至有些像动态语言中的鸭子类型，如前面讲过的，Actix的handler函数，只要返回值实现了`Responder`这个`trait`就可以，因此可以用`impl Responder`来表示这个泛型，而无需从顶层定义一个超类。
+
+这里仅以一个我写的[commit格式化工具](https://github.com/Eliot00/commit-formatter)来做个简单示例，展示一下Rust的`trait`:
+
+```rust
+use std::fmt::{self, Display, Formatter};
+
+// 这里是我自定义的类型
+pub struct CommitType {
+    text: &'static str,
+    description: &'static str,
+}
+
+// 这里为自定义类型实现内置的Display这个trait
+impl Display for CommitType {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{:9}: {}", self.text, self.description)
+    }
+}
+```
+
+这其实有些类似`C#`中的接口或`Python`的`mixin`，本质上都是一种组合的思想，现在我自定义的类型`CommitType`的实例就可以用`println!`这个宏打印输出到控制台了。不需要继承某个`String`类，只是表达自定义类型**”有某某属性“，而不是”是某某种类“**，组合在这里比继承更合适。
+
+### 数据库
+
+Actix目前可以使用`sqlx`来操作一些常用数据库，也可以使用如`async_pg`这样专门针对`postgresql`的crate，当然也可以使用如`Diesel`这样的`ORM`框架，支持`migrate`操作，但暂时不支持异步。
+
+其它还有诸如测试、中间件、`Websockets`等特性就不一一展开了。
+
+## 前端开发
+
+### Yew
+
+Rust也可以基于`WebAssembly`来做前端开发。
+
+> WebAssembly是一种新的编码方式，可以在现代的网络浏览器中运行 － 它是一种低级的类汇编语言，具有紧凑的二进制格式，可以接近原生的性能运行，并为诸如C / C ++等语言提供一个编译目标，以便它们可以在Web上运行。它也被设计为可以与JavaScript共存，允许两者一起工作。
+>
+> ——MDN web docs
+
+Rust为`WebAssembly`提供了一套工具链，可以参考官网的[《WebAssembly手册》](https://rustwasm.github.io/docs/book/)。这里主要看一下Rust的`Yew`框架，它的目的是为了像`React`那样以组件的形式写`WebAssembly`应用。
+
+目前来说`Yew`还是个玩具项目，官网文档不全，一些设计也还不稳定，是不能放到生产环境中的。这里使用了一个来自[知乎](https://zhuanlan.zhihu.com/p/101118828)的基于`Parcel`的模板创建了项目，看一下组件：
+
+```rust
+use yew::prelude::*;
+
+pub struct App {}
+
+pub enum Msg {}
+
+impl Component for App {
+    type Message = Msg;
+    type Properties = ();
+
+    fn create(_: Self::Properties, _: ComponentLink<Self>) -> Self {
+        App {}
+    }
+
+    fn update(&mut self, _msg: Self::Message) -> ShouldRender {
+        true
+    }
+
+    fn change(&mut self, _props: Self::Properties) -> ShouldRender {
+        true
+    }
+
+    fn view(&self) -> Html {
+        html! {
+            <p>{ "Hello world!" }</p>
+        }
+    }
+}
+```
+
+看上去非常像React的类组件，为一个`struct`实现`Component`这个`trait`即可使我们的`struct`成为一个组件。但不知道为什么`Yew`没有为这个`trait`里面除了`view`这个对应React的`render`生命周期函数以外的其它函数定义默认实现，导致哪怕并没有额外逻辑也得自己实现一遍另外的生命周期。
+
+在配置上，看一下在项目主目录的`package.json`：
+
+```json
+{
+"scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
+  },
+   "devDependencies": {
+    "parcel-bundler": "^1.12.4",
+    "parcel-plugin-wasm.rs": "^1.2.16"
+  }
+}
+```
+
+使用`Parcel`比官网示例的`web-pack`要方便一些，不需要做过多配置，可以在js中直接引用应用。
+
+而Rust方面的依赖如下：
+
+```toml
+[dependencies]
+wasm-bindgen = "0.2"
+yew = "0.16"
+```
+
+`wasm-bindgen`是由Rust官方维护的用于`wasm`到`JavaScript`直接绑定的胶水工具。
+
+目前给我的感受是，`Yew`要想成为Rust做`WebAssembly`的第一选择，那么必须要发力提升开发者体验，完善文档，并且要完善自己的集成工具，不能让开发者同时在`node`和`Rust`之间来回切换，两边都要构建，这些工作应该自动完成。
+
+### 对比Blazor
+
+`Blazor`是微软推出的前端UI框架，今年发布了稳定的`Blazor WebAssembly`，这里来体验一下`Blazor`的开发流程。
+
+写这篇文章的时候微软已经推出了`.NET 5`，不过我使用的`Manjaro Linux`的包管理中心还没有更新，虽然可以自己编译安装，但是我对安装包有”包管理洁癖“，为了体验最新版，我使用了Docker。当然如果使用微软平台，可以使用宇宙第一IDE`Visual Studio`，开发体验更上一层楼，可惜Mac版本似乎功能不全，而Linux更是不支持（也许我该买一台Windows机器了）。
+
+首先是拉取镜像并启动容器，然后使用VS Code上的[Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)扩展，就能愉快的在容器中开发了，这个扩展也是微软出的，微软大法好！
+
+使用命令：
+
+```bash
+dotnet new blazorwasm -o WebApplication
+```
+
+创建应用，`dotNET`自动创建了模板应用，可以直接使用`dotnet watch run`命令运行。
+
+![运行效果图](https://i.loli.net/2020/11/21/yqwL5HPUemhs1Ap.png)
+
+看一下`index.razor`：
+
+```html
+@page "/"
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+```
+
+`Blazor`中的组件文件以`razor`作为后缀名，即使在VS Code中，仍然可以实现组件间跳转与代码提示，虽然比不上Visual Studio，但毕竟也是微软自家产品，体验还行，光标移动到`SurveyPrompt`这个组件，按下`F12`即可跳转到这个组件的定义：
+
+```html
+<div class="alert alert-secondary mt-4" role="alert">
+    <span class="oi oi-pencil mr-2" aria-hidden="true"></span>
+    <strong>@Title</strong>
+
+    <span class="text-nowrap">
+        Please take our
+        <a target="_blank" class="font-weight-bold" href="https://go.microsoft.com/fwlink/?linkid=2137916">brief survey</a>
+    </span>
+    and tell us what you think.
+</div>
+
+@code {
+    // Demonstrates how a parent component can supply parameters
+    [Parameter]
+    public string Title { get; set; }
+}
+```
+
+使用`@`标识符，就可以嵌入`C#`代码，这种形式可能会让熟悉React的程序员感到不习惯，整个组件不像React将DOM部分以`JSX`的形式嵌入到`JavaScript`中，反过来是将`C#`嵌入到`HTML`中，不过对于`C#`程序员可谓是十分舒适的，不需要手动进行任何配置，可以随意使用C#的逻辑构建页面。
+
+引入样式也非常方便，在组件所在的`Shared`文件夹下，放置与组件同名的`CSS`样式文件就行了。`Blazor`提供了一套默认的样式，同时也可以使用`Ant Design`的`Blazor`迁移版。
+
+看一个循环组件渲染的例子：
+
+```html
+@page "/"
+
+<h1>@heading</h1>
+<h4>Remaining - @todos.Count(todo => !todo.Done)</h4>
+
+<ul>
+    @foreach (var todo in todos)
+    {
+        <li>
+            <input type="checkbox" @bind="todo.Done" />
+            <label>@todo.Item</label>
+        </li>
+    }
+</ul>
+
+@code{
+    string heading = "To Do List";
+
+    class Todo
+    {
+        public bool Done { get; set; }
+        public string Item { get; set; }
+    }
+    List<Todo> todos = new List<Todo>()
+    {
+        new Todo(){ Done = false, Item = "Corn" },
+        new Todo(){ Done = false, Item = "Apples" },
+        new Todo(){ Done = false, Item = "Bacon" }
+    };
+}
+```
+
+`MVVM`架构源自于微软的桌面UI框架，`Blazor`看上去也是基于`MVVM`，所以感觉和`Vue`有点相像，不知道`Vue`程序员看了会不会有亲切感。
+
+![效果图](https://i.loli.net/2020/11/21/cP9QBKyzTXGpkSg.png)
+
+模板程序里还有一个`Counter`组件和`Fetch data`的示例，感兴趣可以自己创建一个应用尝试。整个开发过程中仅有`C#`、`HTML`、`CSS`，完全看不到`JS`的身影，但是JS前端生态丰富，开发前端应用要用到JS的库怎么办？`Blazor`也提供了` IJSRuntime`这个依赖注入接口，可以在组件中调用JS。
+
+目前看来`Blazor`的开发可以说是开箱即用的，甚至让人感觉不到在使用`WebAssembly`，只是在用`C#`替代`JavaScript`。目前来说，个人感觉`Blazor`除了帮助开发者快速构建`WebAssembly`应用以外，还为一些使用`.NET`为主要技术栈的中小企业提供了让后端快速开发一些简单前端应用的能力，熟悉`C#`的程序员也可以快速构建全栈应用，只是在国内群众基础实在太浅。
+
+不得不说近几年微软对于开发者还是非常有诚意的，尤其在Web开发领域，体验过`ASP.NET core`之后再看其它框架就有些黯然失色了。可惜的是，微软在中国错失了最好时机，领先的大厂没有一个使用`.NET`，大厂不招，工作机会少，新手也就不愿意学，愿意使用`.NET`的公司就招不到人，最终陷入恶性循环。
+
+## 总结
+
+目前来看，Rust的后端开发体验还是不错的，至于前端，本身目前前端还是`JavaScript`的天下，`WebAssembly`的应用范围还是作为JS的一个补充，再者Rust下的`WebAssembly`开发体验远低于`Blazor`（仅仅讨论开发者体验），还有很长的路要走。
+
+Rust语言可以说站在巨人的肩膀上，提出了非常多优秀的设计，着实让人眼前一亮，目前来看，一个高效的`IDE`支持，对Rust来说还是很重要的。Rust自带的工具链`rustup`、`cargo`、`fmt`、`clippy`、`wasm-pack`等已经很强大，但还是需要一个集成环境，帮助程序员更加流畅的开发。
+
+而`dotNET`平台，未来必将在国内Web开发领域拥有一席之地（国外还是比较流行的）！

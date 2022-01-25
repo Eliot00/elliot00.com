@@ -1,0 +1,275 @@
+## React
+
+现在我们有了一个属于**文章**的API，可以添加、修改、删除、查看文章，但是对于我们的网站来说，还需要一个用户界面才行。现在开始探索一下`ReactJS`吧。
+
+经常听到有前端三大框架`Angular、React、Vue`的说法，不过React官网对自己的介绍却是这样的：
+
+> A JavaScript library for building user interfaces
+
+一个用来构建用户界面的JavaScript库。首先我们需要配置一下环境，以便使用`React`。
+
+首先我们要安装一个`Node.js`，目前我们还不用深入了解`Node`，只需要知道它能帮助你在**非浏览器环境**下运行JS代码就行了。官网为`node.org`，直接下载安装就行，Linux用户推荐用各自的包管理器安装。
+
+`Node`自带包管理器`npm`，有点类似Python的`pip`，不过这里我们使用[yarn](https://yarnpkg.com/)这个包管理器。按照官网说明安装完之后，打开终端，并进入我们的项目目录`DjangoWithReact`，为接下来的工作做准备。
+
+从零开始构建一个`React`项目涉及到的东西是比较多的，这时候就有一些方便的**脚手架**可以选择，脚手架可以帮我们省掉很多麻烦的配置。在这里先选用`Facebook`官方提供的`create-react-app`，顺带一提，React创建的[单页应用](https://zh.wikipedia.org/wiki/%E5%8D%95%E9%A1%B5%E5%BA%94%E7%94%A8)，对搜索引擎是不友好的，所以对于博客这类内容网站，一般还需要做SSR，通常会使用NextJS或者Gatsby等脚手架，有兴趣可以了解下。
+
+```shell
+$ yarn create react-app frontend
+```
+
+使用上述命令后，你将会看到项目根目录下多了个`frontend`文件夹：
+
+```shell
+$ cd frontend
+$ yarn start
+```
+
+这下你会看到浏览器跳转到`localhost:3000`，并且应该看到一个转动的`React logo`的页面，这说明你安装成功了，接下来浏览一下`frontend`这个目录下的文件，但还不要做任何改动。
+
+## index.js
+
+现在让我们一起来看一下`frontend/src`这个目录，基本上目前我们只要关心这个目录下的内容就可以了。首先来看一下这里的`frontend/src/index.js`：
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.unregister();
+```
+
+可能你已经注意到了代码中的`<App />`这一部分，似乎`HTML`中并没有这一标签，并且为什么`JS`文件中有这样类似`HTML`的东西呢？可能你的心中已经布满了疑问，没关系，让我们先动手改一下这段代码：
+
+```jsx
+...
+<React.StrictMode>
+    <div>hello world</div>
+</React.StrictMode>,
+...
+```
+
+我想，上述写法应该能让你看出应该在哪里修改代码。现在，打开浏览器，看看`localhost:3000`这个页面，应该能看到页面发生了改变并显示了**hello world**。如果你之前不小心关闭了终端，请记得重新打开，并在`frontend`目录下运行`yarn start`。
+
+这里我不打算详细介绍`React`的基础知识了，目前我还没有见过比**React官方文档**更好的入门学习资料，哪怕你觉得自己的英语很差劲，[官方的中文文档](https://zh-hans.reactjs.org/docs/getting-started.html)也值得一看，这里我仅仅粗略介绍一下接下来要接触的知识点。
+
+- **JSX**：不够恰当但简单理解的话，可以认为在`React`中可以把`HTML`、`CSS`、`JavaScript`混合在一起，一个原本在`HTML`中的元素可以被赋值给变量，如`const element = <h1>Hello, world!</h1>;`，`JSX`里面也**可以插入JS**，如
+
+```jsx
+const name = 'Josh Perez';
+// 使用JS变量
+const element = <h1>Hello, {name}</h1>;
+```
+
+- **组件**：可以简单理解为，`React`认为`UI`应该是组件化的，就像**搭积木**一样，由一个一个组件搭起来，这样将一个大页面的工作拆分为很多个小组件，便于复用，也方便多人协作开发。之前看到的`<App />`就是一个组件。
+
+- **生命周期函数**：有一个有趣的比喻，把组件比作一只**蚂蚁**，它的一生就是**从一根绳子的一端爬向另一端，这个绳子上挂了很多卡片**，那么它从头爬到尾，就会在过程中**触碰到不同的卡片，这些卡片就是生命周期函数**，蚂蚁爬到这个卡片时函数会被执行。
+
+## 第一个组件
+
+在`frontend/src`目录下创建新文件`ArticleList.js`，正如名字所示，这是一个文章列表的组件。
+
+```jsx
+import React, {Component} from "react";
+
+class ArticleList extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+}
+```
+
+现在我们定义了一个**类组件**，它继承自`React`的`Component`类，这里我们写了它的第一个生命周期函数，也就是`constructor`，如果你熟悉过任何一门面向对象的语言，这里应该不难理解。`constructor`并不是`React`独有的，而是`JavaScript`原生的写法，不过对于**类组件**来说，它当然也可以算生命周期的一部分。
+
+现在来看第二个生命周期函数`render`：
+
+```jsx
+class ArticleList extends Component {
+  constructor(props) {
+    ......
+  }
+
+  render() {
+    return <div>第一个组件</div>;
+  }
+
+}
+```
+
+`render`函数是**类组件**中唯一一个必须被实现的函数，组件将根据这个函数的返回值渲染内容。这里的`<div>第一个组件</div>`就是`JSX`，如果有多行嵌套可以用括号括起来：
+
+```jsx
+return (
+      <div>
+        <div>文章一</div>
+        <div>文章二</div>
+      </div>
+    );
+```
+
+那怎么让这个组件被渲染呢？聪明的你可能已经把`App.js`的代码看了一遍，我们在`ArticleList.js`的最后面添加一行代码
+
+```javascript
+export default ArticleList;
+```
+
+同时修改`index.js`：
+
+```jsx
+import React from 'react';
+......
+// 原先引入App的那行可以删掉
+import ArticleList from './ArticleList'
+
+ReactDOM.render(
+  <React.StrictMode>
+    <ArticleList />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
+
+......
+```
+
+现在运行`yarn start`，你将在看到浏览器启动并显示你在`render`函数中返回的内容。当然事实上如果你之前没有停止终端的运行，那么就不必要重新运行`yarn start`，代码做了更改，会自动重新渲染，以后不再提醒如何查看我们的成果了。
+
+接下来开始实现文章列表界面，但是先不急着从API获取文章数据，先让我们模拟一下文章数据：
+
+```jsx
+const articleList = [
+  {
+    "id": 2,
+    "title": "React",
+    "body": "React is good",
+    "created": "2020-03-21T21:19:31.732703",
+    "updated": "2020-03-21T21:19:31.732728"
+  },
+  {
+    "id": 1,
+    "title": "React",
+    "body": "React is good",
+    "created": "2020-03-21T21:10:53.922033",
+    "updated": "2020-03-21T21:10:53.922128"
+  }
+];
+
+class ArticleList extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      articleList: articleList,
+    }
+  }
+  ......
+}
+```
+
+注意到这里添加了一个`articleList`列表，在`构造函数`里多了一个`this.state`，并为其设置了`articleList`属性。现在来修改`render`函数：
+
+```jsx
+render() {
+    return (
+      <div className="article-list">
+        {this.state.articleList.map(item =>
+          <div key={item.id}>
+            <h4>{item.title}</h4>
+            <p>
+              <strong>{item.body}</strong>
+              <br/>
+              <em>创建时间：{item.created}</em>
+              <em>更新时间：{item.updated}</em>
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+```
+
+现在来大致讲解一下上面的代码，首先我们看到最外层的`div`标签，它拥有一个`className`属性，这个实际上就是`HTML`的`class`属性，这么写的原因也很简单，`JSX`允许`JS`和`HTML`混合在一起，但在**很多编程语言（包括JS）里**`class`都是用于创建类的**关键字**，所以给它改个名字便于区分。
+
+接着我们看到了在`JSX`中如何使用`JavaScript`，我们在大括号里使用了`map`方法，使用**箭头函数**，让不同标签里包含了文章标题、正文等内容。
+
+注意到包含`<div key={item.id}>`这一行，现在如果你已经使用了`yarn start`命令，你将会在浏览器看到一个简陋的文章列表，如果你删除这个`key={item.id}`，在浏览器按下`F12`，你将会在控制台看到警告信息。
+
+![Warning](https://i.loli.net/2021/04/11/1SIREyfATBWGHP7.png)
+
+总之记住`React`要求这类列表元素，必须要要有一个唯一的`key`标识来让`React`能**识别哪些元素被改变了**。在后台的真实数据中，`id`这个字段是主键，也就是唯一的，刚好可以利用。
+
+## 使用API
+
+好了，我们已经使用虚假的数据尝试了一把，之前说过前后端分离开发的一个好处是前端与后端约定好接口后，可以各自分开并行开发，那么实质上就会有一些工具来帮助生成**“假的API”**或者虚假的前端请求之类来帮助测试，有兴趣的可以去搜索搜索。
+
+当然这里我们是为了学习，开发只有自己一个人而已，那现在让我们来试试使用真实的API吧。
+
+### 同源策略
+
+在正式开始之前，我们还要先了解一下浏览器的**同源策略**。想象一下，如果你在`a.com`登录浏览了一段时间，再跑去`b.com`逛逛，结果`b.com`直接取到了你在`a.com`的`cookie`，用于在`a.com`登录你的账号，那实在是太可怕了，尤其是当`a.com`是银行或购物网站的时候。基于此，浏览器使用**同源策略**来做一个**基本的安全保障**。简单来说，就是**域名、端口、协议**只要**有一个不一样**，就会受到访问限制：
+
+- Cookie、LocalStorage 和 IndexDB 无法读取。
+
+- DOM 无法获得。
+
+- AJAX 请求不能发送。
+
+我们可以简单尝试一下，修改`ArticleList.js`：
+
+```jsx
+  componentDidMount() {
+    fetch('http://127.0.0.1:8000/api/articles/')
+      .then(response => response.json())
+      .then(result => this.setState({articleList: result}))
+      .catch(e => e);
+  }
+  ......
+```
+
+这里我们又见到了一个**新的生命周期函数**，`componentDidMount`将在`render`之后执行。这里调用了原生的`fetch`函数，直接简单粗暴的请求API，在浏览器中按下`F12`，你会看到如下报错：
+
+![报错](https://i.loli.net/2021/04/11/hdYLAWwjeXVD7nx.png)
+
+虽然**域名（IP）、协议都相同，但是端口号却不同**，`Django`后台在`8000`，`React`却在`3000`，所以发生了错误。
+
+这里给出一个在开发时可以用的方案，帮助我们解决这个问题，当然，在实际部署时不能这么做，部署时的具体情况以后再讲，这里我们先找到`frontend/package.json`这个文件，在其中添加一行：
+
+```json
+{
+ .......,
+ "proxy": "http://127.0.0.1:8000"
+}
+```
+
+**省略号代表之前的内容，如果你插入在文件最后面可别忘了给前面加一个逗号。**
+
+接着对源代码做一处修改：
+
+```jsx
+componentDidMount() {
+    fetch('/api/articles/')
+      ......
+  }
+```
+
+这样开发服务器就能识别你的请求将其代理到`http://127.0.0.1:8000`也就是Django服务所在的地址了，现在重新运行`yarn start`，可以在浏览器看到你在后端添加的数据啦。
+
+![效果图](https://i.loli.net/2021/04/11/SjTYOLpAB13lcI8.png)
+
+如果在`render`函数return之前加一行，`console.log(this.state.articleList)`，打开控制台，你将看到这个变量被打印两次，一次是空数组，第二次则有了数据。
+
+
+## 结语
+
+这次就讲到这里了，下一章要讲讲将这次的代码在细节上优化一下。这一章有**很多React的基础知识并没有讲解**，如果读者对`React`目前还没有一点了解，那么建议现在去**React官网**看一下，至少把基础教程看完。

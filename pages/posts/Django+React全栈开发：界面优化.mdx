@@ -1,0 +1,241 @@
+## 时间处理
+
+不少博客都会在文章列表界面仅显示文章发布距今的时间（如下图），之前我们是粗暴地将后台传回的`ISO 8601`格式的时间字符串显示出来，现在我们来处理一下。
+
+首先让我们看看后台的数据经`rest_framework`序列化后是什么样子：`2021-04-10T08:56:01.576834Z`，这样显示太不体面了，给它修改一下。
+
+这里我们可以使用`dayjs`来处理时间，现在来到前端部分，打开`DjangoWithReact/frontend`目录，使用`yarn`安装依赖，运行命令`yarn add dayjs`。为了直接看到效果，别忘了把前后端两个程序都启动起来。现在来修改`frontend/src/ArticleList.js`：
+
+```jsx
+import React, {Component} from "react";
+import dayjs from "dayjs";
+import "dayjs/locale/zh-cn"
+
+// 本地化
+dayjs.locale('zh-cn')
+
+class ArticleList extends Component {
+  // 省略...
+
+  render() {
+      return (
+      <div className="article-list">
+        {this.state.articleList.map(item =>
+          <div key={item.id}>
+            <h4>{item.title}</h4>
+            <p>
+              <strong>{item.body}</strong>
+              <br/>
+              <em>创建时间：{dayjs(item.created).format("YYYY-MM-DD")}</em>
+              <em>更新时间：{dayjs(item.updated).format("YYYY-MM-DD")}</em>
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+}
+```
+
+现在打开浏览器浏览`localhost:3000`，你就能看到和上面图中一样的效果了，Django默认使用的是UTC时间，我们这里自动根据时区做了本地化，可以把格式化字符串改成`YYYY-MM-DD HH:mm`与后端数据对比。
+
+为了简洁起见，可以把时间改成相对时间，如昨天、上个月等，这需要引入`dayjs`的`relativeTime`插件：
+
+```jsx
+import relativeTime from "dayjs/plugin/relativeTime"
+
+dayjs.locale('zh-cn')
+dayjs.extend(relativeTime)
+
+class ArticleList extends Component {
+  // ...
+
+  render() {
+      return (
+		......
+          	  {/* 加个title，鼠标悬浮显示原始时间字符 */}
+              <em>创建时间：<time title={item.created}>{dayjs().to(dayjs(item.created))}</time></em>
+              <em>更新时间：<time title={item.updated}>{dayjs().to(dayjs(item.updated))}</time></em>
+
+    );
+  }
+
+}
+```
+
+效果如下：
+
+![效果图](https://i.loli.net/2021/04/11/z4wMmbcIZsxDPQR.png)
+
+其实这里的需求很简单，不太需要用到`dayjs`这种时间处理库，也可以拿原生的[Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl)API来实现，这里就不讲了。
+
+## 条件渲染
+
+之前我们自己定义的名为`articleList`的数组对象现在**还在代码中**，但是事实上我们并不需要它，我们的文章数据是从后台`API`中取出的。现在删去原本定义`articleList`部分的代码，并在我们的**类组件ArticleList**的`构造函数`中修改以下部分：
+
+```jsx
+constructor(props) {
+    super(props);
+    this.state = {
+    // 将state中的内容改成空数组
+      articleList: [],
+    };
+  }
+  .......
+```
+
+现在来关注一个组件中的`render`函数：
+
+```jsx
+render() {
+    const {articleList} = this.state;
+    ......
+  }
+```
+
+增加这一行代码，从`this.state`对象中直接取出`articleList`，这样之前`JSX`中的`this.state.articleList`就都可以直接简写为`articleList`了。目前我们在**本地环境**中，获取API非常**快速**，并且数据量也很少，那么如果**在网络不好的情况下，后台的数据还没有取到**，我们的页面当然不能**一片空白**吧？
+
+修改`render`函数的返回值部分如下：
+
+```jsx
+return (
+    Array.isArray(articleList) && articleList.length !== 0
+    ?
+    <div className="article-list">
+        ......
+    </div>
+    :
+    <div>Loading</div>
+);
+```
+
+这里我们在`JSX`中使用了**三元运算符**，代码很简单，只是当`articleList`数组不为空时显示文章列表，否则渲染`<p>加载中...</p>`。不过在`JS`中判断一个数组是否为空不能用Python的思维，例如`arr == []`或`arr === []`都只会返回`false`。（PS：忍不住又想吐槽JS了。。。
+
+现在打开浏览器刷新，不过由于这里获取到数据很快，所以会“加载中”的字样会一闪而过，可以将整个`componentDidMount`函数注释掉看看效果。
+
+这就是`React`中的条件渲染了，可以根据情况来决定组件的渲染，目前我们的页面还非常简单，等以后我们添加了导航栏、侧边栏等元素时，你当然不希望因为文章数据还没取到而使得页面空空如也吧。
+
+后续讲到`Hooks`的时候，会用`react-query`这个强大的库来替代原生fetch，现在先用简陋实现吧。
+
+> 可以尝试封装**ErrorPage**组件，在请求错误时显示
+
+### 提示
+
+对代码做以下修改，将`fetch`捕获到的错误，设置到`this.state`中。完成练习后，暂停`Django`的运行，验证你做的是否正确吧。
+
+```jsx
+constructor(props) {
+    super(props);
+    this.state = {
+      articleList: [],
+      error: null,
+    };
+  }
+
+  componentDidMount() {
+    fetch('/articles/')
+      ......
+      .catch(e => this.setState({error: e}));
+  }
+```
+
+## 添加样式
+
+可能你已经发现了，`frontend/src`目录下，除了后缀名为`js`的文件，还有后缀为`css`的同名文件，打开`App.js`看一看（如果你还没有删除它），还能发现`import './App.css';`这一行代码。
+
+现在让我们也来写一个`ArticleList.css`：
+
+```css
+.article-list {
+    text-align: center;
+}
+```
+
+只是个文本居中显示，注意到我们已经在组件`render`函数的`JSX`中定义了`div`元素的`className`。现在只要在`App.js`中引入样式文件就行，在代码顶部添加`import './ArticleList.css';`。现在可以在页面中看到文字居中显示了。
+
+也可以在`JSX`中直接设定样式，例如：
+
+```jsx
+<h4 style={{ color: "red" }}>{item.title}</h4>
+```
+
+现在可以看到标题变成了红色。
+
+还可以使用`CSS Module`，我们使用了类名选择器，如`className="btn"`，浏览器会对拥有这个类名的元素应用对应的样式规则，但是在不同组件里的按钮可能是不一样的样式，那么我们就要注意命名，名字相同很可能会导致意想不到的效果。CSS模块可以解决这个问题，这种样式文件的命名规则为`组件名.module.css`，例如`ArticleList.module.css`：
+
+```css
+.title {
+    color: blueviolet;
+    font-size: 20px;
+}
+```
+
+接着修改组件：
+
+```jsx
+// 注意引入方式
+import style from "./ArticleList.module.css";
+
+
+class ArticleList extends Component {
+......
+
+    render() {
+        const { articleList } = this.state;
+        return (
+            Array.isArray(articleList) && articleList.length !== 0
+                ?
+                <div>
+                    {articleList.map(item =>
+                        <div key={item.id}>
+                            {/* 使用对应命名空间的类名 */}
+                            <div className={style.title}>{item.title}</div>
+                        </div>
+                    )}
+                </div>
+                :
+                <div>Loading</div>
+        );
+    }
+
+}
+```
+
+浏览器查看元素，可以发现这个元素的类名被自动格式化成这样`<div class="ArticleList_title__m5rub">React</div>`，如果在这个组件引入了其它样式文件，并且有同名的选择器，那么也不怕样式覆盖了。
+
+## 原子化CSS
+
+简单来说原子CSS就是每个类名对于唯一的CSS规则，通过在HTML中组合类名，而不是修改CSS文件来改变样式。下面使用[TailwindCSS](https://tailwindcss.com/)来感受下，首先按照[官网教程](https://tailwindcss.com/docs/guides/create-react-app)配置好，然后可以删掉之前的文章列表组件的样式文件不用，修改组件：
+
+```jsx
+// 直接使用预先定义好的类名组合
+<div className="font-sans">
+  {articleList.map(item =>
+    <div key={item.id} className="py-3">
+      <div className="text-2xl font-semibold">{item.title}</div>
+      <div className="space-x-2">
+        <span>创建时间：<time title={item.created}>{dayjs().to(dayjs(item.created))}</time></span>
+        <span>更新时间：<time title={item.updated}>{dayjs().to(dayjs(item.updated))}</time></span>
+      </div>
+    </div>
+  )}
+</div>
+```
+
+此外，如果某个组合样式重复出现，那么也可以使用`@apply`方法：
+
+```css
+.btn {
+    @apply py-2 px-4 font-semibold rounded-lg shadow-md;
+}
+.btn-green {
+    @apply text-white bg-green-500 hover:bg-green-700;
+}
+```
+
+可以尝试修改类名，通过tailwindcss去美化页面。
+
+其实React中是有像[AntDesign](https://ant.design/)这样的美观易用的组件库存在的，但是样式不是这个系列的重点，同时库提供的组件已经预先实现了很多我们要做的需求，学习嘛，还是以手动实现为主。
+
+![antd部分组件](https://i.loli.net/2021/04/11/YhHfun3PCRt6qMI.png)

@@ -1,0 +1,183 @@
+## REST framework
+
+我们继续之前的内容，让我们先进入后端项目文件夹`backend`，激活虚拟环境，并安装`REST framework`：
+```shell
+$ source venv/bin/activate
+// 激活后命令提示符前面会出现(venv)
+(venv) $ pip install djangorestframework
+```
+
+> Django REST framework is a powerful and flexible toolkit for building Web APIs.
+
+**官方介绍：Django REST framework是一个用于构建WEB API的强大而灵活的工具。**
+
+还记得在上一篇文章中提到的`RESTful API`吗？这次我们就来试试使用`REST framework`这个库来改造我们之前写的程序。
+
+安装完成后，记得到项目文件夹`backend/backend/settings.py`文件中注册：
+
+```python
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'rest_framework', # 加上这个
+    'article.apps.ArticleConfig',
+]
+```
+
+## 扩展模型
+
+打开我们的`backend/article/models.py`文件，原本的内容有点少，我们首先把这个模型扩展一下：
+
+```python
+from django.db import models
+
+
+class Article(models.Model):
+    title = models.CharField(max_length=50)
+    body = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ('-created',)
+```
+
+注意我们定义的继承了`models.Model`的类`Article`，与数据库中的**表**有对应关系，可以看到这个类的不同属性分别是不同的对象示例，它们对应了数据库中的**表**的不同**列**，并且代表了不同的数据类型。
+
+`created`与`updated`通过将两个不同的参数设置为`True`实现了**自动保存创建时间与最后修改时间**的功能。
+
+这里在元类里定义了以创建时间降序排序，注意`ordering`应该是一个元组，所以别忘了逗号`,`
+
+好啦，还记得每次更改模型后要做什么？
+
+```
+(venv)  $ python manage.py makemigrations article 
+Migrations for 'article':
+  article/migrations/0001_initial.py
+    - Create model Article
+(venv)  $ python manage.py migrate
+Operations to perform:
+  Apply all migrations: admin, article, auth, authtoken, contenttypes, sessions
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  ……
+  Applying sessions.0001_initial... OK
+
+```
+
+现在迁移完成了，但是现在不急着去写视图和模板，我们要开始制作自己的RESTful API。
+
+## 序列化
+
+还记得之前提过，`REST`的意思是`表现层状态转换`，我们**需要有一个工具来对模型进行序列化与反序列化**，通俗的讲法序列化就是将语言中的**对象转化为可以存储或传输**的形式，反序列化就是反过来的过程。
+
+在前后端分离模式的开发中，由于前后端语言往往是不同的，例如后端`Java`，前端`JavaScript`，或者有移动端的`Kotlin`，往往需要一种较为通用的格式，`JSON`就是一个常见的选择。
+
+好了，开始行动吧，在`article`文件夹中新建一个`serializers.py`文件：
+
+```python
+# article/serializers.py
+from rest_framework import serializers
+from article.models import Article
+
+
+class ArticleSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    title = serializers.CharField(required=True, max_length=50)
+    body = serializers.CharField(required=True)
+    created = serializers.DateTimeField(read_only=True)
+    updated = serializers.DateTimeField(read_only=True)
+
+    def create(self, validated_data):
+        return Article.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.body = validated_data.get('body', instance.title)
+        instance.save()
+        return instance
+```
+
+由于`TextField`是`Django`定义的针对大文本内容的扩展字段，所以在`rest_framework`中还是只能用`CharField`来序列化。覆写`create`与`update`方法来定义调用`serializer.save()`时的行为。参数`required=True`表示必填，`read_only=True`表示只读。
+
+## shell
+
+`Django`为我们提供了一个交互式的调试环境，输入命令`python manage.py shell`命令，进入交互环境。
+
+先来看看序列化一个`Article`实例：
+
+```python
+>>> from article.models import Article
+>>> from article.serializers import ArticleSerializer
+>>> from rest_framework.renderers import JSONRenderer
+>>> from rest_framework.parsers import JSONParser
+>>> article = Article(title="React", body="React is good")
+>>> article.save()
+>>> serializer = ArticleSerializer(article)
+>>> serializer.data
+{'id': 2, 'title': 'React', 'body': 'React is good', 'created': '2020-03-21T21:19:31.732703', 'updated': '2020-03-21T21:19:31.732728'}
+```
+
+之前通过序列化器将实例序列化为`Python`内置的字典类型，现在看看将其转为`JSON`：
+
+```python
+>>> content = JSONRenderer().render(serializer.data)
+>>> content
+b'{"id":2,"title":"React","body":"React is good","created":"2020-03-21T21:19:31.732703","updated":"2020-03-21T21:19:31.732728"}'
+```
+
+反序列化与上面类似，但步骤相反：
+
+```python
+>>> import io
+>>> stream = io.BytesIO(content)
+>>> data = JSONParser().parse(stream)
+>>> serializer = ArticleSerializer(data=data)
+>>> serializer.is_valid()
+True
+>>> serializer.validated_data
+OrderedDict([('title', 'React'), ('body', 'React is good')])
+>>> serializer.save()
+<Article: Article object (3)>
+```
+
+## ModelSerializer
+
+`REST framework`为我们提供了一个更为简洁的编写序列化器的方式：
+
+```python
+# 修改原本的ArticleSerializer类
+class ArticleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Article
+        fields = ['id', 'title', 'body', 'created', 'updated']
+```
+
+可以在交互模式下看看：
+
+```
+>>> from article.serializers import ArticleSerializer
+>>> serializer = ArticleSerializer()
+>>> print(repr(serializer))
+ArticleSerializer():
+    id = IntegerField(label='ID', read_only=True)
+    title = CharField(max_length=50)
+    body = CharField(style={'base_template': 'textarea.html'})
+    created = DateTimeField(read_only=True)
+    updated = DateTimeField(read_only=True)
+>>> 
+
+```
+
+`ModelSerializer`帮我们自动生成了所需的字段，并且拥有`create`与`update`方法的默认实现。这是官方为我们提供的实现一个序列化器的快捷方式。注意到这里还对模型中的`TextField`类型的`body`做了特殊处理，定义了其渲染成`HTML`时的格式。
+
+如果你对原生`Django`的表单熟悉，你会发现这个`Serializer`与原生的`Form`非常相似。
+
+## 总结
+
+现在我们熟悉了**序列化**与**反序列化**，在下一篇文章中，我们将为我们的API编写一个**新的视图（View）**。

@@ -1,0 +1,158 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "add-friendlink-notification",
+  title: "给个人博客添加后台管理友链与全站公告功能",
+  tags: ["Django", "Python"],
+  series: "随想",
+  createdAt: "2020-04-21T02:03:34.248+00:00",
+  updatedAt: "2020-12-19T05:52:33.867519+00:00",
+}
+
+给个人博客网站添加了友情链接与全站公告通知功能，写篇文章记录一下。
+
+首先考虑了使用Django的模板标签，也是为了练练手，相关知识可以去查看Django官方文档。下面是具体实现。
+
+## 友情链接功能
+
+### 模型
+
+其实友情链接直接在首页页面html里面写就可以（到现在我还没有友链呢~），但是我想通过后台来管理这个数据，索性专门建了个名为`extras`的`app`。
+
+```
+python manage.py startapp extras
+```
+
+编辑`models.py`文件：
+
+```python
+from django.db import models
+from model_utils.models import TimeStampedModel
+from django.utils.translation import gettext_lazy as _
+
+# Create your models here.
+class FriendLink(TimeStampedModel):
+    site_name = models.CharField(_('site_name'), max_length=100)
+    site_domain = models.URLField(_('site_domain'))
+
+    def __str__(self):
+        return self.site_name
+```
+
+`TimeStampedModel`是一个提供**自更新**的创建与修改字段的抽象基类。这里的`gettext_lazy`是用来做国际化的，对我的小破站其实没什么用，之所以有这个是因为这段是我从**追梦人物**的开源代码上复制来的，懒得改了。
+
+写完代码可别忘了模型**迁移**。
+
+### 模板标签
+
+这里使用的是**包含标签**，首先要在app目录下创建`templatetags`目录，并在其中创建`__init__.py`文件使之成为一个包。接着创建`sidebar_tags.py`，在其中编写我们的Python代码。
+
+```python
+from django import template
+from ..models import FriendLink
+
+
+register = template.Library()
+
+@register.inclusion_tag('inclusions/_friend_link.html', takes_context=True)
+def show_friend_links(context, num=5):
+    friend_link_list = FriendLink.objects.all()[:num]
+    return {
+            'friend_link_list': friend_link_list
+    }
+```
+
+默认显示5条数据，Django模板标签可以**接收参数**，像`{% show_friend_links 5 %}`这样使用。
+
+注意这里使用的是包含标签，`@register.inclusion_tag('inclusions/_friend_link.html', takes_context=True)`在装饰器里写上了需要包含的模板路径。包含标签通过渲染这个包含的模板去显示数据。
+
+所以要在放置模板的`templates`文件夹中新建相应的文件：
+
+```
+<div class="card mb-4 hvr-glow" style="display: flex">
+    <div class="card-body">
+        <p class="card-title text-muted">
+            <i class="fas fa-link" style="color: lightpink;"></i> 友情链接
+        </p>
+        {% if friend_link_list %}
+            {% for link in friend_link_list %}
+            <p class="card-text hvr-forward col-12">
+                <a href="{{ link.site_domain }}" target="_blank" class="text-muted no-underline">
+                    {{ link.site_name }}
+                </a>
+            </p>
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+```
+用了`bootstrap`的`card`样式，还是比较好看的。
+
+接下来在需要使用的地方用`{% load sidebar_tags %}`载入标签，在需要添加的地方使用`{% show_friend_links %}`就可以了。
+
+## 全站公告功能
+
+同样，这个也放到扩展功能app里面去。
+
+### 模型
+
+```python
+class SiteMessage(TimeStampedModel):
+    content = models.TextField(verbose_name="正文")
+    
+    class Meta:
+        verbose_name_plural = '通知'
+
+    def __str__(self):
+        return self.content[:20]
+```
+
+同样使用`TimeStampedModel`省得写创建时间，程序员就是要偷懒，啦啦啦~
+
+同样地在写完后要**迁移**。
+
+### 标签
+
+```
+# 要加上导入这个SiteMessage类
+from ..models import FriendLink, SiteMessage
+
+
+@register.inclusion_tag('inclusions/_site_message.html', takes_context=True)
+def show_site_message(context):
+    try:
+        message = SiteMessage.objects.last()
+        data = {
+                'content': message.content.replace("\r\n", "<br/>"),
+                'created': message.created.strftime("%Y/%m/%d"),
+        }
+    except:
+        data = {
+                "content": "o(╥﹏╥)o服务器连接失败~"
+        }
+    return data
+```
+通过`SiteMessage.objects.last()`每次只取最新的数据。使用方法同上。
+
+## 效果图
+
+![截图](https://i.loli.net/2019/12/29/Aflm5Dh6VZykFxs.png)
+
+# 关于网页结构
+
+为了让页面显示协调一点，我花了不少时间，前端真的是博大精深（太难了）。
+
+1. 最开始我有两个`base.html`文件，一个有侧边栏，一个没有，按需要继承。
+
+2. 接着我将`base.html`修改，固定了侧边栏，放在`{% block side %}{% endblock side %}`中，并且将两个标签都放进去，在文章详情页面，侧边栏需要目录，目录下面用`{% block.super %}`来显示父级的内容。
+
+3. 之前想着让目录侧边栏随着鼠标滚动固定在页面上，而另两个侧边内容自动消失，使用`bootstrap`的滚动监听，不过后来发现侧边栏内容还是要多显示比较好，与全都放到粘性侧边栏里了。
+
+4. 最后还是只有一个`base.html`文件（写这篇文的时候发现我忘了删除没用的那个。。。），并且把侧边栏`block`给去掉了。
+
+代码都放在了Github上，关注公众号在底部菜单查看Github地址。
+
+扫码关注**公子政的宅日常**第一时间查看最新推送：
+![公子政的宅日常](https://i.loli.net/2019/12/11/1Xy2QxE5NZqF7op.jpg)
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

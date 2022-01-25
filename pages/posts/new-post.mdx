@@ -1,0 +1,20 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "opensource-protocol-unix-philosophy",
+  title: "开源、协议与Unix哲学",
+  tags: ["开源"],
+  series: "随想",
+  createdAt: "2021-12-16T09:48:24.442Z",
+  updatedAt: "",
+}
+
+在Vim群友的推荐下，尝试了下一个GPU加速的终端模拟器——[alacritty](https://github.com/alacritty/alacritty)，这款终端程序没有像Mac下的`iterm2`那样的窗口分割与tab功能，这被认为是如`dwm`这样的窗口管理器或`tmux`这样的终端复用器的责任。不谈使用体验，这一点使我联想到了曾经听过的「Unix哲学」，软件应该只专注于做一件事并做好。
+
+一些我使用过或正在使用的其他开源应用，以及一些我正在参与的开源应用，都倾向于简化设计，而很多商业软件则习惯于提供更多更复杂的功能。我从一个用户的角度来说，很少有见到一个「恰到好处」的应用，有的是功能繁多，占用大量系统资源；有的则是简洁以至于简陋，完成一个工作流程需要多个应用配合，而这种配合又非常不顺畅。趁着周末我开始思考，如果我来做一个「代码编辑器」应用，会遇到哪些问题？
+
+## 责任的划分
+
+一个合格的代码编辑器应该具备哪些功能？毫无疑问它至少应该具备读取、修改、保存文件的能力。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

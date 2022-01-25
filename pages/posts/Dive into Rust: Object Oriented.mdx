@@ -1,0 +1,323 @@
+如何快速自定义一个集合类型？熟悉一些面向对象语言的程序员可能会这么写：
+
+```python
+class MyCollection(Collection):
+    ...
+```
+
+继承某个内置的类型（如果存在的话），在该内置类型的基础上进行扩展。但是对于熟悉Python的程序员来说，这样做并不妥当。
+
+## 鸭子类型
+
+> 当看到一只鸟走起来像鸭子、游泳起来像鸭子、叫起来也像鸭子，那么这只鸟就可以被称为鸭子。
+
+一个简单的例子：
+
+```python
+class Collection:
+    def __init__(self, nums):
+        self._nums = list(nums)
+    
+    def __len__(self):
+        return len(self._nums)
+    
+    def __getitem__(self, position):
+        return self._nums[position]
+    
+c = Collection(['A', 'B', 'C', 'D', 'E', 'F'])
+
+# 可以对c调用内置的len方法获取长度
+print(len(c))可以
+
+# 可以使用索引
+print(c[2])
+
+# 可以使用for循环遍历元素
+for i in c:
+    print(i)
+    
+# 还可以使用切片操作 
+print(c[1:3])
+```
+
+看，这个自定义的`Collection`类并没有继承Python内置的`Iterable`之类的类型，但是表现得好像是某个内置的可迭代类型一样。
+
+这种前后都有双下划线的方法一般被称作魔术方法，它不应该被用户自己调用，它被解释器视作一种“协议”，无论你自定义的类是否和标准库的某个类型有继承关系，只要实现了对应的协议，就能使你自定义的类型拥有如索引、切片等功能。
+
+可以说对于我们自定义的`Collection`类型，Python并不关心它是否**是**集合类型的子类，而是它是否**具有**集合的“能力”。
+
+下面这个例子表明，`Python`甚至不要求在定义类时实现接口：
+
+```python
+from collections.abc import Iterable
+
+class Statement:
+    def __init__(self, string):
+        self.words = string.split()
+        
+def my_iter(self):
+    for word in self.words:
+        yield word
+
+Statement.__iter__ = my_iter
+        
+s = Statement("Python is a programming language that lets you work quickly and integrate systems more effectively")
+
+print(list(iter(s)))
+
+print(isinstance(s, Iterable)) # True
+```
+
+直接在运行时动态注册了`Statement`类的`__iter__`方法（这被社区称为猴子补丁，我本人并不喜欢在真实项目中使用），就可以对这个自定义类型调用`iter`函数，甚至`isinstance(s, Iterable)`返回的结果都是`True`。
+
+## Mixin
+
+之前在一次分享会上举过一个例子，如果在系统中有这样的继承链：
+
+```python
+# 伪代码
+
+class 飞机:
+    def 起飞:
+        pass
+
+    def 剩余油量:
+        pass
+
+class 直升机(飞机):
+    pass
+
+class 战斗机(飞机):
+    pass
+```
+
+如果这个系统中需要引入一个新的飞行物对象，但是它表示的是海鸥，要怎么做呢？直接继承现有的飞机基类吗？如果这样做我们将获得一个拥有油量信息的钢铁海鸥，一个独特的新物种。或者可以再提取一个共同的抽象基类，这个抽象基类只有飞机和海鸥共同的部分。
+
+但是如果我们以鸭子类型的方式去思考，添加一个新类型，为什么一定确定它是某个类型的子类呢？不管是直升机还是海鸥，它们需要的共同点只是可以飞而已。
+
+`Django`是Python中流行的Web框架之一，在`Django`中可以这样定义视图：
+
+```python
+class HybridDetailView(JSONResponseMixin, SingleObjectTemplateResponseMixin, BaseDetailView):
+    def render_to_response(self, context):
+        # Look for a 'format=json' GET argument
+        if self.request.GET.get('format') == 'json':
+            return self.render_to_json_response(context)
+        else:
+            return super().render_to_response(context)
+```
+
+`Django`并没有定义一个全面的父类，而是定义了多个`Mixin`类，中文通常翻译成混入类，每个混入类负责一部分功能，例如`JSONResponseMixin`负责`JSON`响应，这有点类似`CSharp`、`Java`的`interface`（接口），不同的是`CSharp`不支持多重继承，但是允许实现多个接口，而Python中的`Mixin`只是个大家默认遵守的约定，可以这样写的原因在于Python支持多重继承，一个子类可以继承自多个父类。`Mixin`不应该影响到子类本身的功能，它应该抽象一个通用的功能用于扩展子类，其本身通常不能实例化。
+
+这样的代码在形式上是继承多个父类，但是从实际表现上看，更像是把不同混入类的功能**组合**起来。比如上面的代码里组合了`JSON`响应与模板响应的功能，根据请求返回不同类型的响应。混合鸭子的叫声、形态、飞行方式，就能得到一只定制的“鸭子”，这取决于你需要哪些功能。
+
+## Rust中的面向对象
+
+现在轮到主角Rust出场了。Rust是一门支持多范式的编程语言，其中包括面向对象范式。但是首先，到底什么是面向对象？借用一下官方教程[The Book](https://doc.rust-lang.org/book/ch17-01-what-is-oo.html)的描述：如果按照[GOF](https://en.wikipedia.org/wiki/Design_Patterns)对面向对象的定义，面向对象的程序由对象构成，对象将数据与操作数据的过程打包在一起，那`Rust`无疑是支持面向对象的，`Rust`由`enum`和`struct`组织数据，通过`impl`为它们绑定方法。
+
+但是，部分程序员可能要反对这个说法，部分人认为只有具备**封装、继承、多态**这样的形式，才算的上面向对象，而Rust甚至都没有`class`，就像有人认为JS和Python也不能完全算面向对象语言一样。
+
+## 封装、继承、多态
+
+这三个词确实很深入人心，有可能每个软件工程师都听过，这里就讨论下在Rust中的这三个特性。
+
+首先说说封装，封装在我看来主要作用是隔离不同的抽象层级，底层开发负责实现细节，而在这上一层的开发者则只关心暴露出来的接口。例如`Python`中的`list`，我们知道它拥有接口让我们获取其内部的元素数量，而不必去了解内部实现细节，这是标准库开发人员负责的。如果我们在这个对象的基础上封装一个最小栈，可以通过`min`方法获取列表中的最小值，我们负责封装这个接口，至于我们是维护一个单独的栈保存最小值，还是在调用接口时遍历整个列表，是内部细节，这个类型的使用者无需知道。
+
+当然，对于部分语言来说，还提供了机制强制对外部调用者隐藏属性，Rust中就有[pub](https://doc.rust-lang.org/reference/visibility-and-privacy.html)关键字来限制**可访问性**。
+
+```rust
+mod my_test {
+    pub struct Test {
+        foo: i32,
+        pub bar: i32,
+    }
+}
+
+fn main() {
+    use my_test::Test;
+
+    let test = Test { foo: 1, bar: 2}; // 错误
+}
+```
+
+由于`foo`字段没有用`pub`关键字标识，所以它是一个私有字段，无法直接访问。
+
+接着是继承，**Rust中没有继承**。不能实现一个子结构体继承父结构体。继承主要有两个作用，一个是复用代码，子类自动获得父类的属性与方法，但是代码复用并不一定非用继承不可；另一个则用于**多态**，一个子类型可以被用在需要父类型的地方。
+
+这样看起来，多态和继承这两个概念相提并论就有点怪异了。继承成了实现多态的一种途径，多态的概念更宽泛一点。
+
+既然Rust没有继承，那么以上继承的两个功能（主要是后者）在Rust中要如何实现呢？多态要怎么实现呢？
+
+Rust可以通过`trait`来抽象共享行为，就以之前举的飞机的例子，各种飞机，还有海鸥，都可以飞行，但是具体飞行方式则有些不同：
+
+```rust
+trait Fly {
+    fn fly(&self);
+}
+
+struct Helicopter;
+
+// 为直升机实现飞行特性
+impl Fly for Helicopter {
+    fn fly(&self) {
+        println!("转动螺旋桨起飞");
+    }
+}
+
+struct Seagull;
+
+impl Fly for Seagull {
+    fn fly(&self) {
+        println!("扇动翅膀起飞");
+    }
+}
+```
+
+通过`impl trait for struct/enum`的语法，可以将一个功能抽象出来，针对不同的类型去实现，对比Python的Mixin，trait也可以**组合**，可以对一个类型实现多个trait。和Mixin以及C#的接口一样，trait也可以有默认实现。
+
+```rust
+trait Fly {
+    fn fly(&self);
+}
+
+trait Dashboard {
+    // 可以提供默认实现，当然在这里只是演示用，无意义
+    fn speed(&self) -> i32 {
+        100
+    }
+}
+
+struct Helicopter;
+
+impl Fly for Helicopter {
+    fn fly(&self) {
+        println!("转动螺旋桨起飞");
+    }
+}
+
+// 可以使用默认实现，也可以覆盖默认行为
+impl Dashboard for Helicopter {}
+```
+
+`trait`的核心思想是组合，`trait`是对行为的抽象，不同的对象可以具有相似的行为，对象是数据与行为的组合。前面`Django`的例子中，虽然在语法上是多重继承，但本质上不也是组合吗？相比继承，组合更适合表示一个对象**具有某功能或特性**，而不是**是某个种类**。
+
+再看鸭子类型，当一个地方需要一只会叫的鸭子，只要我们提供的对象具有鸭子的叫声就行，这不正是多态吗？那么在Rust的类型系统中，如何表现多态呢？
+
+下面这段代码可以通过编译：
+
+```rust
+enum Status {
+    Successful,
+    Failed,
+}
+
+fn print_status(status: Status) {
+    match status {
+        Status::Successful => println!("successful!"),
+        Status::Failed => println!("failed")
+    }
+}
+
+fn main() {
+    let status = Status::Successful;
+    print_status(status);
+}
+```
+
+当然，Rust的枚举在类型系统上是一个*和类型*，这里的`Status::Successful`和`Status::Failed`是同一个类型（`Status`），通常被称为`variants`（变体），再看另一个代码示例：
+
+```rust
+// 省略了前面的结构体与trait定义部分
+
+fn main() {
+    let h = Helicopter;
+    let s = Seagull;
+    generic_func(h);
+    generic_func(s);
+}
+
+fn generic_func<T: Fly>(flyable: T) {
+    flyable.fly();
+}
+```
+
+代码可以通过编译，我在这里利用了**泛型**，自定义的函数需要一个`T`类型的参数，这个`T`类型被限定为：实现了Fly这个trait的类型，这被称为*trait bounds*。
+
+对代码稍作修改：
+
+```rust
+use std::fmt::Debug;
+
+trait Fly {
+    fn fly(&self);
+}
+
+#[derive(Debug)]
+struct Helicopter;
+
+impl Fly for Helicopter {
+    fn fly(&self) {
+        println!("转动螺旋桨起飞");
+    }
+}
+
+#[derive(Debug)]
+struct Seagull;
+
+impl Fly for Seagull {
+    fn fly(&self) {
+        println!("扇动翅膀起飞");
+    }
+}
+
+fn main() {
+    let h = Helicopter;
+    let s = Seagull;
+    generic_func(h);
+    generic_func(s);
+}
+
+fn generic_func<T: Fly + Debug>(flyable: T) {
+    println!("正在飞行的是：{:?}", flyable);
+    flyable.fly();
+}
+```
+
+这里通过`derive`宏为两个结构体实现了`Debug trait`，实现了这个trait就可以打印出结构体自身的名称，同时要在泛型方法的类型限定上加上这一trait，`T: trait1 + trait2`这样的语法可以限定一个类型必须实现多个trait。打印结果为：
+
+```shell
+正在飞行的是：Helicopter
+转动螺旋桨起飞
+正在飞行的是：Seagull
+扇动翅膀起飞
+```
+
+在编写代码时只需编写一个泛型函数，而Rust在编译后实际上会为每个不同类型创建单独的函数，这种方式称为**静态分发**，它的缺点是会使编译后的体积增大。另一种方法称为**动态分发**，它将类型判断放到运行时，空间占用小了，但是带来了更多的运行时开销：
+
+```rust
+fn main() {
+    let h = Helicopter;
+    let s = Seagull;
+    generic_func(&h);
+    generic_func(&s);
+}
+
+fn generic_func(flyable: &dyn Fly) {
+    flyable.fly();
+}
+```
+
+代码改动不大，通过`&`借用或者`Box`智能指针包装类型，并且要加上`dyn`关键字，即可实现动态分发。
+
+> 题外话：泛型多态不仅仅只针对trait bounds，可以查看[reference](https://doc.rust-lang.org/reference/items/generics.html)等资料。
+
+这就是属于Rust的一种静态类型的“鸭子类型”，`generic_func`需要的是能飞的对象，不在乎它是飞机还是海鸥，不在乎它们是否有共同的父类。
+
+## 总结
+
+这篇文章的主要目的，是要说明如何以Rust的方式实现面向对象编程的，Rust并不是完全的独辟蹊径，列举Python的例子就是为了说明这一点。另外，面向对象不等于封装、继承、多态，继承和多态甚至不能算并列的概念。
+
+至于Rust中泛型与`trait`的详细用法，限于篇幅，再者相关资料如官方文档叙述很详细了，就不详细说明了，可以参考以下资料：
+
+- [Advanced Traits](https://doc.rust-lang.org/book/ch19-03-advanced-traits.html)
+- [一个Youtube视频](https://www.youtube.com/watch?v=grU-4u0Okto)

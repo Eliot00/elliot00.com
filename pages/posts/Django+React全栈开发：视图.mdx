@@ -1,0 +1,284 @@
+## 基础视图
+
+现在来写一个简单的函数视图：
+
+```python
+# article/views.py
+from article.serializers import ArticleSerializer
+from article.models import Article
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
+
+
+@csrf_exempt
+def article_list(request):
+    if request.method == 'GET':
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = ArticleSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=201)
+
+        return JsonResponse(serializer.errors, status=400)
+```
+
+以上视图函数将列出所有已存在的`Article`对象，并且接受`POST`请求来新增文章。这里使用了装饰器`csrf_exempt`，因为`Django`为了防止`CSRF`攻击要求`POST`请求需要带上`CSRF token`，但是我们这里要用工具来简单测试一下，所以加上装饰器用于忽略。
+
+除了`list`视图，我们再添加一个`detail`视图，一遍通过`id`来访问具体的文章：
+
+```python
+@csrf_exempt
+def article_detail(request, pk):
+    try:
+        article = Article.objects.get(pk=pk)
+    except Article.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = ArticleSerializer(article)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = ArticleSerializer(article, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        article.delete()
+        return HttpResponse(status=204)
+```
+
+别忘了修改`article/urls.py`：
+
+```python
+urlpatterns = [
+    path('articles/', views.article_list),
+    path('articles/<int:pk>/', views.article_detail),
+]
+```
+
+现在可以使用一些工具来测试一下我们的API了，如果你熟练使用`Postman`，那么下面的内容可以忽略了。
+
+`Linux`各个发行版基本都默认安装了`curl`，不过这里我推荐使用`httpie`这款工具，使用`pip install httpie`安装工具。
+
+```
+$ http http://127.0.0.1:8000/articles/
+HTTP/1.1 200 OK
+......
+
+[
+    {
+        "body": "React is good",
+        "created": "2020-03-21T21:22:55.553124",
+        "id": 3,
+        "title": "React",
+        "updated": "2020-03-21T21:22:55.553182"
+    },
+    ......
+]
+
+```
+
+获取第一篇文章：
+
+```
+$ http http://127.0.0.1:8000/articles/1/
+HTTP/1.1 200 OK
+......
+
+{
+    "body": "React is good",
+    "created": "2020-03-21T21:10:53.922033",
+    "id": 1,
+    "title": "React",
+    "updated": "2020-03-21T21:10:53.922128"
+}
+
+```
+
+`http`命令后跟`POST`、`PUT`等，可执行相应操作，如
+
+```
+http POST http://127.0.0.1:8000/articles/ title='hello' body='一起来写 代码吧'
+```
+
+详情请查看官方文档。或者你更喜欢图形界面工具，可以去试试功能强大的`Postman`。
+
+## API view
+
+虽然现在我们的API已经能工作了，但是使用原生的视图有点麻烦，`REST framework`为我们提供了一些方便的封装：
+
+```python
+# 改写article/views.py
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from article.serializers import ArticleSerializer
+from article.models import Article
+
+
+@api_view(['GET', 'POST'])
+def article_list(request):
+    if request.method == 'GET':
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = ArticleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def article_detail(request, pk):
+    try:
+        article = Article.objects.get(pk=pk)
+    except Article.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = ArticleSerializer(article)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = ArticleSerializer(article, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        article.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+```
+
+现在代码量相比之前减少了一些，`REST framework`为我们封装了`Request`与`Response`类，详情请浏览[官网](https://www.django-rest-framework.org)。
+
+## 类视图
+
+聪明的你想必已经想到了，`REST framework`也如`Django`一样为我们提供了类视图：
+
+```python
+# 导入相关类
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django.http import Http404
+from article.serializers import ArticleSerializer
+from article.models import Article
+```
+
+类视图：
+
+```python
+class ArticleList(APIView):
+    def get(self, request, format=None):
+        articles = Article.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = ArticleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+```
+
+详情视图：
+
+```
+class ArticleDetail(APIView):
+    def get_object(self, pk):
+        try:
+            return Article.objects.get(pk=pk)
+        except Article.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = ArticleSerializer(snippet)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        serializer = ArticleSerializer(snippet, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        snippet = self.get_object(pk)
+        snippet.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+```
+
+通过实现诸如`get`，`put`等方法，实现对不同`HTTP`请求的处理。对于类视图，我们需要修改一下`article/urls.py`：
+
+```python
+urlpatterns = [
+    path('articles/', views.ArticleList.as_view()),
+    path('articles/<int:pk>/', views.ArticleDetail.as_view()),
+]
+```
+
+现在使用工具测试，API又能正常工作啦。
+
+## viewsets
+
+`REST framework`为我们提供了一个更强大的视图集合，这里包括了一些常用的视图，直接上代码：
+
+```python
+from rest_framework import viewsets
+from article.serializers import ArticleSerializer
+from article.models import Article
+
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+```
+
+我们写的`ArticleViewSet`类只有两行代码，但是却涵盖了之前所有的功能。`viewsets`可以与官方提供的路由系统`routers`搭配使用，修改`article/urls.py`：
+
+```python
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from article import views
+
+
+router = DefaultRouter()
+router.register(r'articles', views.ArticleViewSet)
+
+urlpatterns = [
+    path('', include(router.urls)),
+]
+```
+
+**注意**：确保你的**项目urls.py**里包含了`article`的urls，习惯上把所有的路由放到`api/`下。
+
+```python
+# 项目级urls
+urlpatterns = [
+    path('api/', include('article.urls')),
+]
+```
+
+我们准备做前后端分离开发，那么其实这里并不需要再去写模板了，之前的templates文件夹可以删除，但是为了方便调试，`REST framework`提供了默认的一套模板，所以如果你打开浏览器访问默认的地址`127.0.0.1:8000/api`，是可以看到一个API Root的页面的，并且用浏览器去访问api端点会看到拥有样式的页面而不是简单的JSON，框架会根据请求来判断返回形式，非常人性化。
+
+**这里只是简略介绍一下几种编写视图的方法，要深入了解还是要去看官方文档，视图写法还是比较灵活的，可以根据需要选择不同的写法。**
+
