@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "react-django-jwt",
+  title: "Django+React全栈开发：JWT",
+  tags: ["REST", "Django"],
+  series: "Django+React全栈开发",
+  createdAt: "2020-05-17T11:52:05.918+00:00",
+  updatedAt: "2021-07-05T15:03:21.508905+00:00",
+}
+
 在很多有关网络协议的教程里，大概都能看到「`HTTP`协议是无状态的」这句话，**无状态**主要是指HTTP不会记忆当前连接的状态，不同请求之间相互独立。
 
 可以举个不太准确的例子，无状态就像一些不那么智能的语音助手，你对它说：“我想买双鞋”，它可能会为你打开购物网站，而接下来你说：“最便宜的多少钱？”，它可能就无法识别你在说什么，因为它没有联系上一段对话。与无状态协议相对的是有状态协议，例如一些通信协议会要求“握手”，完成握手后才能继续其他连接。
@@ -205,3 +216,5 @@ $ http GET http://127.0.0.1:8000/api/articles/ 'Authorization: Bearer eyJhbGciOi
 ## 第三方库
 
 这篇文章中的代码量很少也很粗糙，仅仅是为了展示一下自定义JWT认证的流程，在实际使用中建议使用[djangorestframwork-simplejwt](https://github.com/jazzband/djangorestframework-simplejwt)。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

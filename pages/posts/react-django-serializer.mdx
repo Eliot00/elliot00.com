@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "react-django-serializer",
+  title: "Django+React全栈开发：序列化器",
+  tags: ["REST", "Django"],
+  series: "Django+React全栈开发",
+  createdAt: "2020-04-21T02:45:38.408+00:00",
+  updatedAt: "2021-04-10T08:58:38.801513+00:00",
+}
+
 ## REST framework
 
 我们继续之前的内容，让我们先进入后端项目文件夹`backend`，激活虚拟环境，并安装`REST framework`：
@@ -181,3 +192,5 @@ ArticleSerializer():
 ## 总结
 
 现在我们熟悉了**序列化**与**反序列化**，在下一篇文章中，我们将为我们的API编写一个**新的视图（View）**。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

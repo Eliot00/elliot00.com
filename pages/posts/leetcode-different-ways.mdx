@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "leetcode-different-ways",
+  title: "刷题笔记0x07：不同路径",
+  tags: ["算法", "动态规划"],
+  series: "刷题笔记",
+  createdAt: "2020-04-21T02:06:07.349+00:00",
+  updatedAt: "2020-12-19T05:52:51.490058+00:00",
+}
+
 ## 不同路径
 
 ### 描述
@@ -94,5 +105,4 @@ int uniquePaths(int m, int n)
 
 这一题其实还可以用高中数学方法解决，因为这其实就是个排列组合问题。这个留给读者自己去想啦。
 
-扫码关注**公子政的宅日常**第一时间查看最新推送：
-![公子政的宅日常](https://i.loli.net/2019/12/11/1Xy2QxE5NZqF7op.jpg)
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

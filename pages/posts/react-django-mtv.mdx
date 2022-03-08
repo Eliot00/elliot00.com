@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "react-django-mtv",
+  title: "Django+React全栈开发：MTV初试",
+  tags: ["Django"],
+  series: "Django+React全栈开发",
+  createdAt: "2020-04-21T02:40:35.423+00:00",
+  updatedAt: "2021-04-10T08:47:40.429112+00:00",
+}
+
 第一步先来配置基础的开发环境，先把后端配置起来。
 
 ## 环境配置
@@ -205,3 +216,5 @@ urlpatterns = [
 想要加深一下对Django的了解，请去[官网](https://www.djangoproject.com/)跟着官方给的小教程敲一遍代码。
 
 一般来说官方文档应该是我们需要常读的最好的资料之一，但是没有必要把整个文档从头到尾看一遍并熟记，我们并不需要应付考试，**先粗略看看官方指引，接着在实践中遇到问题，再去查看官方文档，我认为这更为有效。**
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

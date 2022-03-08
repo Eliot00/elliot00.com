@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "react-django-ui-optimize",
+  title: "Django+React全栈开发：界面优化",
+  tags: ["REST", "Django"],
+  series: "Django+React全栈开发",
+  createdAt: "2020-04-21T02:50:32.67+00:00",
+  updatedAt: "2021-04-11T09:46:05.434489+00:00",
+}
+
 ## 时间处理
 
 不少博客都会在文章列表界面仅显示文章发布距今的时间（如下图），之前我们是粗暴地将后台传回的`ISO 8601`格式的时间字符串显示出来，现在我们来处理一下。
@@ -239,3 +250,5 @@ class ArticleList extends Component {
 其实React中是有像[AntDesign](https://ant.design/)这样的美观易用的组件库存在的，但是样式不是这个系列的重点，同时库提供的组件已经预先实现了很多我们要做的需求，学习嘛，还是以手动实现为主。
 
 ![antd部分组件](https://i.loli.net/2021/04/11/YhHfun3PCRt6qMI.png)
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

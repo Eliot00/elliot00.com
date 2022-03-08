@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "rust-web-framework",
+  title: "简单探索Rust Web开发",
+  tags: ["Rust"],
+  series: "随笔",
+  createdAt: "2020-11-21T10:25:53.887+00:00",
+  updatedAt: "2020-12-19T05:40:36.000308+00:00",
+}
+
 ## 摘要
 
 对`Rust`的web开发相关框架做个简单评测，同时在`WebAssembly`部分与微软的`Blazor`做个简单的对比。只是一次浅薄的评测，仅仅为了看看目前用`Rust`做web开发体验如何，性能方面Rust稳站顶端，因此不做评价。
@@ -360,4 +371,6 @@ Welcome to your new app.
 
 Rust语言可以说站在巨人的肩膀上，提出了非常多优秀的设计，着实让人眼前一亮，目前来看，一个高效的`IDE`支持，对Rust来说还是很重要的。Rust自带的工具链`rustup`、`cargo`、`fmt`、`clippy`、`wasm-pack`等已经很强大，但还是需要一个集成环境，帮助程序员更加流畅的开发。
 
-而`dotNET`平台，未来必将在国内Web开发领域拥有一席之地（国外还是比较流行的）！
+不负责任地预测一波`dotNET`平台未来必将在国内Web开发领域拥有一席之地（国外还是比较流行的）！
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

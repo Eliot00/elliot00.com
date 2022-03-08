@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "rust-plugin-with-webassembly",
+  title: "通过WebAssembly实现插件机制",
+  tags: ["Rust"],
+  series: "随笔",
+  createdAt: "2021-02-22T14:55:33.976744+00:00",
+  updatedAt: "2021-02-22T14:55:33.976744+00:00",
+}
+
 ## 插件
 
 前两天在鼓捣[coco](https://github.com/inherd/coco)的插件系统，我们常说要面向接口开发而不是面向实现，插件这个东西，就像后端框架里的中间件，我们按照框架定义的接口实现中间件，这也可以算一种插件，我们有很多机制实现“编译前插件”，但是像coco这样要编译发布的二进制程序，有什么办法让用户定义插件来补充功能呢？不能在运行期间插入用户的代码再重新编译整个程序吧？有办法在运行时加载用户的库文件吗？有的，这项技术被称为[Dynamic Loading](https://en.wikipedia.org/wiki/Dynamic_loading)。
@@ -139,6 +150,6 @@ import adder  # 直接引入adder.wasm
 print(adder.adder(1, 7))
 ```
 
-
-
 我很看好WebAssembly的前景，独立运行时的出现，使得WebAssembly成为一个通用的**公共语言运行时**，实现“**Run any code on any client**”。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

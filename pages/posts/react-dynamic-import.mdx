@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "react-dynamic-import",
+  title: "Ant Design Pro页面内切换组件问题",
+  tags: ["React"],
+  series: "随笔",
+  createdAt: "2020-09-12T03:59:22.374+00:00",
+  updatedAt: "2020-12-19T05:41:43.845714+00:00",
+}
+
 ## 目的
 
 最近在项目中要使用`Ant Design Pro`，页面布局大致如图：
@@ -65,3 +76,5 @@ render() {
 ## 思考
 
 在实践的过程中，经常有可能只是要写个简单的功能，我们会随意写个函数，最终随着功能的复杂化，可能我们的代码量越来越大，有时候就会见到“超级文件”、“超级函数”这样的代码，给维护和复用带来很多困难。其实对于工程实践中的问题，我们常常听到很多名词，诸如面向对象、函数式编程、模块化编程、TDD，以及语言层面，例如`JavaScript`的超集`TypeScript`，`Python`中的类型注解，`Rust`的**所有权**等等，很多东西在项目前期往往看不到好处，反而让程序员觉得浪费时间，但是也许在后期这些东西能避免很多问题。但是也常有人说，不要**过早优化**，如何权衡或者说掌握好项目进度与代码优化的之间的平衡，这是个值得思考的问题。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

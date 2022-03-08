@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "blog-evolution",
+  title: "论博客的进化与前端发展史",
+  tags: ["React", "Django"],
+  series: "随笔",
+  createdAt: "2020-12-01T13:48:46.390201+00:00",
+  updatedAt: "2020-12-19T05:54:07.218295+00:00",
+}
+
 ## 概述
 
 这次的标题十分标题党了，这篇文章实际上想要聊聊我的个人博客的技术栈变更与我感受中的前端技术的发展。
@@ -185,3 +196,5 @@ pages
 现在在我的博客中最初的`Django`部分已经完全废弃了，自然Django提供的管理后台也就不能用了，在[上一篇文章](https://www.elliot00.com/posts/detail/21)中介绍了`Blazor`，接下来预计会花费几个周末来搭建一个`SPA`的后台，毕竟后台应用不需要`SEO`，`SPA`会更合适，用`CSharp`来写前端，过去`JS`向桌面端、移动端渗透，反过来，静态语言也开始染指`Web`前端了。
 
 总的来说，这个博客的不断重新构建的过程，也是我学习一些前端技能的试验过程，在这个过程中倒有一种经历了前端技术发展变迁的感觉，从“切图仔”，慢慢地工程化、体系化，随着`Node`以及一些框架的发展，前端开发体验也在不断提高。博客本身成了一个实验室，各种东西轮番体验了一遍，这个过程暂时还不会停止，毕竟业余时间写写代码还是挺有意思的。博客[已开源](https://github.com/Eliot00/elliot00.com)。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

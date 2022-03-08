@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "react-django-preface",
+  title: "Django+React全栈开发：前言",
+  tags: ["React", "REST", "Django"],
+  series: "Django+React全栈开发",
+  createdAt: "2020-04-21T02:37:38.324+00:00",
+  updatedAt: "2021-04-10T05:37:31.999531+00:00",
+}
+
 应该是2020年开始写这个系列的，不过当时写的比较混乱，最近[杜塞大佬的Django+Vue系列](https://www.dusaiphoto.com/)更新完了，并且`Django3.2`也发布了，那我就厚着脸皮附上一个Django+React版本吧。
 
 ## 开发环境
@@ -21,7 +32,6 @@
 
 ## 问题交流
 
-所有代码后续会放在[Github](https://github.com/Eliot00/DjangoWithReact)上。之前一次更新把博客的注册评论功能去掉了，后续可能会用第三方服务，遇到问题可直接在公众号留言，或者添加杜塞的DjangoQQ群：**107143175**。
+所有代码后续会放在[Github](https://github.com/Eliot00/DjangoWithReact)上。之前一次更新把博客的注册评论功能去掉了，后续可能会用第三方服务，遇到问题可直接在公众号留言，或者添加杜塞的Django QQ群：**107143175**。
 
-扫码关注**公子政的宅日常**第一时间查看最新推送：
-![公子政的宅日常](https://i.loli.net/2019/12/11/1Xy2QxE5NZqF7op.jpg)
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

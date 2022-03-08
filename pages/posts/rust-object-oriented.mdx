@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "rust-object-oriented",
+  title: "Dive into Rust: Object Oriented",
+  tags: ["Rust", "OOP"],
+  series: "Dive Into Rust",
+  createdAt: "2021-05-30T12:47:27.298294+00:00",
+  updatedAt: "2021-05-30T12:47:27.298294+00:00",
+}
+
 如何快速自定义一个集合类型？熟悉一些面向对象语言的程序员可能会这么写：
 
 ```python
@@ -321,3 +332,5 @@ fn generic_func(flyable: &dyn Fly) {
 
 - [Advanced Traits](https://doc.rust-lang.org/book/ch19-03-advanced-traits.html)
 - [一个Youtube视频](https://www.youtube.com/watch?v=grU-4u0Okto)
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

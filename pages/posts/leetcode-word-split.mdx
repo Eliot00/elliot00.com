@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "leetcode-word-split",
+  title: "刷题笔记0x09：单词拆分",
+  tags: ["动态规划", "算法"],
+  series: "随笔",
+  createdAt: "2020-06-25T12:42:00.349+00:00",
+  updatedAt: "2020-12-19T05:36:32.519314+00:00",
+}
+
 ## 题目分析
 
 > 给定一个非空字符串 s 和一个包含非空单词列表的字典 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。https://leetcode-cn.com/problems/word-break/
@@ -93,3 +104,5 @@ class Solution:
 快了一丢丢～
 
 评论区也有先求出`wordDict`中最长单词长度`maxWordLength`，仅遍历当前`i`位置向前`maxWordLength`的元素，以减少循环次数，不过我试了几次运行时间没有显著提升。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

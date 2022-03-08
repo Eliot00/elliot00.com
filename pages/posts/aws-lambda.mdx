@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "aws-lambda",
+  title: "Serverless学习笔记0x00",
+  tags: ["Python", "Serverless", "FastAPI"],
+  series: "随笔",
+  createdAt: "2020-10-11T08:36:36.92+00:00",
+  updatedAt: "2020-12-19T05:41:09.514124+00:00",
+}
+
 ## AWS Lambda
 
 最近在工作中接触到`Serverless`架构，学习了一些AWS相关的服务，为了避免遗忘，在这里先记录一下目前的收获。
@@ -260,6 +271,8 @@ handler = Mangum(app)
 
 * 持续集成
 
-  ……
+……
 
-  目前准备去了解的问题，写下一篇笔记前可以先研究这些了。
+目前准备去了解的问题，写下一篇笔记前可以先研究这些了。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

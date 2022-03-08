@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "react-django-route",
+  title: "Django+React全栈开发：路由",
+  tags: ["REST", "Django"],
+  series: "Django+React全栈开发",
+  createdAt: "2020-04-21T02:52:06.324+00:00",
+  updatedAt: "2021-04-17T06:42:43.563771+00:00",
+}
+
 ## react-router
 
 现在的网站一般来讲很少只有单个“页面”，对于我们的博客来说，除了文章列表的界面，起码还得得有个文章详情页才行。
@@ -218,3 +229,4 @@ export default ArticleDetail
 
 现在我们的文章详情组件只是简单地显示了`article + id`，可以尝试重写组件以显示真正的文章详情。之前说过函数组件又叫无状态组件，没有`state`，也没有生命周期，这里暂时先不讲`Hooks`（其实我们已经不知不觉中使用过了），所以你可能要将`ArticleDetail`改写为类组件，并通过`props`传递文章`id`并在`componentDidMount`中请求API。
 
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

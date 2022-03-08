@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "react-django-user",
+  title: "Django+React全栈开发：关联用户",
+  tags: ["REST", "Django"],
+  series: "Django+React全栈开发",
+  createdAt: "2020-05-15T11:05:23.57+00:00",
+  updatedAt: "2021-04-18T07:39:42.509881+00:00",
+}
+
 [上一篇文章](https://elliot00.com/posts/react-django-custom-auth)其实已经讲了一点登录验证相关的内容，不过主要还是为了回答一位群友关于定制DJango用户模型的提问而临时写的，认证（authentication）与授权（authorization）实质上是两个步骤，但是一般都放在一起讲，认证是识别身份，你用管理员账户登录，密码正确，身份被确认为管理员，这是认证，因为是文章作者，所以有编辑文章的权限，这是授权。
 
 ## 文章关联用户
@@ -146,3 +157,5 @@ $ http -a elliot:test1234 POST 127.0.0.1:8000/api/articles/ title="author is rea
 ```
 
 这样即使传递了非法的author字段也会被忽略掉。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

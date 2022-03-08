@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "python-type-hint",
+  title: "探究Python类型注解",
+  tags: ["Python"],
+  series: "车轮滚滚",
+  createdAt: "2021-04-23T14:15:47.881639+00:00",
+  updatedAt: "2021-04-23T14:15:47.881639+00:00",
+}
+
 最近业余时间在尝试造一些轮子，为了记录造轮子过程中的一些问题，准备开一个新系列，既然是造轮子，那这个系列就叫车轮滚滚吧～
 
 ## ORM
@@ -127,3 +138,5 @@ def foo(*args: *Args, **kwargs: **KArgs): ...
 ```
 
 事实证明不行，[这个Issue](https://github.com/python/mypy/issues/4441)是2018年开的，我写这篇文章的时候已经2021了……
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

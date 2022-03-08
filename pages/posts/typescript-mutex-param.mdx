@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "typescript-mutex-param",
+  title: "TypeScript实现互斥参数",
+  tags: ["React", "TypeScript"],
+  series: "随笔",
+  createdAt: "2021-04-28T13:59:47.440365+00:00",
+  updatedAt: "2021-04-28T13:59:47.440365+00:00",
+}
+
 之前写过一个markdown相关的组件，将后端解析markdown后生成的字符串通过`dangerouslySetInnerHTML`插入DOM，并且设置了不少样式，通过模块化的CSS引入。
 
 ```tsx
@@ -109,3 +120,5 @@ foo({a: "hello", b: 12}) // 报错
 ![error](https://i.loli.net/2021/04/28/etzSwlqQ13b7ka9.png)
 
 这样就可以保证用户只会使用两个互斥属性中的一个，在组件内简单做个条件渲染就可以了。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

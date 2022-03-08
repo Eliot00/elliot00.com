@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "react-django-article-detail",
+  title: "Django+React全栈开发：文章详情",
+  tags: ["REST", "Django"],
+  series: "Django+React全栈开发",
+  createdAt: "2020-06-10T05:44:51.454+00:00",
+  updatedAt: "2021-10-31T13:30:48.64777+00:00",
+}
+
 ## 验证问题
 
 修改`ArticleDetail`组件，从后端拿到文章正文。现在如果直接启动应用，会发现获取文章列表时后端返回了403响应，因为在[上一节](https://elliot00.com/posts/react-django-jwt)中设置了身份验证，每次请求必须携带正确的JWT，但是事实上对于文章列表和详情的`GET`请求完全可以忽略验证，毕竟这是一个博客应用，现在先处理这个问题。
@@ -133,3 +144,5 @@ function useUser(friendID) {
 ## 练习
 
 读者可以尝试在页面上呈现文章标题创建日期等其他信息。
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

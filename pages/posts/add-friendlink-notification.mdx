@@ -4,7 +4,7 @@ export const meta = {
   slug: "add-friendlink-notification",
   title: "给个人博客添加后台管理友链与全站公告功能",
   tags: ["Django", "Python"],
-  series: "随想",
+  series: "随笔",
   createdAt: "2020-04-21T02:03:34.248+00:00",
   updatedAt: "2020-12-19T05:52:33.867519+00:00",
 }
@@ -151,8 +151,5 @@ def show_site_message(context):
 4. 最后还是只有一个`base.html`文件（写这篇文的时候发现我忘了删除没用的那个。。。），并且把侧边栏`block`给去掉了。
 
 代码都放在了Github上，关注公众号在底部菜单查看Github地址。
-
-扫码关注**公子政的宅日常**第一时间查看最新推送：
-![公子政的宅日常](https://i.loli.net/2019/12/11/1Xy2QxE5NZqF7op.jpg)
 
 export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

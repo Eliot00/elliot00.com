@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "leetcode-stone-game",
+  title: "刷题笔记0x08:石子游戏",
+  tags: ["动态规划"],
+  series: "刷题笔记",
+  createdAt: "2020-04-21T02:08:06.745+00:00",
+  updatedAt: "2020-12-19T05:51:10.326149+00:00",
+}
+
 ## 题目描述
 
 ![img](https://pic2.zhimg.com/v2-ba3e5d4aa7443e692cf3190702ec5f85_b.png)
@@ -26,7 +37,7 @@
 
 对于先手而言，只有两种选择，拿左边的或者右边的，我们设置一个三维数组dp[i][j][2]，dp[i][j][0]表示先手在区间内可得石子数，dp[i][j][1]就是后手的了。
 
-```
+```c
 dp[i][j][0] = max(piles[i] + dp[i-1][j][1], piles[j] + dp[i][j-1][1]);
 /*
 当我是先手时，比如说我拿走最右边一堆piles[j]，
@@ -50,7 +61,7 @@ dp[i][j][1] = 0;
 
 具体写代码时，我们要得到的答案就是表格的右上角dp[i][j][0] > dp[i][j][1]这个表达式是否为true，也就是先手是不是比后手拿的石头多。为此，我们可以试着斜着遍历数组直到右上角。
 
-```
+```c
 bool stoneGame(int* piles, int pilesSize)
 {
     int dp[pilesSize][pilesSize][2];
@@ -98,6 +109,4 @@ return true;
 
 ![img](https://pic1.zhimg.com/v2-6161495841dbf245d807a23efc452ec8_b.jpg)
 
-扫码关注**公子政的宅日常**第一时间查看最新推送： 
-
-![img](https://pic2.zhimg.com/v2-7da95293ed9e55c03ab41084ba3ed8c5_b.jpg)
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>

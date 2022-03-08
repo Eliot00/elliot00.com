@@ -1,3 +1,14 @@
+import MDArticle from '../../components/MDArticle'
+
+export const meta = {
+  slug: "review-2020",
+  title: "再见，2020",
+  tags: ["总结"],
+  series: "随笔",
+  createdAt: "2020-12-30T13:03:04.466532+00:00",
+  updatedAt: "2020-12-30T13:14:10.520802+00:00",
+}
+
 今年确实是个很不平凡的一年，一不留神居然就到年尾了，就写篇文章记录一下这一年我都做了什么事吧。
 
 ## 技术
@@ -32,3 +43,5 @@
 - Rust实现一个基于中间件的异步HTTP服务端框架
 - 练听力，学好英语
 - 看完两本厚书：CSAPP、SICP
+
+export default ({children}) => <MDArticle meta={meta}>{children}</MDArticle>
