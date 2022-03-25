@@ -28,14 +28,14 @@ const MDArticle: React.FC<Props> = props => {
       <article>
         <header>
           <h1 className="font-serif text-center text-3xl">{title}</h1>
-          <div className="text-center text-gray-400 py-4">
+          <div className="text-center text-gray-400 my-4">
             <span className="px-2">
-              创建于
-              <time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(createdAt))}</time>
+              创建于：
+              <time className="link">{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(createdAt))}</time>
             </span>
             <span className="px-2">
-              更新于
-              <time>{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(updatedAt))}</time>
+              更新于：
+              <time className="link">{new Intl.DateTimeFormat("zh-Hans-CN").format(new Date(updatedAt))}</time>
             </span>
             <span className="px-2">文集：<Link href="/series"><a className="link">{series}</a></Link></span>
           </div>
