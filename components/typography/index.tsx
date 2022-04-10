@@ -1,5 +1,6 @@
 import CustomLink from './CustomLink'
 import { Heading2, Heading3, Heading4, Heading5, Heading6 } from './Heading'
+import Blockquote from './Blockquote'
 
 const components = {
   h2: Heading2,
@@ -8,6 +9,7 @@ const components = {
   h5: Heading5,
   h6: Heading6,
   a: CustomLink,
+  blockquote: Blockquote,
 }
 
 export default components
