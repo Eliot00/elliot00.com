@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://elliot00.com
+
+# Sitemaps
+Sitemap: https://elliot00.com/sitemap.xml
