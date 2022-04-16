@@ -31,6 +31,7 @@
     "@types/node": "^16.11.7",
     "@types/prismjs": "^1.26.0",
     "@types/react": "^17.0.34",
+    "@types/react-syntax-highlighter": "^13.5.2",
     "@types/react-transition-group": "^4.4.4",
     "@typescript-eslint/eslint-plugin": "^5.18.0",
     "@typescript-eslint/parser": "^5.18.0",
