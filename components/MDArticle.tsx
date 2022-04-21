@@ -23,9 +23,9 @@ const MDArticle: React.FC<Props> = (props) => {
   const { title, slug, series, createdAt, updatedAt } = props.meta
 
   return (
-    <MDXProvider components={components}>
+    <>
       <SEO title={`${title} - 公子政的宅日常`} />
-      <article>
+      <article className="container">
         <header>
           <h1 className="font-serif text-center text-3xl">{title}</h1>
           <div className="text-center text-gray-400 my-4">
@@ -53,7 +53,7 @@ const MDArticle: React.FC<Props> = (props) => {
             </span>
           </div>
         </header>
-        {props.children}
+        <MDXProvider components={components}>{props.children}</MDXProvider>
         <div className="text-center font-medium">
           <a className="link" href="https://afdian.net/@Elliot?tab=home">
             文章有帮助？为我充个
@@ -73,7 +73,7 @@ const MDArticle: React.FC<Props> = (props) => {
           }}
         />
       </div>
-    </MDXProvider>
+    </>
   )
 }
 

@@ -29,7 +29,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="relative z-10 bg-white shadow-sm">
-      <nav className="mx-auto max-w-screen-lg flex flex-wrap items-center justify-between p-4 sm:px-6 md:px-8 lg:px-0">
+      <nav className="mx-auto container flex flex-wrap items-center justify-between p-4 sm:px-6 md:px-8 lg:px-0">
         <Link href="/">
           <a className="flex items-center">
             <div className="font-thin font-sans text-gray-900 text-3xl">
