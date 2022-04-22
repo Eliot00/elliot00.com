@@ -49,7 +49,7 @@ const About: React.FC = () => {
             <a href="https://www.dusaiphoto.com/">杜塞的个人网站</a>
           </li>
           <li>
-            <a href="http://jackypy.xyz/">Jacky的个人网站</a>
+            <a href="https://jackyfzh.github.io/">Jacky的个人网站</a>
           </li>
         </ul>
       </MarkdownBody>
