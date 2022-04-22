@@ -1,0 +1,216 @@
+---
+slug: "react-django-jwt"
+title: "Django+React全栈开发：JWT"
+tags: ["REST", "Django"]
+series: "Django+React全栈开发"
+createdAt: "2020-05-17T11:52:05.918+00:00"
+updatedAt: "2021-07-05T15:03:21.508905+00:00"
+---
+
+在很多有关网络协议的教程里，大概都能看到「`HTTP`协议是无状态的」这句话，**无状态**主要是指HTTP不会记忆当前连接的状态，不同请求之间相互独立。
+
+可以举个不太准确的例子，无状态就像一些不那么智能的语音助手，你对它说：“我想买双鞋”，它可能会为你打开购物网站，而接下来你说：“最便宜的多少钱？”，它可能就无法识别你在说什么，因为它没有联系上一段对话。与无状态协议相对的是有状态协议，例如一些通信协议会要求“握手”，完成握手后才能继续其他连接。
+
+因为这个特性，服务端无法直接了解到当前请求的用户是谁，因此需要一些辅助手段来做身份验证。**JWT（JSON Web Token）**就是其中一种。从名字大概可以看出，它将`JSON`编码成一串固定格式的字符串，作为身份验证的令牌。更多详情可以查看[jwt.io](https://jwt.io)。
+
+## 创建应用
+
+现在来尝试写一个用于JWT认证的应用，首先用命令`python manage.py startapp jwt_auth`新建一个应用。
+
+首先在`jwt_auth`这个应用下新建一个登录视图：
+
+```python
+from rest_framework.decorators import api_view
+from django.contrib.auth import authenticate
+
+
+@api_view(['POST'])
+def login(request):
+    username = request.data["username"]
+    password = request.data["password"]
+    user = authenticate(request, username=username, password=password)
+```
+
+登录视图要求从请求体中取出用户名和密码，通过Django内置的`authenticate`函数验证用户名密码是否正确，如果用户名密码正确，这个函数会返回对应的`User`对象，否则返回`None`。下一步我们要做的就是生成一个`Token`，当作这个用户的“签名”，后续需要验证的请求里，只要看到这个“签名”，就表示是这个用户本人的操作。
+
+## 登录视图
+
+可以通过`python-jose`这个库来生成和验证`JWT`。首先安装它：
+
+```shell
+pip install python-jose[cryptography]
+```
+
+使用方法如下：
+
+```python
+>>> from jose import jwt
+>>> token = jwt.encode({'key': 'value'}, 'secret', algorithm='HS256')
+u'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXkiOiJ2YWx1ZSJ9.FG-8UppwHaFp1LgRYQQeS6EDQF7_6-bMFegNucHjmWg'
+
+>>> jwt.decode(token, 'secret', algorithms=['HS256'])
+{u'key': u'value'}
+```
+
+给`jwt.encode`的三个参数非别是要编码的值，密钥和签名算法。密钥可以用一个随机生成的字符串，例如使用`openssl rand -hex 32`命令生成一个32位随机数。
+
+密钥和签名算法这两个固定的配置项在实际代码中推荐不要像上面的示例一样直接写字面量，可以在项目的`settings.py`中定义：
+
+```python
+JWT_SECRET_KEY = "0dcb42e12219beab48e811926bedaf827fe99acdad44ba381117d7e29648acf4"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+```
+
+还有一个token的过期时间，可以按需定义，这里先设成30分钟，后面会用到。项目的`settings.py`中的内容可以通过`from django.conf import settings`获取到。这样如果我们的单个应用需要打包发布出去，使用这个应用的用户不至于无法配置这些选项。
+
+实际代码：
+
+```python
+data = {"sub": user.username, "exp": datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)}
+token = jwt.encode(data, settings.JWT_SECRET_KEY, algorithm=settings.ALGORITHM)
+return Response(data={"access_token": token}, status=status.HTTP_200_OK)
+
+```
+
+将当前用户名和过期时间作为encode的第一个参数，注意`HS356`算法用来生成签名摘要，不是安全的加密算法，因此不要把敏感信息放到`data`中去。
+
+完整视图代码如下：
+
+```python
+from datetime import datetime, timedelta
+
+from django.conf import settings
+from jose import jwt
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from django.contrib.auth import authenticate
+
+
+@api_view(['POST'])
+def login(request):
+    username = request.data["username"]
+    password = request.data["password"]
+    user = authenticate(request, username=username, password=password)
+    if user is not None:
+        data = {"sub": user.username, "exp": datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)}
+        token = jwt.encode(data, settings.JWT_SECRET_KEY, algorithm=settings.ALGORITHM)
+        return Response(data={"access_token": token}, status=status.HTTP_200_OK)
+    return Response(status=status.HTTP_401_UNAUTHORIZED)
+```
+
+下一步给这个视图注册Url：
+
+```python
+# 新建jwt_auth/urls.py
+from django.urls import path
+from .views import login
+
+
+urlpatterns = [
+    path('login/', login),
+]
+
+# 项目主目录的urls.py也要修改
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('api/', include('article.urls')),
+    path('auth/', include('jwt_auth.urls'))
+]
+```
+
+可以启动项目验证一下：
+
+```shell
+$ http POST http://127.0.0.1:8000/auth/login/ username="elliot" password="12345678"
+{
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbGxpb3QiLCJleHAiOjE2MjU0OTU3MzZ9.JY9urGY27liuKdRvvdEEdpktHDpaxb7GF_qz63NyzcQ"
+}
+
+```
+
+发送正确的请求可以得到一个包含JWT的响应，得到的JWT要怎么使用呢？
+
+## Authentication
+
+```python
+# 新建jwt_auth/authentication.py
+
+from rest_framework.authentication import BaseAuthentication
+
+
+class JWTAuthentication(BaseAuthentication):
+
+    def authenticate(self, request):
+        pass
+```
+
+自定义一个`JWTAuthentication`类，继承DRF框架内的`BaseAuthentication`，我们只需要实现`authenticate`方法就可以完成自定义的认证类。当验证成功时这个方法方法返回一个元组，元组第一个元素是对应的用户，验证失败的时候，我们可以直接抛出一个`AuthenticationFailed`错误。
+
+实际代码：
+
+```python
+from django.contrib.auth.models import User
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from django.conf import settings
+from jose import jwt
+
+
+class JWTAuthentication(BaseAuthentication):
+
+    def authenticate(self, request):
+        # 从请求头取出token
+        header = request.META.get('HTTP_AUTHORIZATION')
+        try:
+            token = header.split()[1]
+            user = self.get_user(token)
+            return user, None
+        except Exception:
+            raise AuthenticationFailed('Authentication Failed')
+
+    def get_user(self, token):
+        # 验证token并解码数据取出用户名
+        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.ALGORITHM])
+        username = payload.get("sub")
+        # 根据用户名取出对应用户
+        user = User.objects.get(username=username)
+        return user
+```
+
+现在可以在需要认证的视图里，引用自定义的JWT认证类。
+
+```python
+from jwt_auth.authentication import JWTAuthentication
+
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    ...
+    authentication_classes = [JWTAuthentication]
+
+```
+
+验证一下：
+
+```shell
+$ http GET http://127.0.0.1:8000/api/articles/ 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlbGxpb3QiLCJleHAiOjE2MjU0OTgwOTd9.oKveILGQ_C8cp33IZNjsz7pdvsMxVazd9CccCNXxSt0'
+
+[
+    {
+        "author": 1,
+        "body": "author is readonly",
+        "created": "2021-04-18T07:39:31.175273Z",
+        "id": 8,
+        "title": "author is readonly",
+        "updated": "2021-04-18T07:39:31.175525Z"
+    },
+    ......
+]
+```
+
+注意请求头格式为*Authorization: Bearer Token*（仔细看代码会发现代码获取该请求头的键是HTTP_AUTHORIZATION，原因参见[文档](https://docs.djangoproject.com/en/3.2/ref/request-response/#django.http.HttpRequest.META)），如果没有提供Token或者Token不合法，就无法获取文章信息了。
+
+## 第三方库
+
+这篇文章中的代码量很少也很粗糙，仅仅是为了展示一下自定义JWT认证的流程，在实际使用中建议使用[djangorestframwork-simplejwt](https://github.com/jazzband/djangorestframework-simplejwt)。

@@ -12,12 +12,13 @@
   "dependencies": {
     "@mdx-js/loader": "^1.6.22",
     "@next/bundle-analyzer": "^10.0.1",
-    "@next/mdx": "^12.0.3",
     "babel-plugin-import": "^1.13.0",
+    "glob": "^8.0.1",
     "graphql": "^15.4.0",
     "graphql-request": "^3.3.0",
     "marked": "^2.1.3",
     "next": "^12.1.0",
+    "next-mdx-remote": "^4.0.2",
     "prismjs": "^1.24.1",
     "react": "^17.0.2",
     "react-cusdis": "^2.1.3",
@@ -26,6 +27,7 @@
     "react-transition-group": "^4.4.1"
   },
   "devDependencies": {
+    "@types/glob": "^7.2.0",
     "@types/marked": "^4.0.3",
     "@types/mdx-js__react": "^1.5.5",
     "@types/node": "^16.11.7",

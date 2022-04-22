@@ -1,0 +1,120 @@
+---
+slug: "typescript-mutex-param"
+title: "TypeScript实现互斥参数"
+tags: ["React", "TypeScript"]
+series: "随笔"
+createdAt: "2021-04-28T13:59:47.440365+00:00"
+updatedAt: "2021-04-28T13:59:47.440365+00:00"
+---
+
+之前写过一个markdown相关的组件，将后端解析markdown后生成的字符串通过`dangerouslySetInnerHTML`插入DOM，并且设置了不少样式，通过模块化的CSS引入。
+
+```tsx
+import style from "./MarkdownBody.module.css"
+
+const MarkdownBody: react.FC<Props> = ({ content }) => {
+
+	return (
+		<div className={style.markdown} dangerouslySetInnerHTML={{ __html: content }}></div>
+	)
+}
+```
+
+之前它一直正常工作，但是最近我有另一个页面，需要和markdown页面保持相同的样式，当然，最直观的办法就是直接把样式文件提出来，不过在这里我想到一个有趣的问题：一个组件的props，或者说一个函数的参数，也没有可能类型安全地定义为互斥的？
+
+```jsx
+<MarkdownBody content={...} />
+
+<MarkdownBody>
+    <div>...</div>
+</MarkdownBody>
+```
+
+同一个组件，没有children，只传递一个名为content的props，与不传递content，而是子组件的情况，采用不同的渲染方式。
+
+或者举个函数的例子：
+
+```typescript
+foo(p1); // 允许
+foo(p2); // 允许
+foo(p1, p2); // 错误
+```
+
+当然，即使不用TypeScript，JS本身是允许调用函数时与定义时不匹配的：
+
+```javascript
+function foo(a, b) {
+    console.log(a, b);
+}
+
+foo(); // undefined undefined
+foo(1); // 1 undefined
+```
+
+可以通过判断参数是否是`undefined`得知是否传入了某个参数，在`TypeScript`里可以把两个参数都定义成可选。但是如果这段代码出现在第三方库中，那只能期望用户看了文档并且遵守约定，有没有类型安全的方式？
+
+## 联合类型
+
+`TypeScript`中可以定义联合类型*Union Types*，如：
+
+```typescript
+let foo: string | number;
+```
+
+但是如果直接将参数定义为两个interface的联合类型是没用的：
+
+```typescript
+interface P1 {
+    a: string
+}
+
+interface P2 {
+    b: number
+}
+
+function foo(p: P1 | P2) {
+    console.log(p)
+}
+
+// 都可以通过编译
+foo({a: "hello"})
+foo({b: 123})
+foo({a: "hello", b: 12})
+```
+
+## never
+
+一些语言的类型系统里，会有一个底部类型，它是所有类型的子类型，在`TypeScript`里，就有这样一个类型，`never`，它可以用来表示一个只会抛出异常或者内部死循环的函数的返回值（或者说没有返回值）。它有一个特性，即任何其他类型的值都不能赋值给这个类型的变量。
+
+```typescript
+let foo: never = 123; // Error: number 类型不能赋值给 never 类型
+
+// ok, 作为函数返回类型的 never
+let bar: never = (() => {
+  throw new Error('Throw my hands in the air like I just dont care');
+})();
+```
+
+利用这个性质，将上面的代码修改一下：
+
+```typescript
+type Param = {
+    a: string
+    b?: never
+} | {
+    a?: never
+    b: number
+}
+
+function foo(p: Param) {
+    console.log(p)
+}
+
+foo({a: "hello"})
+foo({b: 123})
+foo({a: "hello", b: 12}) // 报错
+```
+
+![error](https://i.loli.net/2021/04/28/etzSwlqQ13b7ka9.png)
+
+这样就可以保证用户只会使用两个互斥属性中的一个，在组件内简单做个条件渲染就可以了。
