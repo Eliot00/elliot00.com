@@ -1,11 +1,11 @@
-import SEO from '../components/SEO'
+import SEO from '@/components/SEO'
 import { gql, request } from 'graphql-request'
 import { GetStaticProps } from 'next'
-import { GraphQLEndpoint } from '../utils/auth'
-import groupBy from '../lib/groupBy'
-import range from '../utils/range'
+import { GraphQLEndpoint } from '@/lib/auth'
+import groupBy from '@/lib/groupBy'
+import range from '@/lib/range'
 import Link from 'next/link'
-import { yearToDiZhi } from '../utils/time'
+import { yearToDiZhi } from '@/lib/time'
 import type { NextPage } from 'next'
 
 type ArticleTimelineItem = {

@@ -7,7 +7,7 @@ const MINUTE = 6e4
 function diff(start: string) {
   const last = new Date(start)
   const now = new Date()
-  return  now.getTime() - last.getTime()
+  return now.getTime() - last.getTime()
 }
 
 export function timeInterval(timeString: string) {
@@ -17,15 +17,15 @@ export function timeInterval(timeString: string) {
   if (interval < MINUTE) {
     result = '刚刚'
   } else if (interval < HOUR && interval >= MINUTE) {
-    result = `${Math.floor(interval/MINUTE)}分钟前`
+    result = `${Math.floor(interval / MINUTE)}分钟前`
   } else if (interval < DAY && interval >= HOUR) {
-    result = `${Math.floor(interval/HOUR)}小时前`
+    result = `${Math.floor(interval / HOUR)}小时前`
   } else if (interval < MONTH && interval >= DAY) {
-    result = `${Math.floor(interval/DAY)}天前`
+    result = `${Math.floor(interval / DAY)}天前`
   } else if (interval < YEAR && interval >= MONTH) {
-    result = `${Math.floor(interval/MONTH)}月前`
+    result = `${Math.floor(interval / MONTH)}月前`
   } else {
-    result = `${Math.floor(interval/YEAR)}年前`
+    result = `${Math.floor(interval / YEAR)}年前`
   }
   return result
 }

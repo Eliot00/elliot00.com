@@ -1,11 +1,11 @@
 import { gql, request } from 'graphql-request'
 import { GetStaticProps } from 'next'
 import React from 'react'
-import ArticleList from '../../components/ArticleList'
+import ArticleList from '@/components/ArticleList'
 import { ArticleItem } from '../../types/ArticleItem'
-import { GraphQLEndpoint } from '../../utils/auth'
-import SEO from '../../components/SEO'
-import getFirstParagraph from '../../utils/getFirstParagraph'
+import { GraphQLEndpoint } from '@/lib/auth'
+import SEO from '@/components/SEO'
+import getFirstParagraph from '@/lib/getFirstParagraph'
 import type { NextPage } from 'next'
 
 const Posts: NextPage<{ articles: ArticleItem[] }> = ({ articles }) => {

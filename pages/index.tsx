@@ -1,12 +1,12 @@
 import { gql, request } from 'graphql-request'
 import { GetStaticProps } from 'next'
 import React from 'react'
-import ArticleList from '../components/ArticleList'
-import { GraphQLEndpoint } from '../utils/auth'
+import ArticleList from '@/components/ArticleList'
+import { GraphQLEndpoint } from '@/lib/auth'
 import { ArticleItem } from '../types/ArticleItem'
-import SEO from '../components/SEO'
+import SEO from '@/components/SEO'
 import Link from 'next/link'
-import getFirstParagraph from '../utils/getFirstParagraph'
+import getFirstParagraph from '@/lib/getFirstParagraph'
 
 interface Props {
   latestArticles: ArticleItem[]

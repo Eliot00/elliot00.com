@@ -1,5 +1,5 @@
-import MarkdownBody from '../components/MarkdownBody'
-import SEO from '../components/SEO'
+import MarkdownBody from '@/components/MarkdownBody'
+import SEO from '@/components/SEO'
 
 const About: React.FC = () => {
   return (
