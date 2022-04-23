@@ -29,7 +29,7 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
   return (
     <>
       <SEO title={`${title} - 公子政的宅日常`} />
-      <article className="container">
+      <article>
         <header>
           <h1 className="font-serif text-center text-3xl">{title}</h1>
           <div className="text-center text-gray-400 my-4">
