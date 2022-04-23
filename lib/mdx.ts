@@ -16,7 +16,7 @@ export async function getInexactRecentArticlesSlugs() {
     .map((path) => ({ path, ctime: fs.statSync(path).ctime }))
     .sort((a, b) => b.ctime.getTime() - a.ctime.getTime())
     .map((obj) => obj.path)
-  return sortedPaths.map(getSlugFromPath).slice(0, 4)
+  return sortedPaths.map(getSlugFromPath).slice(0, 5)
 }
 
 const getSlugFromPath = (path: string): string => {
