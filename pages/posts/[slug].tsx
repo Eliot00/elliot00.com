@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { getSlug } from '@/lib/mdx'
+import { getSlugs } from '@/lib/mdx'
 import SEO from '@/components/SEO'
 import Copyright from '@/components/Copyright'
 import Link from 'next/link'
@@ -85,7 +85,7 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
 export default MDArticle
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const paths = (await getSlug()).map((slug) => ({ params: { slug } }))
+  const paths = (await getSlugs()).map((slug) => ({ params: { slug } }))
 
   return {
     paths,

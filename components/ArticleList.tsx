@@ -1,10 +1,10 @@
 import Link from 'next/link'
-import { ArticleItem } from '../types/ArticleItem'
-import { timeInterval } from '../utils/time'
+import { timeInterval } from '@/lib/time'
 import Summary from '@/components/Summary'
+import { ArticleSummary } from '@/lib/mdx'
 
 interface Props {
-  articles: ArticleItem[]
+  articles: ArticleSummary[]
   title?: string
 }
 
@@ -22,15 +22,15 @@ const ArticleList: React.FC<Props> = ({ articles, title = '最新文章' }) => {
             </Link>
             <div className="flex">
               {article.tags.map((tag) => (
-                <div className="px-2 text-gray-500" key={tag.tag.name}>
-                  {tag.tag.name}
+                <div className="px-2 text-gray-500" key={tag}>
+                  {tag}
                 </div>
               ))}
-              <time className="px-2 text-gray-500" title={article.created}>
-                {timeInterval(article.created)}
+              <time className="px-2 text-gray-500" title={article.createdAt}>
+                {timeInterval(article.createdAt)}
               </time>
-              <time className="px-2 text-gray-500" title={article.updated}>
-                {timeInterval(article.updated)}
+              <time className="px-2 text-gray-500" title={article.updatedAt}>
+                {timeInterval(article.updatedAt)}
               </time>
             </div>
             <Summary summary={article.summary} />
