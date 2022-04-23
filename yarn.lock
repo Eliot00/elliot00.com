@@ -2227,11 +2227,6 @@ markdown-extensions@^1.0.0:
   resolved "https://registry.yarnpkg.com/markdown-extensions/-/markdown-extensions-1.1.1.tgz#fea03b539faeaee9b4ef02a3769b455b189f7fc3"
   integrity sha512-WWC0ZuMzCyDHYCasEGs4IPvLyTGftYwh6wIEOULOF0HXcqZlhwRzrK0w2VUlxWA98xnvb/jszw4ZSkJ6ADpM6Q==
 
-marked@^2.1.3:
-  version "2.1.3"
-  resolved "https://registry.nlark.com/marked/download/marked-2.1.3.tgz"
-  integrity sha1-vQF872Qxck/Usn4GV/XOsUv/N1M=
-
 matcher@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npm.taobao.org/matcher/download/matcher-4.0.0.tgz"
@@ -3094,11 +3089,6 @@ prettier@^2.6.2:
   version "2.6.2"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.6.2.tgz#e26d71a18a74c3d0f0597f55f01fb6c06c206032"
   integrity sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==
-
-prismjs@^1.24.1:
-  version "1.25.0"
-  resolved "https://registry.nlark.com/prismjs/download/prismjs-1.25.0.tgz"
-  integrity sha1-b4It8b2tllc0sxCzFaIzFc+Zl1Y=
 
 prismjs@^1.27.0, prismjs@~1.27.0:
   version "1.27.0"
