@@ -11,6 +11,7 @@ import { GetStaticPaths, GetStaticProps } from 'next'
 import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import type { NextPage } from 'next'
+import Divider from '@/components/Divider'
 
 type MetaData = {
   slug: string
@@ -59,6 +60,7 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
         </header>
         {/* @ts-ignore */}
         <MDXRemote {...mdxSource} components={components} />
+        <Divider>EOF</Divider>
         <div className="text-center font-medium">
           <a className="link" href="https://afdian.net/@Elliot?tab=home">
             文章有帮助？为我充个
