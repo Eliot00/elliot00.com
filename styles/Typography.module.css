@@ -1,6 +1,6 @@
 .typography ul,
 .typography ol {
-  @apply ml-4 list-inside;
+  @apply mb-4 ml-8;
 }
 .typography li > p,
 .typography li > ul,
