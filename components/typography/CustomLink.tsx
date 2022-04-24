@@ -1,10 +1,14 @@
 import React from 'react'
 
-const CustomLink: React.FC = props => {
+const CustomLink: React.FC = (props) => {
   return (
-    <a className="text-gray-600 hover:text-gray-900 hover:underline transition duration-150 ease-in-out" {...props}>{props.children}</a>
+    <a
+      className="text-indigo-500 hover:text-indigo-900 underline transition duration-150 ease-in-out"
+      {...props}
+    >
+      {props.children}
+    </a>
   )
 }
 
 export default CustomLink
-
