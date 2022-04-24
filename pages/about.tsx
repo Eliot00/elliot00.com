@@ -1,6 +1,5 @@
 import SEO from '@/components/SEO'
 import { Heading2, Heading3 } from '@/components/typography/Heading'
-import Paragraph from '@/components/typography/Paragraph'
 import styles from '@/styles/Typography.module.css'
 
 const About: React.FC = () => {
@@ -8,11 +7,9 @@ const About: React.FC = () => {
     <article className={styles.typography}>
       <SEO title="关于 - 公子政的宅日常" />
       <Heading2>关于博主</Heading2>
-      <Paragraph>技术宅，爱好折腾各种新奇事物，积极的开源贡献者。</Paragraph>
-      <Paragraph>
-        享受创造的乐趣，黑客也是创造者，与画家建筑师作家一样。
-      </Paragraph>
-      <Paragraph>围棋爱好者、铁佛寺。</Paragraph>
+      <p>技术宅，爱好折腾各种新奇事物，积极的开源贡献者。</p>
+      <p>享受创造的乐趣，黑客也是创造者，与画家建筑师作家一样。</p>
+      <p>围棋爱好者、铁佛寺。</p>
       <Heading3>常用语言</Heading3>
       <div className="flex space-x-2 mt-2">
         <img
@@ -33,11 +30,11 @@ const About: React.FC = () => {
         />
       </div>
       <Heading2>关于博客</Heading2>
-      <Paragraph>
+      <p>
         我的博客技术栈经过了很多次改动，经常遇到一些新技术都会在博客上试验一下，可以通过
         <a href="https://github.com/Eliot00/elliot00.com">Github代码仓库</a>
         查看变更历史。
-      </Paragraph>
+      </p>
       <Heading3>当前技术栈（2022-04）</Heading3>
       <ul>
         <li>NextJS</li>

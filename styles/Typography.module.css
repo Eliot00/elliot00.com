@@ -15,3 +15,11 @@
 .typography ul {
   @apply list-disc;
 }
+
+.typography p {
+  @apply font-serif text-lg;
+}
+
+.typography p + p {
+  @apply my-4;
+}
