@@ -12,6 +12,7 @@ import { serialize } from 'next-mdx-remote/serialize'
 import { MDXRemote, MDXRemoteSerializeResult } from 'next-mdx-remote'
 import type { NextPage } from 'next'
 import Divider from '@/components/Divider'
+import styles from '@/styles/Typography.module.css'
 
 type MetaData = {
   slug: string
@@ -30,7 +31,7 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
   return (
     <>
       <SEO title={`${title} - 公子政的宅日常`} />
-      <article>
+      <article className={styles.typography}>
         <header>
           <h1 className="font-serif text-center text-3xl">{title}</h1>
           <div className="text-center text-gray-400 my-4">

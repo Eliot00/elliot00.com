@@ -1,10 +1,11 @@
 import SEO from '@/components/SEO'
 import { Heading2, Heading3 } from '@/components/typography/Heading'
 import Paragraph from '@/components/typography/Paragraph'
+import styles from '@/styles/Typography.module.css'
 
 const About: React.FC = () => {
   return (
-    <article>
+    <article className={styles.typography}>
       <SEO title="关于 - 公子政的宅日常" />
       <Heading2>关于博主</Heading2>
       <Paragraph>技术宅，爱好折腾各种新奇事物，积极的开源贡献者。</Paragraph>

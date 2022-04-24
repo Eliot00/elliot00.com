@@ -1,0 +1,17 @@
+.typography ul,
+.typography ol {
+  @apply mb-4 ml-8;
+}
+.typography li > p,
+.typography li > ul,
+.typography li > ol {
+  @apply mb-0;
+}
+
+.typography ol {
+    @apply list-decimal;
+}
+
+.typography ul {
+  @apply list-disc;
+}
