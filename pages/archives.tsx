@@ -23,7 +23,7 @@ const START = 2020
 const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
   const now = new Date().getFullYear()
   return (
-    <div className="container mx-auto w-full h-full">
+    <div className="mx-auto w-full h-full">
       <SEO title="归档 - 公子政的宅日常" />
       <div className="relative wrap overflow-hidden p-10 h-full">
         <div
@@ -49,26 +49,23 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
                 </div>
                 <div
                   className={`order-1 rounded-lg shadow-xl w-5/12 px-6 py-4 ${
-                    isEven ? 'bg-red-400' : 'bg-purple-400'
+                    isEven ? 'bg-rose-400' : 'bg-violet-400'
                   }`}
                 >
                   <h3 className="mb-3 font-bold text-gray-800 text-xl">
                     {year}
                   </h3>
-                  <p>
-                    <ul className="text-sm leading-snug tracking-wide text-gray-900 text-opacity-100">
+                    <ul className="text-sm leading-snug tracking-wide text-gray-900 text-opacity-100 break-all">
                       {articlesTimeline[`${year}`].map((item) => {
-                        // CSS更优雅实现
                         return (
-                          <li key={item.slug} style={{ width: '1000px' }}>
+                          <li key={item.slug} className="my-2">
                             <Link href={`/posts/${item.slug}`}>
-                              <a className="hover:underline">{item.title}</a>
+                              <a className="underline">{item.title}</a>
                             </Link>
                           </li>
                         )
                       })}
                     </ul>
-                  </p>
                 </div>
               </div>
             )
