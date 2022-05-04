@@ -29,8 +29,8 @@ const ArticleList: React.FC<Props> = ({ articles, title = '最新文章' }) => {
               <time className="px-2 text-gray-500" title={article.createdAt}>
                 {timeInterval(article.createdAt)}
               </time>
-              <time className="px-2 text-gray-500" title={article.updatedAt}>
-                {timeInterval(article.updatedAt)}
+              <time className="px-2 text-gray-500" title={article.publishedAt}>
+                {timeInterval(article.publishedAt)}
               </time>
             </div>
             <Summary summary={article.summary} />

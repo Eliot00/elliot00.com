@@ -36,7 +36,7 @@ export const getStaticProps: GetStaticProps = async () => {
   }
 
   articles.sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   )
   return {
     props: {

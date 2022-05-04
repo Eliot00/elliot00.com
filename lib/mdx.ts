@@ -33,7 +33,7 @@ export type MetaData = {
   tags: string[]
   series: string
   createdAt: string
-  updatedAt: string
+  publishedAt: string
 }
 
 export type ArticleSummary = {

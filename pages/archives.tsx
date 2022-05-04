@@ -13,7 +13,7 @@ import { matter } from 'vfile-matter'
 
 type ArticleTimelineItem = {
   slug: string
-  updatedAt: string
+  publishedAt: string
   title: string
 }
 
@@ -87,12 +87,12 @@ export const getStaticProps: GetStaticProps = async () => {
     )
     const vfile = new VFile({ value: source })
     matter(vfile, { strip: true })
-    return (vfile.data.matter as ArticleTimelineItem | undefined) ?? {slug, title: '', updatedAt: ''}
+    return (vfile.data.matter as ArticleTimelineItem | undefined) ?? {slug, title: '', publishedAt: ''}
   })
 
   const articlesTimeline = groupBy(articles, (item) => {
-    const updatedAt = new Date(item.updatedAt)
-    return updatedAt.getFullYear()
+    const publishedAt = new Date(item.publishedAt)
+    return publishedAt.getFullYear()
   })
   return {
     props: {

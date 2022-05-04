@@ -19,13 +19,13 @@ type MetaData = {
   title: string
   series: string
   createdAt: string
-  updatedAt: string
+  publishedAt: string
 }
 
 const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
   mdxSource,
 }) => {
-  const { title, slug, series, createdAt, updatedAt } =
+  const { title, slug, series, createdAt, publishedAt } =
     mdxSource.frontmatter as MetaData
 
   return (
@@ -44,10 +44,10 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
               </time>
             </span>
             <span className="px-2">
-              更新于：
+              发布于：
               <time className="link">
                 {new Intl.DateTimeFormat('zh-Hans-CN').format(
-                  new Date(updatedAt)
+                  new Date(publishedAt)
                 )}
               </time>
             </span>
