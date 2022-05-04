@@ -44,7 +44,7 @@ const getSlugFromPath = (path: string): string => {
 }
 
 export type MetaData = {
-  slug: string
+  slug?: string
   title: string
   tags: string[]
   series: string

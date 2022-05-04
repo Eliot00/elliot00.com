@@ -1,5 +1,7 @@
 import { GetStaticProps } from 'next'
-import { serialize } from 'next-mdx-remote/serialize'
+import { VFile } from 'vfile'
+import { matter } from 'vfile-matter'
+import type { MetaData } from '@/lib/mdx'
 import fs from 'fs'
 import path from 'path'
 import ArticleList from '@/components/ArticleList'
@@ -27,20 +29,21 @@ const Home: NextPage<HomeProps> = ({ recentArticles }) => {
 
 export const getStaticProps: GetStaticProps = async () => {
   const slugs = await getInexactRecentArticlesSlugs()
-  const recentArticles: ArticleSummary[] = []
-  for (const slug of slugs) {
+  const recentArticles: ArticleSummary[] = slugs.map(slug => {
     const source = fs.readFileSync(
       path.join(process.cwd(), 'data/articles', `${slug}.mdx`),
       'utf-8'
     )
-    const mdxSource = await serialize(source, { parseFrontmatter: true })
-    const metaData: any = mdxSource.frontmatter
-    recentArticles.push({
+    const vfile = new VFile({ value: source })
+    matter(vfile, { strip: true })
+    const metaData = vfile.data.matter as MetaData
+    return {
       slug,
       ...metaData,
       summary: getFirstParagraph(source),
-    })
-  }
+    }
+  })
+
   return {
     props: {
       recentArticles,
