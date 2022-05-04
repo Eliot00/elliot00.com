@@ -1,15 +1,11 @@
 import SEO from '@/components/SEO'
-import fs from 'fs'
-import path from 'path'
 import { GetStaticProps } from 'next'
 import groupBy from '@/lib/groupBy'
 import range from '@/lib/range'
 import Link from 'next/link'
 import { yearToDiZhi } from '@/lib/time'
 import type { NextPage } from 'next'
-import { getSlugs } from '@/lib/mdx'
-import { VFile } from 'vfile'
-import { matter } from 'vfile-matter'
+import { getAllArticlesMetaData } from '@/lib/mdx'
 
 type ArticleTimelineItem = {
   slug: string
@@ -79,16 +75,7 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const slugs = await getSlugs()
-  const articles: ArticleTimelineItem[] = slugs.map(slug => {
-    const source = fs.readFileSync(
-      path.join(process.cwd(), 'data/articles', `${slug}.mdx`),
-      'utf-8'
-    )
-    const vfile = new VFile({ value: source })
-    matter(vfile, { strip: true })
-    return (vfile.data.matter as ArticleTimelineItem | undefined) ?? {slug, title: '', publishedAt: ''}
-  })
+  const articles = await getAllArticlesMetaData()
 
   const articlesTimeline = groupBy(articles, (item) => {
     const publishedAt = new Date(item.publishedAt)

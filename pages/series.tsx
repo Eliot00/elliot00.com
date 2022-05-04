@@ -1,9 +1,5 @@
-import fs from 'fs'
-import { VFile } from 'vfile'
-import { matter } from 'vfile-matter'
-import path from 'path'
 import groupBy from '@/lib/groupBy'
-import { getSlugs } from '@/lib/mdx'
+import { getAllArticlesMetaData } from '@/lib/mdx'
 import type { MetaData } from '@/lib/mdx'
 import { GetStaticProps } from 'next'
 import React, { Fragment } from 'react'
@@ -45,17 +41,7 @@ const Series: React.FC<Props> = ({ series }) => {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const slugs = await getSlugs()
-  const articles = slugs.map(slug => {
-    const source = fs.readFileSync(
-      path.join(process.cwd(), 'data/articles', `${slug}.mdx`),
-      'utf-8'
-    )
-    const vfile = new VFile({ value: source })
-    matter(vfile, { strip: true })
-    return vfile.data.matter as MetaData
-  })
-
+  const articles = await getAllArticlesMetaData()
   const series = groupBy(articles, item => item.series)
 
   return {
