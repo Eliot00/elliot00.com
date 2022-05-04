@@ -1,21 +1,16 @@
-import { gql, request } from 'graphql-request'
+import fs from 'fs'
+import { VFile } from 'vfile'
+import { matter } from 'vfile-matter'
+import path from 'path'
+import groupBy from '@/lib/groupBy'
+import { getSlugs } from '@/lib/mdx'
+import type { MetaData } from '@/lib/mdx'
 import { GetStaticProps } from 'next'
 import React, { Fragment } from 'react'
-import { GraphQLEndpoint } from '@/lib/auth'
 import SEO from '@/components/SEO'
 
-interface ArticleSlug {
-  slug: string
-  title: string
-}
-interface Serie {
-  id: number
-  name: string
-  articles: ArticleSlug[]
-}
-
-interface Props {
-  series: Serie[]
+type Props = {
+  series: Record<string, MetaData[]>
 }
 
 const Series: React.FC<Props> = ({ series }) => {
@@ -24,11 +19,13 @@ const Series: React.FC<Props> = ({ series }) => {
       <SEO title="文集 - 公子政的宅日常" description="公子政的宅日常" />
       <div>
         <ul className="text-center">
-          {series.map((item) => (
-            <Fragment key={item.id}>
-              <li className="text-2xl py-2">{item.name}</li>
+            {Object.entries(series).map(entry => {
+              const [seriesName, articles] = entry
+              return (
+            <Fragment key={seriesName}>
+              <li className="text-2xl py-2">{seriesName}</li>
               <ul>
-                {item.articles.map((a) => {
+                {articles.map((a) => {
                   return (
                     <li key={a.slug}>
                       <a href={`/posts/${a.slug}`} className="link">
@@ -39,30 +36,31 @@ const Series: React.FC<Props> = ({ series }) => {
                 })}
               </ul>
             </Fragment>
-          ))}
+              )
+            })}
         </ul>
       </div>
     </>
   )
 }
 
-export const getStaticProps: GetStaticProps = async (context) => {
-  const query = gql`
-    {
-      serie {
-        name
-        id
-        articles(order_by: { created: asc }) {
-          slug
-          title
-        }
-      }
-    }
-  `
-  const response = await request(GraphQLEndpoint, query)
+export const getStaticProps: GetStaticProps = async () => {
+  const slugs = await getSlugs()
+  const articles = slugs.map(slug => {
+    const source = fs.readFileSync(
+      path.join(process.cwd(), 'data/articles', `${slug}.mdx`),
+      'utf-8'
+    )
+    const vfile = new VFile({ value: source })
+    matter(vfile, { strip: true })
+    return vfile.data.matter as MetaData
+  })
+
+  const series = groupBy(articles, item => item.series)
+
   return {
     props: {
-      series: response.serie,
+      series
     },
   }
 }
