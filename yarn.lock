@@ -674,11 +674,6 @@ astring@^1.6.0:
   resolved "https://registry.yarnpkg.com/astring/-/astring-1.8.1.tgz#a91c4afd4af3523e11f31242a3d5d9af62bb6cc6"
   integrity sha512-Aj3mbwVzj7Vve4I/v2JYOPFkCGM2YS7OqQTNSxmUR+LECRpokuPgAYghePgr6SALDo5bD5DlfbSaYjOzGJZOLQ==
 
-asynckit@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.nlark.com/asynckit/download/asynckit-0.4.0.tgz"
-  integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
-
 autoprefixer@^10.4.4:
   version "10.4.4"
   resolved "https://registry.npmjs.org/autoprefixer/-/autoprefixer-10.4.4.tgz"
@@ -906,13 +901,6 @@ colorette@^2.0.16:
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.16.tgz#713b9af84fdb000139f04546bd4a93f62a5085da"
   integrity sha512-hUewv7oMjCp+wkBv5Rm0v87eJhq4woh5rSR+42YSQJKecCqgIqNkZ6lAlQms/BwHPJA5NKMRlpxPRv0n8HQW6g==
 
-combined-stream@^1.0.8:
-  version "1.0.8"
-  resolved "https://registry.nlark.com/combined-stream/download/combined-stream-1.0.8.tgz"
-  integrity sha1-w9RaizT9cwYxoRCoolIGgrMdWn8=
-  dependencies:
-    delayed-stream "~1.0.0"
-
 comma-separated-tokens@^1.0.0:
   version "1.0.8"
   resolved "https://registry.nlark.com/comma-separated-tokens/download/comma-separated-tokens-1.0.8.tgz"
@@ -953,13 +941,6 @@ cosmiconfig@^7.0.1:
     parse-json "^5.0.0"
     path-type "^4.0.0"
     yaml "^1.10.0"
-
-cross-fetch@^3.0.6:
-  version "3.1.4"
-  resolved "https://registry.nlark.com/cross-fetch/download/cross-fetch-3.1.4.tgz"
-  integrity sha1-lyPzo6JHv4uJA586OAqSROj6Lzk=
-  dependencies:
-    node-fetch "2.6.1"
 
 cross-spawn@^7.0.2, cross-spawn@^7.0.3:
   version "7.0.3"
@@ -1029,11 +1010,6 @@ defined@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npm.taobao.org/defined/download/defined-1.0.0.tgz"
   integrity sha1-yY2bzvdWdBiOEQlpFRGZ45sfppM=
-
-delayed-stream@~1.0.0:
-  version "1.0.0"
-  resolved "https://registry.npm.taobao.org/delayed-stream/download/delayed-stream-1.0.0.tgz"
-  integrity sha1-3zrhmayt+31ECqrgsp4icrJOxhk=
 
 dequal@^2.0.0:
   version "2.0.2"
@@ -1475,11 +1451,6 @@ extend@^3.0.0:
   resolved "https://registry.nlark.com/extend/download/extend-3.0.2.tgz"
   integrity sha1-+LETa0Bx+9jrFAr/hYsQGewpFfo=
 
-extract-files@^9.0.0:
-  version "9.0.0"
-  resolved "https://registry.nlark.com/extract-files/download/extract-files-9.0.0.tgz"
-  integrity sha1-indE8kN/gfXtMlDtnxVQ3pAv5Uo=
-
 fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.npmjs.org/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz"
@@ -1553,15 +1524,6 @@ flatted@^3.1.0:
   version "3.2.5"
   resolved "https://registry.npmjs.org/flatted/-/flatted-3.2.5.tgz"
   integrity sha512-WIWGi2L3DyTUvUrwRKgGi9TwxQMUEqPOPQBVi71R96jZXJdFskXEmf54BoZaS1kknGODoIGASGEzBUYdyMCBJg==
-
-form-data@^3.0.0:
-  version "3.0.1"
-  resolved "https://registry.npm.taobao.org/form-data/download/form-data-3.0.1.tgz"
-  integrity sha1-69U3kbeDVqma+aMA1CgsTV65dV8=
-  dependencies:
-    asynckit "^0.4.0"
-    combined-stream "^1.0.8"
-    mime-types "^2.1.12"
 
 format@^0.2.0:
   version "0.2.2"
@@ -1683,20 +1645,6 @@ globby@^11.0.4:
     ignore "^5.2.0"
     merge2 "^1.4.1"
     slash "^3.0.0"
-
-graphql-request@^3.3.0:
-  version "3.5.0"
-  resolved "https://registry.nlark.com/graphql-request/download/graphql-request-3.5.0.tgz"
-  integrity sha1-fmlXThWHX7P2YKS0vjmW7NC7yLc=
-  dependencies:
-    cross-fetch "^3.0.6"
-    extract-files "^9.0.0"
-    form-data "^3.0.0"
-
-graphql@^15.4.0:
-  version "15.5.3"
-  resolved "https://registry.nlark.com/graphql/download/graphql-15.5.3.tgz"
-  integrity sha1-xyNJAX1cn1RGqJf+aQizGG2x2gA=
 
 gzip-size@^6.0.0:
   version "6.0.0"
@@ -2650,18 +2598,6 @@ micromatch@^4.0.4:
     braces "^3.0.1"
     picomatch "^2.2.3"
 
-mime-db@1.49.0:
-  version "1.49.0"
-  resolved "https://registry.nlark.com/mime-db/download/mime-db-1.49.0.tgz"
-  integrity sha1-89/eYMmenPO8lwHWh3ePU3ABy+0=
-
-mime-types@^2.1.12:
-  version "2.1.32"
-  resolved "https://registry.nlark.com/mime-types/download/mime-types-2.1.32.tgz?cache=0&sync_timestamp=1627407819001&other_urls=https%3A%2F%2Fregistry.nlark.com%2Fmime-types%2Fdownload%2Fmime-types-2.1.32.tgz"
-  integrity sha1-HQDonn3n/gIAjbYQAdngKFJnD9U=
-  dependencies:
-    mime-db "1.49.0"
-
 mime@^2.3.1:
   version "2.5.2"
   resolved "https://registry.npm.taobao.org/mime/download/mime-2.5.2.tgz?cache=0&sync_timestamp=1615984369368&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmime%2Fdownload%2Fmime-2.5.2.tgz"
@@ -2772,11 +2708,6 @@ next@^12.1.0:
     "@next/swc-win32-arm64-msvc" "12.1.4"
     "@next/swc-win32-ia32-msvc" "12.1.4"
     "@next/swc-win32-x64-msvc" "12.1.4"
-
-node-fetch@2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-2.6.1.tgz#045bd323631f76ed2e2b55573394416b639a0052"
-  integrity sha512-V4aYg89jEoVRxRb2fJdAg8FHvI7cEyYdVAh94HH0UIK8oJxUfkjlDQN9RbMx+bEjP7+ggMiFRprSti032Oipxw==
 
 node-releases@^2.0.2:
   version "2.0.2"

@@ -12,8 +12,6 @@
   "dependencies": {
     "@next/bundle-analyzer": "^10.0.1",
     "glob": "^8.0.1",
-    "graphql": "^15.4.0",
-    "graphql-request": "^3.3.0",
     "next": "^12.1.0",
     "next-mdx-remote": "^4.0.2",
     "react": "^17.0.2",
