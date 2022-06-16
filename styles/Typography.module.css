@@ -16,12 +16,16 @@
   @apply list-disc;
 }
 
-.typography p {
-  @apply font-serif text-lg;
+.typography blockquote {
+  @apply border-l-4 border-gray-300 px-4 mb-4;
 }
 
-.typography p + p {
-  @apply my-4;
+.typography blockquote > p {
+  @apply font-mono text-gray-600;
+}
+
+.typography p {
+  @apply font-serif text-lg mb-4 break-all;
 }
 
 .typography img {
