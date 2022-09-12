@@ -5,7 +5,7 @@ import range from '@/lib/range'
 import Link from 'next/link'
 import { yearToDiZhi } from '@/lib/time'
 import type { NextPage } from 'next'
-import { getAllArticlesMetaData } from '@/lib/mdx'
+import ALL_BLOG_META_DATA from '../data/manifest.json'
 
 type ArticleTimelineItem = {
   slug: string
@@ -75,9 +75,8 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const articles = await getAllArticlesMetaData()
 
-  const articlesTimeline = groupBy(articles, (item) => {
+  const articlesTimeline = groupBy(ALL_BLOG_META_DATA, (item) => {
     const publishedAt = new Date(item.publishedAt)
     return publishedAt.getFullYear()
   })

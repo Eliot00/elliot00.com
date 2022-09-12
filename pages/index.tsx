@@ -7,9 +7,10 @@ import path from 'path'
 import ArticleList from '@/components/ArticleList'
 import SEO from '@/components/SEO'
 import Link from 'next/link'
-import { getInexactRecentArticlesSlugs, ArticleSummary } from '@/lib/mdx'
+import { ArticleSummary } from '@/lib/mdx'
 import getFirstParagraph from '@/lib/getFirstParagraph'
 import type { NextPage } from 'next'
+import ALL_BLOG_META_DATA from '../data/manifest.json'
 
 type HomeProps = {
   recentArticles: ArticleSummary[]
@@ -28,7 +29,7 @@ const Home: NextPage<HomeProps> = ({ recentArticles }) => {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const slugs = await getInexactRecentArticlesSlugs()
+  const slugs = ALL_BLOG_META_DATA.slice(0, 5).map(value => value.slug)
   const recentArticles: ArticleSummary[] = slugs.map(slug => {
     const source = fs.readFileSync(
       path.join(process.cwd(), 'data/articles', `${slug}.mdx`),

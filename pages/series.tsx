@@ -1,9 +1,9 @@
 import groupBy from '@/lib/groupBy'
-import { getAllArticlesMetaData } from '@/lib/mdx'
 import type { MetaData } from '@/lib/mdx'
 import { GetStaticProps } from 'next'
 import React, { Fragment } from 'react'
 import SEO from '@/components/SEO'
+import ALL_BLOG_META_DATA from '../data/manifest.json'
 
 type Props = {
   series: Record<string, MetaData[]>
@@ -41,8 +41,7 @@ const Series: React.FC<Props> = ({ series }) => {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-  const articles = await getAllArticlesMetaData()
-  const series = groupBy(articles, item => item.series)
+  const series = groupBy(ALL_BLOG_META_DATA, item => item.series)
 
   return {
     props: {
