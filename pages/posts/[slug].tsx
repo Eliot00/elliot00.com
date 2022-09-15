@@ -73,8 +73,8 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
       <div>
         <ReactCusdis
           attrs={{
-            host: 'https://cusdis-p65vpouz7-eliot00.vercel.app',
-            appId: 'f73edaa5-cdc2-486e-9cda-6360f7d3b907',
+            host: 'https://cusdis-gules.vercel.app',
+            appId: '032168ca-8f97-4fc7-9b42-c6419edac968',
             pageId: slug,
             pageTitle: title,
             pageUrl: `https://elliot.com/posts/${slug}`,
