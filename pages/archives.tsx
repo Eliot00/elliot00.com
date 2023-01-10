@@ -21,6 +21,7 @@ const START = 2020
 
 const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
   const now = new Date().getFullYear()
+
   return (
     <div className="mx-auto w-full h-full">
       <SEO title="归档 - 公子政的宅日常" />
@@ -32,6 +33,11 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
         {range(START, now + 1)
           .reverse()
           .map((year) => {
+            const articlesOfThisYear = articlesTimeline[`${year}`]
+            if (!articlesOfThisYear) {
+              return null
+            }
+
             const isEven = year % 2 === 0
             return (
               <div
@@ -54,17 +60,17 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
                   <h3 className="mb-3 font-bold text-gray-800 text-xl">
                     {year}
                   </h3>
-                    <ul className="text-sm leading-snug tracking-wide text-gray-900 text-opacity-100 break-all">
-                      {articlesTimeline[`${year}`].map((item) => {
-                        return (
-                          <li key={item.slug} className="my-2">
-                            <Link href={`/posts/${item.slug}`}>
-                              <a className="underline">{item.title}</a>
-                            </Link>
-                          </li>
-                        )
-                      })}
-                    </ul>
+                  <ul className="text-sm leading-snug tracking-wide text-gray-900 text-opacity-100 break-all">
+                    {articlesOfThisYear.map((item) => {
+                      return (
+                        <li key={item.slug} className="my-2">
+                          <Link href={`/posts/${item.slug}`}>
+                            <a className="underline">{item.title}</a>
+                          </Link>
+                        </li>
+                      )
+                    })}
+                  </ul>
                 </div>
               </div>
             )
@@ -75,7 +81,6 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
 }
 
 export const getStaticProps: GetStaticProps = async () => {
-
   const articlesTimeline = groupBy(ALL_BLOG_META_DATA, (item) => {
     const publishedAt = new Date(item.publishedAt)
     return publishedAt.getFullYear()
