@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useEffect } from 'react'
 import Script from 'next/script'
 import type { AppProps } from 'next/app'
@@ -41,10 +40,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           `,
         }}
       />
-    <MyLayout>
-      {/* @ts-ignore */}
-      <Component {...pageProps} />
-    </MyLayout>
+      <MyLayout>
+        <Component {...pageProps} />
+      </MyLayout>
     </>
   )
 }
