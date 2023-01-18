@@ -1,4 +1,6 @@
-const Divider: React.FC = (props) => {
+import type { FCWithChildren } from '@/lib/types'
+
+const Divider: FCWithChildren = (props) => {
   return (
     <div className="relative flex py-5 items-center">
       <div className="flex-grow border-t border-gray-400" />
