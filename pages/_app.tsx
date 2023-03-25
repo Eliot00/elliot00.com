@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
 import Script from 'next/script'
-import Head from 'next/head'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import MyLayout from '@/components/MyLayout'
@@ -23,7 +22,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      <Head>
         <Script
           id="Adsense-id"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4587152222007322"
@@ -31,7 +29,6 @@ function MyApp({ Component, pageProps }: AppProps) {
           crossOrigin="anonymous"
           async
         />
-      </Head>
       <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
