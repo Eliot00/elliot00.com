@@ -14,7 +14,7 @@ import type { MetaData } from '@/lib/mdx'
 const Posts: NextPage<{ articles: ArticleSummary[] }> = ({ articles }) => {
   return (
     <>
-      <SEO title="博客 - 公子政的宅日常" description="博客文章列表" />
+      <SEO title="博客 - Elliot" description="博客文章列表" />
       <ArticleList articles={articles} />
     </>
   )

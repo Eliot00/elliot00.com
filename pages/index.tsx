@@ -19,10 +19,10 @@ type HomeProps = {
 const Home: NextPage<HomeProps> = ({ recentArticles }) => {
   return (
     <>
-      <SEO title="公子政的宅日常" description="公子政的宅日常" />
+      <SEO title="Elliot" description="Elliot's blog." />
       <ArticleList articles={recentArticles} />
-      <Link href="/posts">
-        <a className="link px-2">查看更多</a>
+      <Link href="/posts" className="link px-2">
+        查看更多
       </Link>
     </>
   )

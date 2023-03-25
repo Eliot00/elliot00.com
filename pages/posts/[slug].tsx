@@ -30,7 +30,7 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
 
   return (
     <>
-      <SEO title={`${title} - 公子政的宅日常`} />
+      <SEO title={`${title} - Elliot`} />
       <article className={styles.typography}>
         <header>
           <h1 className="font-serif text-center text-3xl">{title}</h1>
@@ -53,8 +53,8 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
             </span>
             <span className="px-2">
               文集：
-              <Link href="/series">
-                <a className="link">{series}</a>
+              <Link href="/series" className="link">
+                {series}
               </Link>
             </span>
           </div>

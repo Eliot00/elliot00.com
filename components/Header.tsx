@@ -30,18 +30,16 @@ const Header: React.FC = () => {
   return (
     <header className="relative z-10 bg-white shadow-sm">
       <nav className="mx-auto max-w-3xl flex flex-wrap items-center justify-between p-4 sm:px-6 md:px-8 lg:px-0">
-        <Link href="/">
-          <a className="flex items-center">
-            <div className="font-thin font-sans text-gray-900 text-3xl">
-              公子政
+        <Link href="/" className="flex items-center">
+            <div className="font-sans text-gray-900 text-3xl">
+              Elliot
             </div>
-          </a>
         </Link>
         <ul className="hidden lg:flex gap-10 items-end">
           {ENTRIES.map((entry) => (
             <li key={entry.href}>
-              <Link href={entry.href}>
-                <a className="font-medium link">{entry.content}</a>
+              <Link href={entry.href} className="font-medium link">
+                {entry.content}
               </Link>
             </li>
           ))}
@@ -70,10 +68,8 @@ const Header: React.FC = () => {
         <div className="rounded-lg shadow-md">
           <div className="rounded-lg bg-white shadow-xs overflow-hidden">
             <div className="px-5 pt-4 flex items-center justify-between">
-              <Link href="/">
-                <a className="font-thin text-gray-900 leading-tight text-2xl sm:text-3xl tracking-tight">
-                  公子政
-                </a>
+              <Link href="/" className="text-gray-900 leading-tight text-2xl sm:text-3xl tracking-tight">
+                  Elliot
               </Link>
               <button onClick={closeMenu}>
                 <div className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:(text-gray-500 bg-gray-100) focus:(outline-none bg-gray-100 text-gray-500) transition duration-150 ease-in-out">
@@ -95,10 +91,8 @@ const Header: React.FC = () => {
             </div>
             <div className="px-2 pt-4 pb-3">
               {ENTRIES.map(({ href, content }) => (
-                <Link href={href} key={href}>
-                  <a className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:(text-gray-900 bg-gray-50) focus:(outline-none text-gray-900 bg-gray-50) transition duration-150 ease-in-out">
+                <Link href={href} key={href} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:(text-gray-900 bg-gray-50) focus:(outline-none text-gray-900 bg-gray-50) transition duration-150 ease-in-out">
                     {content}
-                  </a>
                 </Link>
               ))}
             </div>

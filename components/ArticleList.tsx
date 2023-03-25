@@ -15,10 +15,8 @@ const ArticleList: React.FC<Props> = ({ articles, title = '最新文章' }) => {
       <ul className="divide-y divide-gray-100 font-serif">
         {articles.map((article) => (
           <li key={article.slug} className="py-4">
-            <Link href={`/posts/${article.slug}`}>
-              <a className="link font-meduim text-2xl">
+            <Link href={`/posts/${article.slug}`} className="link font-meduim text-2xl">
                 <h2 className="p-2">{article.title}</h2>
-              </a>
             </Link>
             <div className="flex">
               {article.tags.map((tag) => (

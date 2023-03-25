@@ -5,7 +5,7 @@ import styles from '@/styles/Typography.module.css'
 const About: React.FC = () => {
   return (
     <article className={styles.typography}>
-      <SEO title="关于 - 公子政的宅日常" />
+      <SEO title="关于 - Elliot" />
       <Heading2>关于博主</Heading2>
       <p>技术宅，爱好折腾各种新奇事物，积极的开源贡献者。</p>
       <p>享受创造的乐趣，黑客也是创造者，与画家建筑师作家一样。</p>

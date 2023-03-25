@@ -24,7 +24,7 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
 
   return (
     <div className="mx-auto w-full h-full">
-      <SEO title="归档 - 公子政的宅日常" />
+      <SEO title="归档 - Elliot" />
       <div className="relative wrap overflow-hidden p-10 h-full">
         <div
           className="border-2-2 absolute border-opacity-20 border-gray-700 h-full border"
@@ -64,8 +64,8 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
                     {articlesOfThisYear.map((item) => {
                       return (
                         <li key={item.slug} className="my-2">
-                          <Link href={`/posts/${item.slug}`}>
-                            <a className="underline">{item.title}</a>
+                          <Link href={`/posts/${item.slug}`} className="underline">
+                            {item.title}
                           </Link>
                         </li>
                       )

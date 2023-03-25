@@ -12,7 +12,7 @@ type Props = {
 const Series: React.FC<Props> = ({ series }) => {
   return (
     <>
-      <SEO title="文集 - 公子政的宅日常" description="公子政的宅日常" />
+      <SEO title="文集 - Elliot" description="Elliot's blog." />
       <div>
         <ul className="text-center">
             {Object.entries(series).map(entry => {
