@@ -7,9 +7,9 @@ const About: React.FC = () => {
     <article className={styles.typography}>
       <SEO title="关于 - Elliot" />
       <Heading2>关于博主</Heading2>
-      <p>技术宅，爱好折腾各种新奇事物，积极的开源贡献者。</p>
-      <p>享受创造的乐趣，黑客也是创造者，与画家建筑师作家一样。</p>
-      <p>围棋爱好者、铁佛寺。</p>
+      <p>技术宅，爱好折腾各种新奇事物，编程使我快乐。</p>
+      <p>享受创造的乐趣，认同GNU的价值观但不激进，渴望成为自由软件世界的Hacker。</p>
+      <p>围棋爱好者兼铁佛寺。</p>
       <Heading3>常用语言</Heading3>
       <div className="flex space-x-2 mt-2">
         <img
