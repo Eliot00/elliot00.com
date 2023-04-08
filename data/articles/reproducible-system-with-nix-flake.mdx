@@ -1,0 +1,143 @@
+---
+slug: "reproducible-system-with-nix-flake"
+title: "使用Nix Flake构建可重现系统"
+tags: ["Nix", "工具"]
+series: "百宝箱"
+createdAt: "2023-04-08T08:35:44.055881+00:00"
+publishedAt: "2023-04-08T12:24:49.184163+00:00"
+---
+
+在之前的[介绍Nix的文章](https://elliot00.com/posts/nix-note)里，我提到了如何使用nix代码管理NixOS系统配置。通过函数式语言来描述窗口管理、系统软件包、字体等等，可以说每个NixOS的用户都有一个个人专属的定制化Linux发行版，相同的配置可以复现出同样的结果，但是现在我要说，NixOS并不是真正或者并不是完全可复现的。
+
+**Reproducible**可是写在Nix官网上的三大特性中的第一个，难道说它虚假宣传了吗？
+
+## Nix channels
+
+要搞清楚这个问题，我们需要先看一下`nix channels`这个东西。首先任何人都可以用Nix语言写软件包、NixOS模块，而官方有一个超大的git仓库叫做[nixpkgs](https://github.com/NixOS/nixpkgs)，里面集合了超过八万个软件包以及所有的NixOS模块，那么怎么指示Nix使用哪个软件包仓库，以及使用这个仓库的哪个版本呢？就是通过“channel”了，channel其实就是指向某个git仓库的分支，例如`nixpkgs-unstable`这个channel就是指向了官方nixpkgs仓库的nixpkgs-unstable分支。如果这个分支上新增了很多commit，例如更新了某些包，修复了一些bug，我们就可以使用`nix-channel --update`来更新channel，获取该分支最新的版本，再重新`nixos-rebuild`来升级我们的系统。
+
+现在假设我有一台NixOS的机器使用的channel是`nixos-unstable`，我购买了一台新机器，我希望重用原有的Nix配置，但是我在这台新设备上设置channel时使用了`nixos-21.11`，虽然我使用了相同的配置，但是channel指向的分支不同，得到的包版本也大概率不一样了；退一步说，即使两台机器都使用nixos-unstable这个channel，但是添加时间不同，对应的同一个分支上的commit也就不同，比如旧机器上的channel还停留在该分支一个月前的版本，那么显然同一份配置得到的结果也不同了。
+
+这个问题想必用过Python的包管理工具pip的朋友会很熟悉，如果一个开源的Python程序没有提供一份`requirements.txt`来声明依赖版本的话，即使根据代码使用pip安装所有需要的依赖，这个程序也未必能跑起来，因为你现在用pip安装的某个Python包可能比作者当时安装的高了一个大版本，带来了一些不兼容的改动。由此可见，影响可复现性的关键点在哪里呢？在于依赖的版本没有被显式地声明。Nix纯函数式的环境被channel这个副作用给污染了。
+
+## Nix flakes
+
+我们已经知道问题出在哪里了，那么要怎么解决问题呢？一些现代的编程语言的包管理工具已经给出了答案，很简单，就是**显式声明依赖版本**。为此，Nix引入了一个称为flakes的机制。这个机制让我们可以通过一个`flake.nix`文件来声明依赖：
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+  };
+
+  outputs = { self, nixpkgs, ... }@inputs: {
+    nixosConfigurations."host-name" = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./configuration.nix
+      ];
+    };
+  };
+}
+```
+
+这个代码声明了一个set，其中最重要的有两个属性，一个是**inputs**，这个属性就是用来声明依赖的，可以是某个本地仓库的路径，也可以是某个仓库的链接，可以指定git的tag、分支或commit hash，详细的格式可以参考[官方手册](https://nixos.org/manual/nix/stable/command-ref/new-cli/nix3-flake.html#flake-references)。
+
+另一个重要的属性是**outputs**，outputs是一个函数，输入就是inputs声明的flakes依赖，输出是一个set，可以包含任意属性，但是有一些特殊属性会被一些nix子命令用到，例如要build的包，NixOS模块等。
+
+`flake.nix`目前必须被包含在git仓库里，每一个包含flake.nix的仓库又可以作为inputs被其他flake引用。除了`flake.nix`文件，Nix还会自动生成一个`flake.lock`文件，里面包含一些元信息，它会将inputs锁定在一个具体的版本。
+
+flakes目前是一个实验特性，要想在NixOS中使用，首先需要修改`configuration.nix`，然后再跑一遍`sudo nixos-rebuild switch`应用修改：
+
+```nix
+{ config, pkgs, lib, ... }:
+
+{
+  # ...
+
+  nix = {
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
+}
+```
+
+现在可以将NixOS的配置也改写成flake版本了，首先要将上面的flake.nix文件放到配置目录`/etc/nixos`目录下，将配置目录初始化为git仓库，`git add flake.nix`，接着运行`nix flake update`，这会生成或更新（当前没有就生成）一个`flake.lock`文件，最后rebuild的命令需要改变一下，使用`sudo nixos-rebuild switch --flake '.#'`就可以了。
+
+一个flake里面可以定义多个系统配置：
+
+```nix
+  outputs = { self, nixpkgs, ... }@inputs: {
+    # 主机名是john
+    nixosConfigurations."john" = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./john-configuration.nix
+      ];
+    };
+
+    # 主机名是paul
+    nixosConfigurations."paul" = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./paul-configuration.nix
+      ];
+    };
+  };
+```
+
+命令行参数指明需要build哪一个：
+
+```shell
+$ sudo nixos-rebuild switch --flake '.#' # 默认build当前主机名
+$ sudo nixos-rebuild switch --flake '.#paul' # 指定build
+```
+
+如果要在另一台机器上复现当前配置，只需要clone当前的配置仓库，保证在同一个commit，那么根据同样的flake.lock，就可以保证使用的是同一个版本的软件源，得到同样的NixOS配置了。
+
+## 可复现的开发环境
+
+`nix-shell`是Nix生态中一个非常强大的命令，可以用来开启一个由Nix声明的隔离的shell环境。和前面提到的一样，nix-shell也受channel影响，使得nix-shell可能在不同环境下生成不同结果，现在也可以通过flake来改进这一点。
+
+下面是一个来自[rust-overlay](https://github.com/oxalica/rust-overlay)的flake.nix配置：
+
+```nix
+{
+  description = "A devShell example";
+
+  inputs = {
+    nixpkgs.url      = "github:NixOS/nixpkgs/nixos-unstable";
+    rust-overlay.url = "github:oxalica/rust-overlay";
+    flake-utils.url  = "github:numtide/flake-utils";
+  };
+
+  outputs = { self, nixpkgs, rust-overlay, flake-utils, ... }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        overlays = [ (import rust-overlay) ];
+        pkgs = import nixpkgs {
+          inherit system overlays;
+        };
+      in
+      with pkgs;
+      {
+        devShells.default = mkShell {
+          buildInputs = [
+            openssl
+            pkg-config
+            exa
+            fd
+            rust-bin.beta.latest.default
+          ];
+
+          shellHook = ''
+            alias ls=exa
+            alias find=fd
+          '';
+        };
+      }
+    );
+}
+```
+
+将这个文件放进git仓库，生成lock文件，然后运行`nix develop`，就可以得到一个安装了固定Rust版本的开发环境。

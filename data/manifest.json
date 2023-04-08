@@ -1,5 +1,16 @@
 [
 	{
+		"slug": "reproducible-system-with-nix-flake",
+		"title": "使用Nix Flake构建可重现系统",
+		"tags": [
+			"Nix",
+			"工具"
+		],
+		"series": "百宝箱",
+		"createdAt": "2023-04-08T08:35:44.055881+00:00",
+		"publishedAt": "2023-04-08T12:24:49.184163+00:00"
+	},
+	{
 		"slug": "use-git-gracefully",
 		"title": "优雅地使用Git",
 		"tags": [
