@@ -31,7 +31,7 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
   return (
     <>
       <SEO title={`${title} - Elliot`} />
-      <article className={styles.typography}>
+      <article className={`${styles.typography} ${styles.betterImage}`}>
         <header>
           <h1 className="font-serif text-center text-3xl">{title}</h1>
           <div className="text-center text-gray-400 my-4">
