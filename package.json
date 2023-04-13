@@ -39,6 +39,7 @@
     "eslint-plugin-react": "^7.29.4",
     "husky": "^7.0.4",
     "lint-staged": "^12.3.7",
+    "mldoc": "^1.5.3",
     "next-sitemap": "latest",
     "postcss": "^8.4.12",
     "prettier": "^2.6.2",

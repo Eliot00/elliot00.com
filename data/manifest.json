@@ -1,5 +1,16 @@
 [
 	{
+		"slug": "input-method-hmm",
+		"title": "自制输入法：拼音输入法与HMM",
+		"tags": [
+			"IME",
+			"HMM"
+		],
+		"series": "车轮滚滚",
+		"createdAt": "2023-04-13T06:52:03.945389+00:00",
+		"publishedAt": "2023-04-13T08:09:39.052480+00:00"
+	},
+	{
 		"slug": "reproducible-system-with-nix-flake",
 		"title": "使用Nix Flake构建可重现系统",
 		"tags": [
