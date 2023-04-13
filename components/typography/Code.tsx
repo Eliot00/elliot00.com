@@ -6,11 +6,18 @@ const Code: React.FC<React.HTMLAttributes<HTMLPreElement>> = ({
   className,
   ...props
 }) => {
-  const match = /language-(\w+)/.exec(className || '')
-  return match ? (
+  if (!className) {
+    return (
+      <code
+        className="bg-slate-200 px-2 rounded"
+        {...props}
+      />
+    )
+  }
+
+  const match = /language-(\w+)/.exec(className) ?? []
+  return (
     <SyntaxHighlighter language={match[1]} style={oneLight} {...props} />
-  ) : (
-    <code className={className} {...props} />
   )
 }
 
