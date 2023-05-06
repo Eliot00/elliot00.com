@@ -22,13 +22,6 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <>
-        <Script
-          id="Adsense-id"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4587152222007322"
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-          async
-        />
       <Script
         strategy="afterInteractive"
         src={`https://www.googletagmanager.com/gtag/js?id=${gtag.GA_TRACKING_ID}`}
