@@ -77,7 +77,7 @@ const MDArticle: NextPage<{ mdxSource: MDXRemoteSerializeResult }> = ({
             appId: '032168ca-8f97-4fc7-9b42-c6419edac968',
             pageId: slug,
             pageTitle: title,
-            pageUrl: `https://elliot.com/posts/${slug}`,
+            pageUrl: `https://elliot00.com/posts/${slug}`,
           }}
         />
       </div>
