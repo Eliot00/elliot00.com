@@ -1,30 +1,22 @@
-import SEO from '@/components/SEO'
-import { GetStaticProps } from 'next'
 import groupBy from '@/lib/groupBy'
 import range from '@/lib/range'
 import Link from 'next/link'
 import { yearToDiZhi } from '@/lib/time'
-import type { NextPage } from 'next'
-import ALL_BLOG_META_DATA from '../data/manifest.json'
+import type { Metadata } from 'next'
+import { allPosts } from 'contentlayer/generated'
 
-type ArticleTimelineItem = {
-  slug: string
-  publishedAt: string
-  title: string
-}
-
-type ArchivesProps = {
-  articlesTimeline: Record<string, ArticleTimelineItem[]>
+export const metadata: Metadata = {
+  title: '归档 - Elliot',
 }
 
 const START = 2020
 
-const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
+export default function Archives() {
+  const articlesTimeline = getTimeline()
   const now = new Date().getFullYear()
 
   return (
     <div className="mx-auto w-full h-full">
-      <SEO title="归档 - Elliot" />
       <div className="relative wrap overflow-hidden p-10 h-full">
         <div
           className="border-2-2 absolute border-opacity-20 border-gray-700 h-full border"
@@ -64,7 +56,10 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
                     {articlesOfThisYear.map((item) => {
                       return (
                         <li key={item.slug} className="my-2">
-                          <Link href={`/posts/${item.slug}`} className="underline">
+                          <Link
+                            href={`/posts/${item.slug}`}
+                            className="underline"
+                          >
                             {item.title}
                           </Link>
                         </li>
@@ -80,16 +75,9 @@ const Archives: NextPage<ArchivesProps> = ({ articlesTimeline }) => {
   )
 }
 
-export const getStaticProps: GetStaticProps = async () => {
-  const articlesTimeline = groupBy(ALL_BLOG_META_DATA, (item) => {
+function getTimeline() {
+  return groupBy(allPosts, (item) => {
     const publishedAt = new Date(item.publishedAt)
     return publishedAt.getFullYear()
   })
-  return {
-    props: {
-      articlesTimeline,
-    },
-  }
 }
-
-export default Archives
