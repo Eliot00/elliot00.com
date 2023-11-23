@@ -1,4 +1,4 @@
-import { MDXComponents } from 'mdx/types'
+import { type MDXComponents } from 'mdx/types'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 // @ts-ignore
 import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism'

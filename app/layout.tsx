@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body>
         <MyLayout>{children}</MyLayout>
-        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GA_ID} />
+        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GA_ID as string} />
       </body>
     </html>
   )
