@@ -10,7 +10,7 @@ const Footer = () => (
         <TwitterIcon />
       </a>
     </div>
-    <div className="text-gray-600">Copyright © 2020-2021 公子政的宅日常</div>
+    <div className="text-gray-600">Copyright © 2020-2024 Elliot</div>
   </div>
 )
 
