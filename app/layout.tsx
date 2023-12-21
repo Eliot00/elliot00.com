@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import MyLayout from '@/components/MyLayout'
 import './globals.css'
-import { GoogleTagManager } from '@next/third-parties/google'
+import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
   title: 'Elliot',
@@ -19,7 +19,7 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body>
         <MyLayout>{children}</MyLayout>
-        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GA_ID as string} />
+        <Analytics />
       </body>
     </html>
   )
