@@ -1,0 +1,40 @@
+---
+title: "Emacs配置tree-sitter"
+tags: ["Emacs", "工具"]
+series: "百宝箱"
+createdAt: "2023-12-23T15:52:43.526890+08:00"
+publishedAt: "2023-12-23T16:59:43.402775+08:00"
+---
+
+使用编辑器写代码时，和编辑普通文本不同，一个重要的需求是要能识别编程语言的不同组成部分，这样就能根据代码的不同部分提供高亮，又或者如移除函数，折叠代码块等结构化编辑功能。
+
+## tree-sitter
+
+为了满足以上需求，需要找一个能识别解析编程语言的工具，[tree-sitter](https://tree-sitter.github.io/tree-sitter/)就是这样一个工具（集）。tree-sitter是一个解析器生成工具和增量解析库。它能够生成一个特定于编程语言的解析器，并实时分析代码文件，
+构建一个详细的语法树。这个语法树反映了代码的结构，使得编辑器可以进行复杂的语法高亮和结构化编辑操作。
+
+[emacs-tree-sitter](https://github.com/emacs-tree-sitter)旨在为Emacs提供tree-sitter支持，而从Emacs 29开始这个古老而强大的编辑器提供了内置的tree-sitter支持。但是Emacs内置的包叫做`treesit`，API和外部的emacs-tree-sitter不一样，我找了一些配置
+片段，终于成功地应用了它，因此在我的个人博客里记录一下。
+
+## 配置
+
+首先要确认Emacs版本，可以通过`(treesit-available-p)`验证treesit是否可用。接下来添加这样一段配置：
+
+```elisp
+(use-package treesit
+  :config (setq treesit-font-lock-level 4)
+  :init
+  (setq treesit-language-source-alist
+    '((elisp      . ("https://github.com/Wilfred/tree-sitter-elisp"))
+      (rust       . ("https://github.com/tree-sitter/tree-sitter-rust"))
+      (toml       . ("https://github.com/tree-sitter/tree-sitter-toml"))))
+  (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.rs\\'" . rust-ts-mode))
+  (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-ts-mode)))
+```
+
+接下来详细讲解一下这段配置：
+
+首先`use-package`不是必要的，只是用它方便初始化和集中配置管理。接着是`treesit-font-lock-level`，这是配置高亮层级的，从低到高值可以是1到4。下一步是添加语法库的源码仓库地址，`tree-sitter`并不是一个工具包含世界上的所有语言解析器，使用者可以自己按需指定单个语言的解析器，在需要的时候加载对应的编译好的动态库。最后，`treesit`给Emacs里的`<language>-mode`加了个对应的`<language>-ts-mode`，一些已经内置的语言的mode，可以用`major-mode-remap-alist`修改，像`Rust`的`rust-mode`没有内置，那就直接根据文件后缀映射一下使用treesit提供的`rust-ts-mode`。
+
+在开始使用前，还有一件事，前面的配置只是添加了grammer的地址，但是还没下载安装，需要使用`M-x treesit-install-language-grammar`来安装。grammar动态库默认应该会放在`~/.emacs.d/tree-sitter`里。现在就可以打开需要编辑的代码文件愉快地编辑了。
