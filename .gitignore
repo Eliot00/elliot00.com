@@ -41,3 +41,7 @@ public/sitemap.xml
 public/sitemap-*.xml
 
 .contentlayer
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
