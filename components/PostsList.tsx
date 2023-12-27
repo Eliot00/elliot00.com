@@ -11,7 +11,7 @@ interface Props {
 const PostsList: React.FC<Props> = ({ posts, title = '最新文章' }) => {
   return (
     <>
-      <h2 className="text-gray-800 px-2 text-2xl">{title}</h2>
+      <h2 className="text-gray-800 text-2xl">{title}</h2>
       <ul className="divide-y divide-gray-100 font-serif">
         {posts.map((post) => (
           <li key={post.slug} className="py-4">
@@ -19,11 +19,11 @@ const PostsList: React.FC<Props> = ({ posts, title = '最新文章' }) => {
               href={`/posts/${post.slug}`}
               className="link font-meduim text-2xl"
             >
-              <h2 className="p-2">{post.title}</h2>
+              <h2 className="py-2">{post.title}</h2>
             </Link>
             <div className="flex">
               {post.tags.map((tag) => (
-                <div className="px-2 text-gray-500" key={tag}>
+                <div className="text-gray-500" key={tag}>
                   {tag}
                 </div>
               ))}

@@ -1,16 +1,11 @@
-import { FunctionComponent } from "react"
+import { FunctionComponent } from 'react'
 
 type Props = {
-    summary: string
+  summary: string
 }
 
-
 const Summary: FunctionComponent<Props> = ({ summary }) => {
-    return (
-        <p className="p-2 font-serif font-thin text-gray-500">
-            {summary}
-        </p>
-    )
+  return <p className="py-2 font-serif font-thin text-gray-500">{summary}</p>
 }
 
 export default Summary

@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
-import MyLayout from '@/components/MyLayout'
-import './globals.css'
 import { Analytics } from '@vercel/analytics/react'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Elliot',
@@ -18,7 +19,11 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body>
-        <MyLayout>{children}</MyLayout>
+        <Header />
+        <main className="max-w-3xl mx-auto p-4 sm:px-6 md:px-8 lg:px-0">
+          {children}
+        </main>
+        <Footer />
         <Analytics />
       </body>
     </html>
