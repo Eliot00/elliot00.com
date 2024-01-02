@@ -27,7 +27,7 @@ export default function PostDetail({ params }: Props) {
 
   return (
     <>
-      <article className={`${styles.typography} ${styles.betterImage}`}>
+      <article className={styles.typography}>
         <header>
           <h1 className="font-serif text-center text-3xl">{title}</h1>
           <div className="text-center text-gray-400 my-4">

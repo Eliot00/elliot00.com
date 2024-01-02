@@ -9,7 +9,7 @@
 }
 
 .typography ol {
-    @apply list-decimal;
+  @apply list-decimal;
 }
 
 .typography ul {
@@ -46,10 +46,4 @@
 
 .typography h6 {
   @apply leading-tight text-sm font-semibold text-gray-600 mb-4 mt-6;
-}
-
-.betterImage img {
-  border-radius: 8px;
-  margin: auto;
-  box-shadow: 0px 5px 10px 0px rgba(0, 0, 0, 0.5);
 }

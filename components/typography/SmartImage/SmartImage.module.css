@@ -1,0 +1,3 @@
+.img {
+  @apply mx-auto my-2 shadow-lg dark:shadow-black/30;
+}
