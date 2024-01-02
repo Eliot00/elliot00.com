@@ -7,6 +7,7 @@
     "build": "next build",
     "postbuild": "next-sitemap",
     "start": "next start",
+    "prepare": "husky install",
     "lint": "next lint"
   },
   "dependencies": {
@@ -44,10 +45,6 @@
   "browser": {
     "fs": false,
     "path": false
-  },
-  "lint-staged": {
-    "**/*.{js.jsx,ts,tsx}": "eslint --cache --fix",
-    "**/*.{js,jsx,ts,tsx}": "prettier --write"
   },
   "resolutions": {
     "typescript": "^5.3.2",
