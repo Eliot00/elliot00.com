@@ -16,22 +16,18 @@ const About: React.FC = () => {
       <p>围棋爱好者兼铁佛寺。</p>
       <h3>常用语言</h3>
       <div className="flex space-x-2 mt-2">
-        <img
-          alt="Rust"
-          src="https://img.shields.io/badge/rust-%23000000.svg?&style=for-the-badge&logo=rust&logoColor=white"
-        />
-        <img
-          alt="Python"
-          src="https://img.shields.io/badge/python%20-%2314354C.svg?&style=for-the-badge&logo=python&logoColor=white"
-        />
-        <img
-          alt="TypeScript"
-          src="https://img.shields.io/badge/typescript-%23007ACC.svg?&style=for-the-badge&logo=typescript&logoColor=white"
-        />
-        <img
-          alt="CSharp"
-          src="https://img.shields.io/badge/c%23%20-%23239120.svg?&style=for-the-badge&logo=c-sharp&logoColor=white"
-        />
+        <span className="py-1 px-2 bg-amber-300 rounded-lg font-mono">
+          Rust
+        </span>
+        <span className="py-1 px-2 bg-blue-300 rounded-lg font-mono">
+          TypeScript
+        </span>
+        <span className="py-1 px-2 bg-zinc-300 rounded-lg font-mono">
+          Python
+        </span>
+        <span className="py-1 px-2 bg-violet-300 rounded-lg font-mono">
+          CSharp
+        </span>
       </div>
       <h2>关于博客</h2>
       <p>
