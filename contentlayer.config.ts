@@ -1,6 +1,7 @@
 // contentlayer.config.ts
 import { defineDocumentType, makeSource } from 'contentlayer/source-files'
 import getFirstParagraph from './lib/getFirstParagraph'
+import rehypeProbeImageSize from './lib/rehypeImage'
 
 export const Post = defineDocumentType(() => ({
   name: 'Post',
@@ -26,4 +27,8 @@ export const Post = defineDocumentType(() => ({
   },
 }))
 
-export default makeSource({ contentDirPath: 'posts', documentTypes: [Post] })
+export default makeSource({
+  contentDirPath: 'posts',
+  documentTypes: [Post],
+  mdx: { rehypePlugins: [rehypeProbeImageSize] },
+})
