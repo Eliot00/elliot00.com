@@ -1,6 +1,5 @@
 // contentlayer.config.ts
 import { defineDocumentType, makeSource } from 'contentlayer/source-files'
-import getFirstParagraph from './lib/getFirstParagraph'
 import rehypeProbeImageSize from './lib/rehypeImage'
 
 export const Post = defineDocumentType(() => ({
@@ -13,15 +12,12 @@ export const Post = defineDocumentType(() => ({
     series: { type: 'string', required: true },
     createdAt: { type: 'date', required: true },
     publishedAt: { type: 'date', required: true },
+    summary: { type: 'string', required: true },
   },
   computedFields: {
     url: {
       type: 'string',
       resolve: (post) => `/posts/${post._raw.flattenedPath}`,
-    },
-    summary: {
-      type: 'string',
-      resolve: (post) => getFirstParagraph(post.body.raw),
     },
     slug: { type: 'string', resolve: (post) => post._raw.flattenedPath },
   },

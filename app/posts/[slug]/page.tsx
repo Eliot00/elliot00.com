@@ -97,5 +97,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${post.title} - Elliot`,
     keywords: post.tags,
+    description: post.summary,
   }
 }

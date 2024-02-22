@@ -4,6 +4,7 @@ tags: ["REST", "Django"]
 series: "Django+React全栈开发"
 createdAt: "2020-05-02T06:20:18.967+00:00"
 publishedAt: "2021-04-17T12:04:51.568562+00:00"
+summary: "这篇文章主要讲了如何自定义 Django 的用户模型、序列化器、验证、权限和限流。1. 自定义用户模型：可以使用继承**AbstractUser**或**AbstractBaseUser**来扩展原生**User**模型，并添加额外的字段和方法。2. 序列化器：定义了如何将模型数据转换成可用于 API 请求和响应的格式。3. 验证：可以使用**TokenAuthentication**或**BasicAuthentication**进行验证，并设置 Token 过期时间。4. 权限：可以使用**AdministratorLevel**这样的自定义权限类来限制不同用户对 API 的访问。5. 限流：可以使用**UserRateThrottle**来限制用户请求的频率。"
 ---
 
 因为之前有人问过Django的自定义用户模型，就写了这篇文章，放在我的《Django+React全栈开发》系列里凑个数，不过和后续内容关联性不大，不感兴趣可以直接跳过。
