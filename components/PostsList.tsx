@@ -21,9 +21,15 @@ const PostsList: React.FC<Props> = ({ posts, title = '最新文章' }) => {
             >
               <h2 className="py-2">{post.title}</h2>
             </Link>
-            <span className="flex gap-2 items-center text-sm font-thin text-gray-500">
+            <span className="flex gap-2 items-center text-sm">
               {post.tags.map((tag) => (
-                <div key={tag}>#{tag}</div>
+                <Link
+                  href={`/tags/${tag}`}
+                  className="rounded-full bg-purple-100 px-2.5 py-0.5 text-sm text-purple-700"
+                  key={tag}
+                >
+                  #{tag}
+                </Link>
               ))}
               <time title={post.publishedAt}>
                 {timeInterval(post.publishedAt)}
