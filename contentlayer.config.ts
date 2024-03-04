@@ -1,5 +1,5 @@
 // contentlayer.config.ts
-import { defineDocumentType, makeSource } from 'contentlayer/source-files'
+import { defineDocumentType, makeSource } from 'contentlayer-temp/source-files'
 import rehypeProbeImageSize from './lib/rehypeImage'
 
 export const Post = defineDocumentType(() => ({
