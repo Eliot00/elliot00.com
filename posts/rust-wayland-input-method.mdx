@@ -109,17 +109,17 @@ struct AppState {
 
 ```rust
 fn main() {
-    # 创建Wayland连接
+    // 创建Wayland连接
     let conn = Connection::connect_to_env().unwrap();
 
-    # 创建event queue，以使输入法接收来自Compositor的事件
+    // 创建event queue，以使输入法接收来自Compositor的事件
     let mut event_queue = conn.new_event_queue();
     let qhandle = event_queue.handle();
 
-    # 客户端必不可少的object
+    // 客户端必不可少的object
     let display = conn.display();
 
-    # 请求创建wl_registry对象，用于绑定全局object
+    // 请求创建wl_registry对象，用于绑定全局object
     display.get_registry(&qhandle, ());
 
     let mut state = AppState {
@@ -127,7 +127,7 @@ fn main() {
         ..Default::default()
     };
 
-    # 开启循环，不断接收事件
+    // 开启循环，不断接收事件
     while state.running {
         event_queue.blocking_dispatch(&mut state).unwrap();
     }
@@ -138,7 +138,7 @@ fn main() {
 
 ```rust
 impl Dispatch<wl_registry::WlRegistry, ()> for AppState {
-    # 这个事件会告知客户端Compositor支持的接口
+    // 这个事件会告知客户端Compositor支持的接口
     fn event(
         state: &mut Self,
         registry: &wl_registry::WlRegistry,
@@ -152,7 +152,7 @@ impl Dispatch<wl_registry::WlRegistry, ()> for AppState {
         } = event
         {
             println!("{} {}", name, interface);
-            # 在这里可以绑定zwp_input_method_v1
+            // 在这里可以绑定zwp_input_method_v1
             match &interface[..] {
                 "zwp_input_method_v1" => {
                     let input_method = registry
@@ -183,14 +183,14 @@ impl Dispatch<zwp_input_method_v1::ZwpInputMethodV1, ()> for AppState {
             zwp_input_method_v1::Event::Activate { id } => {
                 println!("method activate");
 
-                # 截获键盘，之后就可以由输入法处理键盘事件
+                // 截获键盘，之后就可以由输入法处理键盘事件
                 id.grab_keyboard(qhandle, ());
 
-                # 保存context后续使用
+                // 保存context后续使用
                 state.context = Some(id);
             }
             zwp_input_method_v1::Event::Deactivate { context } => {
-                # 销毁context
+                // 销毁context
                 state.context = None;
                 context.destroy();
                 println!("method inactive");
@@ -213,7 +213,7 @@ impl Dispatch<zwp_input_method_context_v1::ZwpInputMethodContextV1, ()> for AppS
         _conn: &Connection,
         _qhandle: &QueueHandle<Self>,
     ) {
-        # 这里暂时空着
+        // 这里暂时空着
         println!("current content event is {:#?}", event);
     }
 }
