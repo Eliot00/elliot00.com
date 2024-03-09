@@ -58,10 +58,10 @@ export default function PostDetail({ params }: Props) {
         <MDXContent components={components} />
         <Divider>EOF</Divider>
         <div className="text-center font-medium">
-          <a className="link" href="https://afdian.net/@Elliot?tab=home">
+          <Link className="link" href="/sponsor">
             文章有帮助？为我充个
             <Lightning />吧
-          </a>
+          </Link>
         </div>
         <Copyright slug={slug} title={title} />
       </article>
