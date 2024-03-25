@@ -17,7 +17,7 @@ summary: "这篇文章介绍了如何在个人博客网站上添加友情链接�
 
 其实友情链接直接在首页页面html里面写就可以（到现在我还没有友链呢~），但是我想通过后台来管理这个数据，索性专门建了个名为`extras`的`app`。
 
-```
+```shell
 python manage.py startapp extras
 ```
 
@@ -66,7 +66,7 @@ def show_friend_links(context, num=5):
 
 所以要在放置模板的`templates`文件夹中新建相应的文件：
 
-```
+```html
 <div class="card mb-4 hvr-glow" style="display: flex">
     <div class="card-body">
         <p class="card-title text-muted">
@@ -111,7 +111,7 @@ class SiteMessage(TimeStampedModel):
 
 ### 标签
 
-```
+```python
 # 要加上导入这个SiteMessage类
 from ..models import FriendLink, SiteMessage
 
@@ -130,6 +130,7 @@ def show_site_message(context):
         }
     return data
 ```
+
 通过`SiteMessage.objects.last()`每次只取最新的数据。使用方法同上。
 
 ## 效果图
