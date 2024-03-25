@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import { timeInterval } from '@/lib/time'
 import Summary from '@/components/Summary'
 import { type Post } from 'contentlayer/generated'
 
@@ -21,7 +20,7 @@ const PostsList: React.FC<Props> = ({ posts, title = '最新文章' }) => {
             >
               <h2 className="py-2">{post.title}</h2>
             </Link>
-            <span className="flex gap-2 items-center text-sm">
+            <span className="flex gap-2 items-center text-sm font-mono">
               {post.tags.map((tag) => (
                 <Link
                   href={`/tags/${tag}`}
@@ -46,9 +45,21 @@ const PostsList: React.FC<Props> = ({ posts, title = '最新文章' }) => {
                   <span className="whitespace-nowrap text-sm">{tag}</span>
                 </Link>
               ))}
-              <time title={post.publishedAt}>
-                {timeInterval(post.publishedAt)}
-              </time>
+              <span className="inline-flex items-center justify-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
+                <svg
+                  height="16px"
+                  width="16px"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2M12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8m.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"></path>
+                </svg>
+                <time title={post.publishedAt}>
+                  {new Intl.DateTimeFormat('zh-Hans-CN').format(
+                    new Date(post.publishedAt)
+                  )}
+                </time>
+              </span>
             </span>
             <Summary summary={post.summary} />
           </li>
