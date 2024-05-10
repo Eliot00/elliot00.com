@@ -17,11 +17,11 @@
 }
 
 .typography > blockquote {
-  @apply border-l-4 border-gray-300 bg-gray-50 px-4 py-2 mb-4;
+  @apply border-l-4 border-outline-variant bg-surface-container-high px-4 py-2 mb-4;
 }
 
 .typography blockquote > p {
-  @apply font-mono text-gray-600 italic;
+  @apply font-mono italic;
 }
 
 .typography > p {
@@ -29,21 +29,21 @@
 }
 
 .typography > h2 {
-  @apply text-2xl leading-tight mt-6 mb-4 font-semibold font-serif border-b-2 pb-1 border-indigo-300 inline-block;
+  @apply text-2xl leading-tight mt-6 mb-4 font-semibold font-serif border-b-2 pb-1 text-primary border-primary-container inline-block;
 }
 
 .typography > h3 {
-  @apply text-lg leading-snug mt-6 mb-4 font-semibold font-serif border-l-4 pl-2 border-indigo-200;
+  @apply text-lg leading-snug mt-6 mb-4 font-semibold font-serif border-l-4 pl-2 border-secondary-container text-secondary;
 }
 
 .typography > h4 {
-  @apply leading-none text-base font-semibold mb-4 mt-6 text-indigo-300;
+  @apply leading-none text-base font-semibold mb-4 mt-6 text-secondary;
 }
 
 .typography > h5 {
-  @apply leading-tight text-sm font-semibold mb-4 mt-6;
+  @apply leading-tight text-sm font-semibold text-secondary mb-4 mt-6;
 }
 
 .typography > h6 {
-  @apply leading-tight text-sm font-semibold text-gray-600 mb-4 mt-6;
+  @apply leading-tight text-sm font-semibold text-secondary mb-4 mt-6;
 }

@@ -22,10 +22,10 @@ const Header: React.FC = () => {
   const [menuVisible, setMenuVisible] = useState(false)
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="shadow-sm">
       <nav className="mx-auto max-w-3xl flex flex-wrap items-center justify-between p-4 sm:px-6 md:px-8 lg:px-0">
         <Link href="/" className="flex items-center">
-          <div className="font-sans text-gray-900 text-3xl">Elliot</div>
+          <div className="font-sans text-3xl">Elliot</div>
         </Link>
         <ul className="hidden lg:flex gap-10 items-end">
           {ENTRIES.map((entry) => (

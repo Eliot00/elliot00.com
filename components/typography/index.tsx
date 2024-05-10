@@ -7,9 +7,7 @@ import StyledTable from './StyledTable'
 const components: any = {
   code: ({ className, ...props }: any) => {
     if (!className) {
-      return (
-        <code className="bg-slate-100 px-1.5 text-red-600 rounded" {...props} />
-      )
+      return <code className="bg-error-container px-1.5 rounded" {...props} />
     }
 
     const match = /language-(\w+)/.exec(className) ?? []

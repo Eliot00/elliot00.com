@@ -3,9 +3,9 @@
 @tailwind utilities;
 
 body {
-    background-color: white;
+  @apply bg-background flex flex-col min-h-screen;
 }
 
 .link {
-    @apply text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out;
+  @apply text-on-surface hover:text-primary transition duration-150 ease-in-out;
 }
