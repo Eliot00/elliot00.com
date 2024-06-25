@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const ENTRIES = [
   {
@@ -20,17 +21,25 @@ const ENTRIES = [
 
 const Header: React.FC = () => {
   const [menuVisible, setMenuVisible] = useState(false)
+  const pathname = usePathname()
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="font-mono bg-white shadow-sm">
       <nav className="mx-auto max-w-3xl flex flex-wrap items-center justify-between p-4 sm:px-6 md:px-8 lg:px-0">
-        <Link href="/" className="flex items-center">
-          <div className="font-sans text-gray-900 text-3xl">Elliot</div>
+        <Link href="/" className="text-2xl font-semibold">
+          Elliot
         </Link>
         <ul className="hidden lg:flex gap-10 items-end">
           {ENTRIES.map((entry) => (
             <li key={entry.href}>
-              <Link href={entry.href} className="font-medium link">
+              <Link
+                href={entry.href}
+                className={`font-medium hover:text-sky-500 ${
+                  pathname === entry.href
+                    ? 'underline underline-offset-4 decoration-wavy decoration-2'
+                    : ''
+                }`}
+              >
                 {entry.content}
               </Link>
             </li>
