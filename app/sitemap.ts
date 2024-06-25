@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: 'https://elliot00.com',
       priority: 1,
+      lastModified: new Date(),
     },
     {
       url: 'https://elliot00.com/about',
