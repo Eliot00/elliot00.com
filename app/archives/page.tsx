@@ -46,7 +46,7 @@ export default function Archives() {
                       </div>
                     </div>
 
-                    <div className="font-semibold text-gray-800 dark:text-white">
+                    <div className="flex items-center font-semibold text-gray-800 dark:text-white">
                       {article.title}
                     </div>
                   </Link>
