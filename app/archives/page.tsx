@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { yearToTaiSui } from '@/lib/time'
 import type { Metadata } from 'next'
 import { allPosts } from 'contentlayer/generated'
-import { Fragment } from 'react'
 
 export const metadata: Metadata = {
   title: '归档 - Elliot',

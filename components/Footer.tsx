@@ -1,4 +1,5 @@
-import { GithubIcon, MastodonIcon } from '@/components/icons'
+import { GithubIcon, MastodonIcon, RssIcon } from '@/components/icons'
+import Link from 'next/link'
 
 const ICON_CLASS =
   'inline-block text-gray-600 transition ease-in-out hover:text-purple-600 hover:rotate-6 hover:scale-110'
@@ -12,6 +13,9 @@ const Footer = () => (
       <a className={ICON_CLASS} href="https://mastodon.social/@CoderElliot">
         <MastodonIcon />
       </a>
+      <Link className={ICON_CLASS} href="/rss">
+        <RssIcon />
+      </Link>
     </div>
     <div className="text-gray-600">Copyright © 2020-2024 Elliot</div>
   </div>
