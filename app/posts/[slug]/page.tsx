@@ -1,5 +1,5 @@
 import { allPosts } from 'contentlayer/generated'
-import { useMDXComponent } from 'next-contentlayer-temp/hooks'
+import { useMDXComponent } from 'next-contentlayer2/hooks'
 import { notFound } from 'next/navigation'
 import components from '@/components/typography'
 import styles from '@/styles/Typography.module.css'

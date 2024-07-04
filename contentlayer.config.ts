@@ -1,5 +1,4 @@
-// contentlayer.config.ts
-import { defineDocumentType, makeSource } from 'contentlayer-temp/source-files'
+import { defineDocumentType, makeSource } from 'contentlayer2/source-files'
 import rehypeProbeImageSize from './lib/rehypeImage'
 import remarkGfm from 'remark-gfm'
 
