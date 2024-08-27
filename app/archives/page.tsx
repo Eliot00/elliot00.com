@@ -3,7 +3,7 @@ import range from '@/lib/range'
 import Link from 'next/link'
 import { yearToTaiSui } from '@/lib/time'
 import type { Metadata } from 'next'
-import { allPosts } from 'contentlayer/generated'
+import { allPosts } from '@docube/generated'
 
 export const metadata: Metadata = {
   title: '归档 - Elliot',
@@ -35,8 +35,8 @@ export default function Archives() {
                 .toSorted((a, b) => b.publishedAt.localeCompare(a.publishedAt))
                 .map((article) => (
                   <Link
-                    href={article.url}
-                    key={article.slug}
+                    href={`/posts/${article._meta.slug}`}
+                    key={article._meta.slug}
                     className="flex gap-x-3 relative group rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
                   >
                     <div className="relative last:after:hidden after:absolute after:top-0 after:bottom-0 after:start-3.5 after:w-px after:-translate-x-[0.5px] after:bg-gray-200 dark:after:bg-neutral-700 dark:group-hover:after:bg-neutral-600">

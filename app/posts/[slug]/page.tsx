@@ -1,5 +1,5 @@
-import { allPosts } from 'contentlayer/generated'
-import { useMDXComponent } from 'next-contentlayer2/hooks'
+import { allPosts } from '@docube/generated'
+import { getMDXComponent } from 'mdx-bundler/client'
 import { notFound } from 'next/navigation'
 import components from '@/components/typography'
 import styles from '@/styles/Typography.module.css'
@@ -16,14 +16,20 @@ type Props = {
 
 export default function PostDetail({ params }: Props) {
   // Find the post for the current page.
-  const post = allPosts.find((post) => post._raw.flattenedPath === params.slug)
+  const post = allPosts.find((post) => post._meta.slug === params.slug)
 
   // 404 if the post does not exist.
   if (!post) notFound()
 
-  const { title, series, createdAt, publishedAt, slug } = post
-  // Parse the MDX file via the useMDXComponent hook.
-  const MDXContent = useMDXComponent(post.body.code)
+  const {
+    title,
+    series,
+    createdAt,
+    publishedAt,
+    body,
+    _meta: { slug },
+  } = post
+  const MDXContent = getMDXComponent(body)
 
   return (
     <>
@@ -84,19 +90,19 @@ export default function PostDetail({ params }: Props) {
 
 export async function generateStaticParams() {
   return allPosts.map((post) => ({
-    slug: post._raw.flattenedPath,
+    slug: post._meta.slug,
   }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = params
-  const post = allPosts.find((post) => post._raw.flattenedPath === slug)
+  const post = allPosts.find((post) => post._meta.slug === slug)
 
   if (!post) notFound()
 
   return {
     title: `${post.title} - Elliot`,
-    keywords: post.tags,
+    keywords: post.tags as string[],
     description: post.summary,
   }
 }

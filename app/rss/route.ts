@@ -1,4 +1,4 @@
-import { allPosts } from 'contentlayer/generated'
+import { allPosts } from '@docube/generated'
 
 const baseUrl = 'https://elliot00.com'
 
@@ -14,7 +14,7 @@ export async function GET() {
       (post) =>
         `<item>
           <title>${post.title}</title>
-          <link>${baseUrl}/${post.url}</link>
+          <link>${baseUrl}/posts/${post._meta.slug}</link>
           <description>${post.summary}</description>
           <pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate>
         </item>`

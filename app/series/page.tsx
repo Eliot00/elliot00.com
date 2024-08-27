@@ -1,7 +1,7 @@
 import groupBy from '@/lib/groupBy'
 import { Metadata } from 'next'
 import React, { Fragment } from 'react'
-import { allPosts } from 'contentlayer/generated'
+import { allPosts } from '@docube/generated'
 
 export const metadata: Metadata = {
   title: '文集 - Elliot',
@@ -23,8 +23,8 @@ const Series: React.FC = () => {
                 <ul>
                   {articles.map((a) => {
                     return (
-                      <li key={a.slug}>
-                        <a href={`/posts/${a.slug}`} className="link">
+                      <li key={a._meta.slug}>
+                        <a href={`/posts/${a._meta.slug}`} className="link">
                           {a.title}
                         </a>
                       </li>

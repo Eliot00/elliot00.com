@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { allPosts } from 'contentlayer/generated'
+import { allPosts } from '@docube/generated'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -17,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     ...allPosts.map((p) => ({
-      url: `https://elliot00.com/posts/${p.slug}`,
+      url: `https://elliot00.com/posts/${p._meta.slug}`,
       lastModified: new Date(p.publishedAt),
     })),
   ]

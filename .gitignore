@@ -45,3 +45,5 @@ public/sitemap-*.xml
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.docube/

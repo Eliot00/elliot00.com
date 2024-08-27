@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Summary from '@/components/Summary'
-import { type Post } from 'contentlayer/generated'
+import { type Post } from '@docube/generated'
 
 interface Props {
   posts: Post[]
@@ -13,9 +13,9 @@ const PostsList: React.FC<Props> = ({ posts, title = '最新文章' }) => {
       <h2 className="text-gray-800 text-2xl">{title}</h2>
       <ul className="divide-y divide-gray-100 font-serif">
         {posts.map((post) => (
-          <li key={post.slug} className="py-4">
+          <li key={post._meta.slug} className="py-4">
             <Link
-              href={`/posts/${post.slug}`}
+              href={`/posts/${post._meta.slug}`}
               className="text-black font-meduim text-2xl hover:text-indigo-700 transition duration-150 ease-in-out"
             >
               <h2 className="py-2">{post.title}</h2>

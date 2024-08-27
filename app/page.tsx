@@ -1,7 +1,7 @@
 import PostsList from '@/components/PostsList'
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { allPosts } from 'contentlayer/generated'
+import { allPosts } from '@docube/generated'
 import { compareDesc } from 'date-fns'
 
 export const metadata: Metadata = {

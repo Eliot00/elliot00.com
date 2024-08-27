@@ -1,4 +1,4 @@
-import { allPosts } from 'contentlayer/generated'
+import { allPosts } from '@docube/generated'
 import { notFound } from 'next/navigation'
 import PostsList from '@/components/PostsList'
 import type { Metadata } from 'next'
