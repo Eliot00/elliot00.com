@@ -18,14 +18,6 @@ const components: any = {
       <SyntaxHighlighter language={match[1]} style={oneLight} {...props} />
     )
   },
-  a: ({ children, href }: any) => (
-    <a
-      href={href}
-      className="text-indigo-500 hover:text-indigo-900 underline transition duration-150 ease-in-out"
-    >
-      {children}
-    </a>
-  ),
   img: SmartImage,
   table: StyledTable,
 }

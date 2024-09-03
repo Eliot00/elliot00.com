@@ -1,4 +1,4 @@
-import { allPosts } from '@docube/generated'
+import { allPosts, Post } from '@docube/generated'
 import { getMDXComponent } from 'mdx-bundler/client'
 import { notFound } from 'next/navigation'
 import components from '@/components/typography'
@@ -9,6 +9,7 @@ import { Lightning } from '@/components/icons'
 import Copyright from '@/components/Copyright'
 import { Metadata } from 'next'
 import Script from 'next/script'
+import reactParse from 'html-react-parser'
 
 type Props = {
   params: { slug: string }
@@ -26,10 +27,8 @@ export default function PostDetail({ params }: Props) {
     series,
     createdAt,
     publishedAt,
-    body,
     _meta: { slug },
   } = post
-  const MDXContent = getMDXComponent(body)
 
   return (
     <>
@@ -61,7 +60,7 @@ export default function PostDetail({ params }: Props) {
             </span>
           </div>
         </header>
-        <MDXContent components={components} />
+        <DualContent post={post} />
         <Divider>EOF</Divider>
         <div className="text-center font-medium">
           <Link className="link" href="/sponsor">
@@ -86,6 +85,15 @@ export default function PostDetail({ params }: Props) {
       ></Script>
     </>
   )
+}
+
+function DualContent({ post }: { post: Post }) {
+  if (post._meta.sourceFileType === 'mdx') {
+    const MDXContent = getMDXComponent(post.body)
+    return <MDXContent components={components} />
+  } else {
+    return <>{reactParse(post.body)}</>
+  }
 }
 
 export async function generateStaticParams() {

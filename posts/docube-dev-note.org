@@ -1,0 +1,159 @@
+#+title: 开发docube问题记录
+#+tags: Org TypeScript
+#+series: 车轮滚滚
+#+created_at: 2024-08-31T16:04:55.883150+08:00
+#+published_at: 2024-09-01T15:10:07.030439+08:00
+#+summary: 本文介绍了作者将博客内容格式从MDX迁移到Org-mode的过程中，开发了一个名为Docube的JavaScript/TypeScript库，并在文中详细描述了库的设计理念、实现细节以及在发布npm包时遇到的问题和解决方法。
+
+* 因缘
+
+不久前打算将我的博客内容格式从​=mdx=​转到​=orgmode=​，此前我一直在使用[[https://contentlayer.dev/][contentlayer]]管理我的mdx文档，但是因为一些原因这个项目停止维护了，并且虽然它具有一定的定制化能力，但和Markdown的绑定太深，无法满足我迁移到orgmode的需求，于是我花了点时间做了我个人的第一个JavaScript/TypeScript库：[[https://codeberg.org/Elliot00/docube][docube]]。
+
+* 设计
+
+通常我更喜欢使用可定制性高的软件，但是像Vim、Emacs这类软件常常被抱怨新手上手难度太高，似乎高度可定制和开箱即用是非常冲突的理念，所以我希望做一个硬核用户可以自定义行为，普通用户又可以快速上手使用的应用。在具体实践上，我借助了[[https://effect.website/][effect]]这个库，抽象出了一个通用的转换流程：
+
+#+begin_src mermaid
+graph TD
+    A[Loader] -->|Array of FileLike| B{Split Process}
+    B -->|Optional| C[ModuleResolver]
+    B -->|Main| D[FileConverter]
+    D -->|FileLike| E[Writer]
+    E --> F[End]
+
+    subgraph "Per FileLike"
+    D
+    E
+    end
+#+end_src
+
+我的原始的需求就是将本地的org文件读取解析成HTML文本格式，并和其它元数据一起组成JSON文件+TypeScript定义文件的形式，之后在React里直接引用。核心的流程就是通过​=Loader=​获取抽象的​=FileLkie[]=​，再调用​=FileConverter=​转换内容，最后通过​=Writer=​写入，因为我想尽量保持核心的通用性，所以​=ModuleResolver=​（主要是用来生成JS模块和类型定义）在这里是可选的，用户可以通过注入对应的依赖来改变默认的行为。
+
+常规的使用方式并不需要了解这些概念，下面是这段是我的博客从contentlayer迁移后的代码：
+
+#+begin_src typescript
+import { transform } from '@docube/mdx'
+import rehypeProbeImageSize from './lib/rehypeImage'
+import remarkGfm from 'remark-gfm'
+
+transform({
+  name: 'Post',
+  directory: './posts',
+  include: '**/*.mdx',
+  fields: (s) => ({
+    title: s.String,
+    tags: s.Array(s.String),
+    series: s.String,
+    createdAt: s.String,
+    publishedAt: s.String,
+    summary: s.String,
+  }),
+  remarkPlugins: [remarkGfm],
+  rehypePlugins: [rehypeProbeImageSize],
+})
+#+end_src
+
+执行这段代码就可以得到一个生成的​=.docube/generated/posts=​模块，顶层导出了​=allPosts=​变量，在NextJS里，可以[[https://github.com/Eliot00/elliot00.com/blob/master/app/posts/%5Bslug%5D/page.tsx][这样使用]]：
+
+#+begin_src typescript
+import { allPosts } from '@docube/generated'
+import { getMDXComponent } from 'mdx-bundler/client'
+
+// ...
+  const MDXContent = getMDXComponent(post.body)
+// ...
+
+// ...
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = params
+  // post即是自动生成的Post类型
+  const post = allPosts.find((post) => post._meta.slug === slug)
+
+  if (!post) notFound()
+
+  return {
+    title: `${post.title} - Elliot`,
+    keywords: post.tags as string[],
+    description: post.summary,
+  }
+}
+#+end_src
+
+而如果需要个性化使用，如提供一种新的文本格式的支持，只需要引用​=@docube/common=​的​=makeTransformer=​，修改传入的FileConverter依赖就可实现，具体见[[https://codeberg.org/Elliot00/docube/src/branch/main/packages/markdown/src/index.ts][@docube/markdown]]的实现。
+
+* 问题
+
+虽说我已经写过不少TypeScript代码，但在npm上发布库还是第一次，过程中还是遇到了不少问题的，在此记录一下，避免后来人踩坑。
+
+** Monorepo
+
+考虑到我至少需要默认支持mdx和org两种格式，所以一开始我就想要创建多个库，因此采用了monorepo的形式。Monorepo说白了就是在一个代码仓库里包含有关联的多个项目，可以共享同样的外围工具如lint、format等，项目之间需要重构更新依赖相对来说要比多仓库轻松些。
+
+对于JS项目，在根目录的package.json添加如​="workspaces": ["packages/*"]=​，就可以在packages目录里包含多个子包。但是在开发时，如果B包依赖A包，​=tsserver=​实际上检查的是A包build后的dist，而不是A包的TS代码，也就是说如果A包更新了，需要先build一下，才能使LSP正确地工作。如果不想手动执行命令，可以用一些工具的​=Watch Mode=​功能，检测到包变化自动rebuild，当然前提是开发机器内存够用:)。
+
+*** 同步依赖
+
+多个子项目依赖同一个依赖的情况是非常常见的，一般来说最好能全局共享这种相同的依赖，将其保持在一个相同版本。这方面NPM那边没有定义这个功能，不像​~Cargo~​可以让子项目继承Workspace的依赖。要实现这个目的的话，要么用[[https://www.npmjs.com/package/syncpack][syncpack]]这类专门处理这个问题的工具，要么用​~pnpm~​这类的包管理工具的[[https://pnpm.io/cli/update#--recursive--r][Workspace支持]]。
+
+** 发版
+
+将包发布到npm上只需要build后执行​~npm publish~​就可以了，但是如果更新的包被另外几个包依赖了，那么后者也需要更新。这个问题有个辅助工具[[https://github.com/changesets/changesets][changesets]]，它能自动帮助更新相关有改动的包的版本，并维护​*Changelog*​。
+
+*** scope
+
+NPM有一个比较好的设计是你可以给包名加一个范围前缀，比如有个通用的名字叫time，不同的组织可以用​=@google/time=​、​=@microsoft/time=​，一方面是避免想用的名字被抢，一方面是对于大企业来说可以标识一下这是自己的官方包。这里对新手的一个坑点是，当你创建了一个scope，然后想发布一个包，如​=@docube/mdx=​，默认情况下这个包会被当做是你组织下的私有包，而私有包是要收费的，需要用​~npm publish --access=public~​明确表明这是个公开的包，或者在package.json里写明：
+
+#+begin_src json
+{
+  "publishConfig": {
+    "access": "public"
+  },
+  ...
+}
+#+end_src
+
+** lint
+
+=turbo=​默认生成的Monorepo模板内部使用了eslint *v8*​，而当前最新的eslint版本是​*v9*​，这两个版本之间有不兼容的改动，所以如果在这个模板上新建项目，并且不指定安装的eslint版本的话，将无法使用​=turbo lint=​命令，解决办法一个是安装eslint时指定使用v8版本，另一个详见[[https://codeberg.org/Elliot00/docube/src/branch/main/packages/eslint-config][我的配置]]。
+
+** 可选依赖
+
+我本人对软件使用有一点小洁癖，不会用到的依赖就尽量不想要装到我的电脑上。如在Markdown支持上，很多人会在Markdown文件的开头放上一段​=yaml=​格式的文本来提供一些如撰写时间、作者等元信息：
+
+#+begin_src markdown
+---
+date: 2024-02-02T04:14:54-08:00
+draft: false
+params:
+  author: John Smith
+title: Example
+weight: 10
+---
+
+...
+#+end_src
+
+这个被称为​/front matter/​，但是处理这段文本的库每个人可能有不同的偏好选择（NPM上下载量较大的两个都有三年以上没有更新了）；并且有些情况下，这个front matter不一定是yaml格式，如静态站生成器hugo就提供了yaml、toml和json三种选择。
+
+如果我在我的库里直接依赖一个实现，那么既便我为用户提供了自定义解析这段文本的配置，用户也必须下载一个他用不到的第三方库，甚至就算是不需要front matter的用户也不得不安装。为此我使用了可选依赖，可选依赖定义在package.json的​*optionalDependencies*​，我在开发中使用的是bun，使用​~bun add gray-matter --optional~​就可以将这个​=gray-matter=​包安装为可选模式。
+
+在我的库代码里，可以用​=tye-catch=加​=import=​来判断用户有没有安装我默认的依赖，大致逻辑如下：
+
+#+begin_src typescript
+if (options.frontMatterExtractor) {
+    frontMatterData = options.frontMatterData(content)
+} else {
+    try {
+        const matter = import("gray-matter")
+        // ...
+    } catch (e) {
+        // ...
+    }
+}
+#+end_src
+
+不想要front matter的用户，或者想用自己的逻辑处理的用户，可以用​~npm install --omit=optinal~​来避免安装我默认的可选包（具体命令根据使用的包管理器不同）。
+
+* 终
+
+这篇博客就是我用org格式写的(*’ｰ’*)
