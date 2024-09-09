@@ -18,6 +18,7 @@ import parse from 'uniorg-parse'
 import uniorg2rehype from 'uniorg-rehype'
 import stringify from 'rehype-stringify'
 import extractKeywords from 'uniorg-extract-keywords'
+import rehypePrettyCode from 'rehype-pretty-code'
 
 import rehypeProbeImageSize from './lib/rehypeImage'
 
@@ -35,6 +36,14 @@ const AppConfigLive = makeAppConfig({
   }),
 })
 
+const rehypePrettyOptions = {
+  theme: {
+    light: 'material-theme-lighter',
+    dark: 'nord',
+  },
+  bypassInlineCode: true,
+}
+
 const processor = unified()
   .use(parse)
   .use(extractKeywords)
@@ -42,12 +51,7 @@ const processor = unified()
   // @ts-ignore
   .use(rehypeShiftHeading, { shift: 1 })
   // @ts-ignore
-  .use(rehypeShiki, {
-    themes: {
-      light: 'material-theme-lighter',
-      dark: 'nord',
-    },
-  })
+  .use(rehypePrettyCode, rehypePrettyOptions)
   .use(stringify)
 
 const UnifiedLive = Layer.succeed(
@@ -61,7 +65,10 @@ const UnifiedLive = Layer.succeed(
 
 const MdxConverterLive = makeMdxConverter({
   remarkPlugins: [remarkGfm],
-  rehypePlugins: [rehypeProbeImageSize],
+  rehypePlugins: [
+    rehypeProbeImageSize,
+    [rehypePrettyCode, rehypePrettyOptions],
+  ],
 })
 
 const MyContentConverterLive = Layer.effect(
