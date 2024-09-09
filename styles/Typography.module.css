@@ -80,3 +80,43 @@
     background-color: var(--shiki-dark-bg);
   }
 }
+
+.typography figure pre code[data-line-numbers] {
+  counter-reset: line;
+}
+
+.typography figure pre code[data-line-numbers] > [data-line]::before {
+  counter-increment: line;
+  content: counter(line);
+
+  /* Other styling */
+  display: inline-block;
+  width: 0.75rem;
+  margin-right: 2rem;
+  text-align: right;
+  color: gray;
+}
+
+.typography
+  figure
+  pre
+  code[data-line-numbers-max-digits='2']
+  > [data-line]::before {
+  width: 1.25rem;
+}
+
+.typography
+  figure
+  pre
+  code[data-line-numbers-max-digits='3']
+  > [data-line]::before {
+  width: 1.75rem;
+}
+
+.typography
+  figure
+  pre
+  code[data-line-numbers-max-digits='4']
+  > [data-line]::before {
+  width: 2.25rem;
+}
