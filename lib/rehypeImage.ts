@@ -54,9 +54,11 @@ async function probeCache(src: string): Promise<ImageSize> {
   const cache = await readCache()
 
   if (cache[src]) {
+    console.log(`Image cache hit: ${src}`)
     return cache[src]
   }
 
+  console.log(`Image cache miss: ${src}`)
   const result = await probe(src)
   cache[src] = { width: result.width, height: result.height }
 
