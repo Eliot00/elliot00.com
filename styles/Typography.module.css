@@ -1,4 +1,4 @@
-.typography a {
+.typography > p > a {
   @apply text-indigo-500 hover:text-indigo-900 underline transition duration-150 ease-in-out;
 }
 .typography ul,
