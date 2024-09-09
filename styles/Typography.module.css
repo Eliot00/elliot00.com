@@ -66,3 +66,17 @@
   font-family: 'Courier New', monospace; /* 字体 */
   font-size: 0.9em; /* 字体大小 */
 }
+
+.typography figure pre[data-theme*=' '],
+.typography figure pre[data-theme*=' '] code span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  .typography figure pre[data-theme*=' '],
+  .typography figure pre[data-theme*=' '] code span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+  }
+}
