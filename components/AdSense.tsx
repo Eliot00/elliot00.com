@@ -13,7 +13,7 @@ export default function AdSense({ pid }: AdSenseProps) {
     <Script
       src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-${pid}`}
       crossOrigin="anonymous"
-      strategy="afterInteractive"
+      strategy="lazyOnload"
       async
     />
   )
