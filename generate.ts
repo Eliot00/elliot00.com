@@ -9,15 +9,10 @@ import {
   ContentValidatorLive,
   ModuleResolverLive,
 } from '@docube/common'
+import { makeUnifiedLive } from '@docube/org'
 import remarkGfm from 'remark-gfm'
 import { Effect, Layer } from 'effect'
 import rehypeShiftHeading from 'rehype-shift-heading'
-import rehypeShiki from '@shikijs/rehype'
-import { unified } from 'unified'
-import parse from 'uniorg-parse'
-import uniorg2rehype from 'uniorg-rehype'
-import stringify from 'rehype-stringify'
-import extractKeywords from 'uniorg-extract-keywords'
 import rehypePrettyCode from 'rehype-pretty-code'
 
 import rehypeProbeImageSize from './lib/rehypeImage'
@@ -44,24 +39,12 @@ const rehypePrettyOptions = {
   bypassInlineCode: true,
 }
 
-const processor = unified()
-  .use(parse)
-  .use(extractKeywords)
-  .use(uniorg2rehype)
-  // @ts-ignore
-  .use(rehypeShiftHeading, { shift: 1 })
-  // @ts-ignore
-  .use(rehypePrettyCode, rehypePrettyOptions)
-  .use(stringify)
-
-const UnifiedLive = Layer.succeed(
-  Unified,
-  Unified.of({
-    process(content) {
-      return Effect.promise(() => processor.process(content))
-    },
-  })
-)
+const UnifiedLive = makeUnifiedLive({
+  rehypePlugins: [
+    [rehypeShiftHeading, { shift: 1 }],
+    [rehypePrettyCode, rehypePrettyOptions],
+  ],
+})
 
 const MdxConverterLive = makeMdxConverter({
   remarkPlugins: [remarkGfm],
