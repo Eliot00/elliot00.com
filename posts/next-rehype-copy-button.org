@@ -1,0 +1,135 @@
+#+title: 在NextJS中为rehype代码块添加复制按钮
+#+tags: React TypeScript
+#+series: 随笔
+#+created_at: 2024-09-13T11:12:48.876771+08:00
+#+published_at: 2024-09-13T13:57:48.733106+08:00
+#+summary: 本文介绍了作者在博客中使用rehype-pretty-code和shiki来美化代码块时，如何通过React Server Components和自定义MDX组件，解决在NextJS中使用带复制按钮的代码块时遇到的问题，并在不同的格式（MDX和Org-mode）下实现了功能的具体方法。
+
+我的博客中使用了​=rehype-pretty-code=​加​=shiki=​来美化代码块，rehype-pretty-code提供了一个shiki的​*transformer*​来自动给代码块加上复制按钮，它会生成这样的代码：
+
+#+begin_src html
+<button
+  data="code内的代码"
+  onclick​=\"navigator.clipboard.writeText(this.attributes.data.value);this.classList.add(&#x27;rehype-pretty-copied&#x27;);window.setTimeout(() =​> this.classList.remove(&#x27;rehype-pretty-copied&#x27;), 3000);\"
+>
+  <span class=\"ready\"></span>
+  <span class=\"success\"></span>
+</button>
+#+end_src
+
+但是在NextJS中目前想要不做额外处理地使用它，只能使用[[https:​//react.dev/​reference​/rsc/​server-components][React Server Components]]，将生成的HTML文本传入​=dangerouslySetInnerHTML=​：
+
+#+begin_src tsx
+function MyComponent() {
+  return <div dangerouslySetInnerHTML={{ __html: html }} />
+}
+#+end_src
+
+但在某些场景下没法直接用服务端组件，下面给出对应的解决办法。
+
+** MDX
+
+如果要结合MDX使用，MDX会把生成的​=button=​当成React组件处理，而React组件的​~onClick~​属性需要的是函数对象而不是字符串，为了防止[[https:​//en.wikipedia.org/​wiki/Cross-site_scripting][XSS]]这类安全问题又不能将字符串直接eval成函数，这里就会报错。
+
+解决办法是通过MDX自定义components的方式，先自定义一个复制按钮组件：
+
+#+begin_src tsx
+'use client'
+
+import { type PropsWithoutRef, useState } from 'react'
+
+export default function CopyCodeButton({
+  code,
+}: PropsWithoutRef<{ code: string }>) {
+  const [isCopied, setIsCopied] = useState(false)
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(code)
+    setIsCopied(true)
+
+    setTimeout(() => {
+      setIsCopied(false)
+    }, 2500)
+  }
+
+  return (
+    <button
+      className="rehype-pretty-copy"
+      title="Copy code"
+      aria-label="Copy code"
+      onClick={copy}
+    >
+      {isCopied ? CheckIcon : CopyIcon}
+    </button>
+  )
+}
+#+end_src
+
+这个组件不是服务端组件，所以在开头第一行要加​="use client"=​，​=className=​可以复用一下，子组件切换复用有点麻烦，干脆直接自定义的图标了。
+
+下一步就是通过MDX的API替换生成的button：
+
+#+begin_src tsx
+<MDXContent
+  components={{
+    button(props) {
+      const { children, className, ...rest } = props
+
+      // 判断一下是否是插件生成的
+      if (className === 'rehype-pretty-copy') {
+        return <CopyCodeButton code={rest.data} />
+      } else {
+        return <button {...props} />
+      }
+    },
+  }}
+/>
+#+end_src
+
+这样就可以实现复制代码按钮了。
+
+** Org
+
+直接使用我的[[https:​//www.npmjs.com/​package​/@docube/​org][@docube/org]]通常来说是没有问题的，但是由于我的文章页面的结构大致是这样的：
+
+#+begin_src tsx
+function Post() {
+  return (
+    <article>
+      <header></header>
+      {content}
+      <address></address>
+    </article>
+  )
+}
+#+end_src
+
+React的​=dangerouslySetInnerHTML=​不能直接作用到​=Fragment=​上，也就是必须要给content加个父元素，我个人有点受不了……
+
+为了能不加额外的父元素，我使用了​=html-react-parser=​这个库，它又带来了新的问题，也就是为了安全，它会直接忽略​~onclick~​属性，导致只能渲染按钮却没有复制的功能。
+
+解决办法如下：
+
+#+begin_src tsx
+import reactParse from 'html-react-parser'
+
+function Content() {
+  return (
+    <>
+      {reactParse(post.body, {
+        replace: (dom) => {
+          if (
+            'attribs' in dom &&
+            dom.name === 'button' &&
+            dom.attribs['class'] === 'rehype-pretty-copy'
+          ) {
+            delete dom.attribs.onclick
+            return <CopyCodeButton code={dom.attribs.data} />
+          }
+        },
+      })}
+    <>
+  )
+}
+#+end_src
+

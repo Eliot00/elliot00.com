@@ -9,7 +9,7 @@ import { Lightning } from '@/components/icons'
 import Copyright from '@/components/Copyright'
 import { Metadata } from 'next'
 import Script from 'next/script'
-import reactParse, { attributesToProps } from 'html-react-parser'
+import reactParse from 'html-react-parser'
 import CopyCodeButton from '@/components/typography/CopyCodeButton'
 
 type Props = {
