@@ -10,8 +10,7 @@ import Copyright from '@/components/Copyright'
 import { Metadata } from 'next'
 import Script from 'next/script'
 import reactParse, { attributesToProps } from 'html-react-parser'
-
-import CopyCodeButton from './copy-code'
+import CopyCodeButton from '@/components/typography/CopyCodeButton'
 
 type Props = {
   params: { slug: string }
@@ -104,8 +103,12 @@ function DualContent({ post }: { post: Post }) {
               dom.attribs['class'] === 'rehype-pretty-copy'
             ) {
               delete dom.attribs.onclick
-              const props = attributesToProps(dom.attribs)
-              return <CopyCodeButton {...props} code={dom.attribs.data} />
+              return (
+                <CopyCodeButton
+                  className="rehype-pretty-code"
+                  code={dom.attribs.data}
+                />
+              )
             }
           },
         })}

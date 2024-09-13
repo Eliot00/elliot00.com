@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, type PropsWithChildren } from 'react'
+import { type PropsWithoutRef, useState } from 'react'
 
-export default function CopyCodeButton(
-  props: PropsWithChildren<{ code: string }>
-) {
+export default function CopyCodeButton({
+  code,
+}: PropsWithoutRef<{ code: string }>) {
   const [isCopied, setIsCopied] = useState(false)
 
   const copy = async () => {
-    await navigator.clipboard.writeText(props.code)
+    await navigator.clipboard.writeText(code)
     setIsCopied(true)
 
     setTimeout(() => {
@@ -17,7 +17,12 @@ export default function CopyCodeButton(
   }
 
   return (
-    <button {...props} onClick={copy}>
+    <button
+      className="rehype-pretty-copy"
+      title="Copy code"
+      aria-label="Copy code"
+      onClick={copy}
+    >
       {isCopied ? CheckIcon : CopyIcon}
     </button>
   )
