@@ -103,12 +103,7 @@ function DualContent({ post }: { post: Post }) {
               dom.attribs['class'] === 'rehype-pretty-copy'
             ) {
               delete dom.attribs.onclick
-              return (
-                <CopyCodeButton
-                  className="rehype-pretty-code"
-                  code={dom.attribs.data}
-                />
-              )
+              return <CopyCodeButton code={dom.attribs.data} />
             }
           },
         })}
