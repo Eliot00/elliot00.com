@@ -9,7 +9,9 @@ import { Lightning } from '@/components/icons'
 import Copyright from '@/components/Copyright'
 import { Metadata } from 'next'
 import Script from 'next/script'
-import reactParse from 'html-react-parser'
+import reactParse, { attributesToProps } from 'html-react-parser'
+
+import CopyCodeButton from './copy-code'
 
 type Props = {
   params: { slug: string }
@@ -92,7 +94,23 @@ function DualContent({ post }: { post: Post }) {
     const MDXContent = getMDXComponent(post.body)
     return <MDXContent components={components} />
   } else {
-    return <>{reactParse(post.body)}</>
+    return (
+      <>
+        {reactParse(post.body, {
+          replace: (dom) => {
+            if (
+              'attribs' in dom &&
+              dom.name === 'button' &&
+              dom.attribs['class'] === 'rehype-pretty-copy'
+            ) {
+              delete dom.attribs.onclick
+              const props = attributesToProps(dom.attribs)
+              return <CopyCodeButton {...props} code={dom.attribs.data} />
+            }
+          },
+        })}
+      </>
+    )
   }
 }
 

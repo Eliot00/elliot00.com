@@ -14,6 +14,7 @@ import remarkGfm from 'remark-gfm'
 import { Effect, Layer } from 'effect'
 import rehypeShiftHeading from 'rehype-shift-heading'
 import rehypePrettyCode from 'rehype-pretty-code'
+import { transformerCopyButton } from '@rehype-pretty/transformers'
 
 import rehypeProbeImageSize from './lib/rehypeImage'
 
@@ -37,6 +38,7 @@ const rehypePrettyOptions = {
     dark: 'nord',
   },
   bypassInlineCode: true,
+  transformers: [transformerCopyButton()],
 }
 
 const UnifiedLive = makeUnifiedLive({

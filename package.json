@@ -27,6 +27,7 @@
     "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.5.0",
     "@next/eslint-plugin-next": "^14.2.4",
+    "@rehype-pretty/transformers": "^0.13.2",
     "@shikijs/rehype": "^1.16.1",
     "@types/node": "^20.14.8",
     "@types/react": "18.3.3",
