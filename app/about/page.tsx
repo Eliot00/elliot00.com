@@ -35,10 +35,12 @@ const About: React.FC = () => {
         <a href="https://github.com/Eliot00/elliot00.com">Github代码仓库</a>
         查看变更历史。
       </p>
-      <h3>当前技术栈（2022-04）</h3>
+      <h3>当前技术栈（2024-09）</h3>
       <ul>
         <li>NextJS</li>
-        <li>MDX(next-mdx-remote)</li>
+        <li>
+          <a href="https://codeberg.org/Elliot00/docube">docube</a>
+        </li>
       </ul>
       <h2>友情链接</h2>
       <ul>
