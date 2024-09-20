@@ -8,9 +8,9 @@ import Link from 'next/link'
 import { Lightning } from '@/components/icons'
 import Copyright from '@/components/Copyright'
 import { Metadata } from 'next'
-import Script from 'next/script'
 import reactParse from 'html-react-parser'
 import CopyCodeButton from '@/components/typography/CopyCodeButton'
+import Comment from '@/components/Comment'
 
 type Props = {
   params: { slug: string }
@@ -71,19 +71,7 @@ export default function PostDetail({ params }: Props) {
         </div>
         <Copyright slug={slug} title={title} />
       </article>
-      <div
-        id="cusdis_thread"
-        data-host="https://cusdis-gules.vercel.app"
-        data-app-id="032168ca-8f97-4fc7-9b42-c6419edac968"
-        data-page-id={slug}
-        data-page-url={`https://elliot00.com/posts/${slug}`}
-        data-page-title={title}
-      ></div>
-      <Script
-        async
-        defer
-        src="https://cusdis-gules.vercel.app/js/cusdis.es.js"
-      ></Script>
+      <Comment />
     </>
   )
 }
