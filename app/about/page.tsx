@@ -1,5 +1,8 @@
 import styles from '@/styles/Typography.module.css'
 import { Metadata } from 'next'
+import Image from 'next/image'
+
+import mpWeixin from './mp-weixin.webp'
 
 export const metadata: Metadata = {
   title: '关于 - Elliot',
@@ -42,6 +45,8 @@ const About: React.FC = () => {
           <a href="https://codeberg.org/Elliot00/docube">docube</a>
         </li>
       </ul>
+      <h2>公众号</h2>
+      <Image src={mpWeixin} alt="MP Weixin" />
       <h2>友情链接</h2>
       <ul>
         <li>
