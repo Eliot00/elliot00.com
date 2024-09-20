@@ -6,7 +6,7 @@
     "dev": "rimraf .docube && esrun generate.ts && next dev",
     "build": "rimraf .docube && esrun generate.ts && next build",
     "start": "next start",
-    "prepare": "husky install",
+    "prepare": "husky",
     "lint": "next lint"
   },
   "dependencies": {
