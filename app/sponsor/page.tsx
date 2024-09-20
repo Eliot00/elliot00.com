@@ -7,5 +7,11 @@ export const metadata: Metadata = {
 }
 
 export default function Sponsor() {
-  return <Image src={wechatSponsor} alt="Wechat sponsor qrcode" />
+  return (
+    <Image
+      className="shadow-lg"
+      src={wechatSponsor}
+      alt="Wechat sponsor qrcode"
+    />
+  )
 }
