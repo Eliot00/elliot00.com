@@ -35,9 +35,9 @@ export default function PostDetail({ params }: Props) {
     <>
       <article className={styles.typography}>
         <header>
-          <h1 className="font-serif text-center text-3xl">{title}</h1>
-          <div className="text-center text-gray-400 my-4">
-            <span className="px-2">
+          <h1 className="font-serif lg:text-center text-3xl">{title}</h1>
+          <div className="flex flex-col justify-center items-start gap-2 lg:gap-4 lg:items-center lg:flex-row text-gray-400 mx-auto py-4">
+            <span className="text-center">
               创建于：
               <time className="link">
                 {new Intl.DateTimeFormat('zh-Hans-CN').format(
@@ -45,7 +45,7 @@ export default function PostDetail({ params }: Props) {
                 )}
               </time>
             </span>
-            <span className="px-2">
+            <span className="text-center">
               发布于：
               <time className="link">
                 {new Intl.DateTimeFormat('zh-Hans-CN').format(
@@ -53,7 +53,7 @@ export default function PostDetail({ params }: Props) {
                 )}
               </time>
             </span>
-            <span className="px-2">
+            <span className="text-center">
               文集：
               <Link href="/series" className="link">
                 {series}
