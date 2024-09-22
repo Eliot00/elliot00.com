@@ -1,0 +1,35 @@
+#+title: 在NextJS14中集成twikoo评论系统
+#+tags: NextJS TypeScript
+#+series: 随笔
+#+created_at: 2024-09-22T14:38:58.034807+08:00
+#+published_at: 2024-09-22T15:05:50.485251+08:00
+#+summary: 本文介绍了在NextJS中集成Twikoo的方法。此外，提到NextJS在使用notFound API时可能存在的bug及解决方案。
+
+某天邮件收到了[[https://www.elephantsql.com/blog/end-of-life-announcement.html][ElephantSQL即将停止服务的通知]]，博客的评论系统可能要没有数据库用了，加上在用的评论系统本身的开发也陷入了停滞状态，于是就打算物色个新的支持自己部署的评论系统。最终选择了使用[[https://twikoo.js.org][twikoo]]，+因为可以暂时不用花钱+。
+
+Twikoo官网提供了CDN引入的方式，在NextJS中，可以通过[[https://nextjs.org/docs/app/building-your-application/optimizing/scripts][Script]]来加载twikoo的JS：
+
+#+begin_src tsx
+'use client'
+
+import Script from 'next/script'
+
+export default function Comment() {
+  return (
+    <div>
+      <div id="tcomment"></div>
+      <Script
+        src="https://cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.min.js"
+        onReady={() => {
+          window.twikoo.init({
+            envId: '', // 根据后端部署方式不同
+            el: '#tcomment',
+          })
+        }}
+      />
+    </div>
+  )
+}
+#+end_src
+
+目前NextJS似乎在[[https://nextjs.org/docs/app/api-reference/functions/not-found][notFound]]这个​~API~​上有点[[https://github.com/vercel/next.js/issues/58055][bug]]，如果你的页面组件使用了​~notFound~​，并且出现了类似​=NotFoundError: Failed to execute 'removeChild' on 'Node'=​的错误，检查一下Comment组件，是否用了​=<div>=​将​=<Script>=​包裹在内了。
