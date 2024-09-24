@@ -27,7 +27,7 @@ function MyComponent() {
 
 但在某些场景下没法直接用服务端组件，下面给出对应的解决办法。
 
-** MDX
+* MDX
 
 如果要结合MDX使用，MDX会把生成的​=button=​当成React组件处理，而React组件的​~onClick~​属性需要的是函数对象而不是字符串，为了防止[[https:​//en.wikipedia.org/​wiki/Cross-site_scripting][XSS]]这类安全问题又不能将字符串直接eval成函数，这里就会报错。
 
@@ -88,7 +88,7 @@ export default function CopyCodeButton({
 
 这样就可以实现复制代码按钮了。
 
-** Org
+* Org
 
 直接使用我的[[https:​//www.npmjs.com/​package​/@docube/​org][@docube/org]]通常来说是没有问题的，但是由于我的文章页面的结构大致是这样的：
 
