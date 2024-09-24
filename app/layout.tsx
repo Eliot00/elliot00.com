@@ -7,8 +7,13 @@ import AdSense from '@/components/AdSense'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Elliot',
-  description: "Elliot's blog.",
+  title: 'Elliot - 致虛極 守靜篤',
+  description: "Elliot's personal website.",
+  metadataBase: new URL('https://elliot00.com'),
+  openGraph: {
+    title: 'Elliot - 致虛極 守靜篤',
+    description: "Elliot's personal website.",
+  },
 }
 
 export default function RootLayout({
