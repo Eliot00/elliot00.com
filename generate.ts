@@ -15,6 +15,8 @@ import { Effect, Layer } from 'effect'
 import rehypeShiftHeading from 'rehype-shift-heading'
 import rehypePrettyCode from 'rehype-pretty-code'
 import { transformerCopyButton } from '@rehype-pretty/transformers'
+import slug from 'rehype-slug-custom-id'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 
 import rehypeProbeImageSize from './lib/rehypeImage'
 
@@ -45,6 +47,8 @@ const UnifiedLive = makeUnifiedLive({
   rehypePlugins: [
     [rehypeShiftHeading, { shift: 1 }],
     [rehypePrettyCode, rehypePrettyOptions],
+    slug,
+    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
   ],
 })
 
@@ -53,6 +57,8 @@ const MdxConverterLive = makeMdxConverter({
   rehypePlugins: [
     rehypeProbeImageSize,
     [rehypePrettyCode, rehypePrettyOptions],
+    slug,
+    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
   ],
 })
 
