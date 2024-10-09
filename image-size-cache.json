@@ -90,5 +90,9 @@
   "https://elliot-blog.oss-cn-shanghai.aliyuncs.com/okr.png": {
     "width": 1400,
     "height": 850
+  },
+  "https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kitty/ansi-escape.png": {
+    "width": 2564,
+    "height": 676
   }
 }
