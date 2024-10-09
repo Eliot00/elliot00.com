@@ -1,0 +1,55 @@
+#+title: 尝试用Vim充当kitty的scrollback pager
+#+tags: 工具 终端 Vim
+#+series: 百宝箱
+#+created_at: 2024-10-08T16:54:22.360578+08:00
+#+published_at: 2024-10-09T11:44:34.990726+08:00
+#+summary: 这篇文章介绍了如何将kitty终端模拟器与Vim结合使用，以实现更强大的搜索、跳转和复制功能，并提供了解决相关问题的方法。
+
+之前有[[https:​//elliot00.com/​posts/terminal-emulator-kitty][介绍]]过，kitty是一个高度可配置的终端模拟器，但是一些初次使用的小伙伴表示kitty不像其它一些终端模拟器可以方便的搜索输出的内容。其实kitty有一个​*Scrollback pager*​的功能，可以结合第三方工具，将当前屏幕内容通过管道传递给第三方工具——官方默认使用的是​~less~​。
+
+但是我想用Vim来提供更强的搜索、跳转、复制等功能，并且和平时用Vim编辑文件有同样的操作体验，所以就研究了下kitty和Vim结合的方法，分享出来。
+
+* 基础用法
+
+#+begin_src plaintext
+scrollback_pager vim -
+#+end_src
+
+添加这行配置后，按下​=ctrl+shift+g=​，kitty会通过管道将显示的内容传给​~scrollback_pager~​后的命令，​~vim -~​命令可以从​~stdin~​中读取内容，这样就可以实现用Vim来查找、复制kitty上的内容了。
+
+** 无法直接退出
+
+使用上述命令进入Vim后，会发现无法直接​=:q!=​退出，提示buffer还没有写入，这种情况下可以用只读模式进Vim，如​=vim -R -=​或者直接用​=view -=​。
+
+** 进入Vim时执行命令
+
+可以使用​=vim -c "ex command" -=​在读取kitty页面后执行ex命令，如​=vim -c "normal G" -=​自动跳到行尾，​=vim -c "map <silent> q :qa!<CR>" -=​映射​~q~​键直接退出等等。
+
+** fish
+
+如果你使用​*fish shell*​，恭喜你将遇到一个存在10年的老[[https://github.com/fish-shell/fish-shell/issues/1396][bug]]，解决办法嘛，可以使用​~vim -u NONE~​不加载配置，但治标不治本。
+
+** ANSI escape sequences
+
+终端模拟器可以通过[[https://zh.wikipedia.org/wiki/ANSI%E8%BD%AC%E4%B9%89%E5%BA%8F%E5%88%97][ANSI escape sequences]]来控制显示文本的颜色、粗细等等，但对于Vim来说，这些只是普通字符而已，所以如果直接使用Vim做kitty的scrollback pager，常常会看到一些乱码，如下图：
+
+#+ATTR_HTML: :alt Screenshot of Vim
+[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kitty/ansi-escape.webp]]
+
+已知的解决办法有两种：
+
+- 先使用清理工具再用管道传给Vim，如[[https://github.com/lunixbochs/vtclean][vtclean]]
+- 使用Vim插件，如[[https://github.com/vim-scripts/AnsiEsc.vim][AnsiEsc]]
+
+还有一种将buffer写入文件，再在Vim内置终端内查看的[[https://github.com/kovidgoyal/kitty/issues/2327#issuecomment-1059786996][邪道方法]]，但似乎只适用于NeoVim。
+
+* 其它方式
+
+** kitty插件
+
+如果只是需要更类似其他终端模拟器的搜索功能，也可以使用插件实现，已经有造好的轮子：[[https://github.com/trygveaa/kitty-kitten-search][kitty-kitten-search]]。
+
+** 返朴归真
+
+考虑到大部分情况下需要搜索复制功能是为了快速打开报错的文件之类的，其实直接用kitty内置的[[https://sw.kovidgoyal.net/kitty/kittens/hints/][hints]]功能也是一个不错的选择。
+

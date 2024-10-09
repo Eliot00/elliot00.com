@@ -45,6 +45,7 @@ const rehypePrettyOptions = {
 
 const UnifiedLive = makeUnifiedLive({
   rehypePlugins: [
+    rehypeProbeImageSize,
     [rehypeShiftHeading, { shift: 1 }],
     [rehypePrettyCode, rehypePrettyOptions],
     slug,

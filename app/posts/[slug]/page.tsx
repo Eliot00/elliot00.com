@@ -11,6 +11,7 @@ import { Metadata } from 'next'
 import reactParse from 'html-react-parser'
 import CopyCodeButton from '@/components/typography/CopyCodeButton'
 import Comment from '@/components/Comment'
+import SmartImage from '@/components/typography/SmartImage'
 
 type Props = {
   params: { slug: string }
@@ -92,6 +93,21 @@ function DualContent({ post }: { post: Post }) {
             ) {
               delete dom.attribs.onclick
               return <CopyCodeButton code={dom.attribs.data} />
+            }
+
+            if ('attribs' in dom && dom.name === 'img') {
+              return (
+                <SmartImage
+                  src={dom.attribs.src}
+                  alt={dom.attribs.alt}
+                  width={
+                    dom.attribs.width ? Number(dom.attribs.width) : undefined
+                  }
+                  height={
+                    dom.attribs.height ? Number(dom.attribs.height) : undefined
+                  }
+                />
+              )
             }
           },
         })}

@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import styles from './SmartImage.module.css'
 
-export default async function SmartImage({
+export default function SmartImage({
   src,
   alt,
   width,
