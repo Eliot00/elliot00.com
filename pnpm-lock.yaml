@@ -160,6 +160,9 @@ importers:
       typescript:
         specifier: ^5.3.2
         version: 5.5.2
+      uniqolor:
+        specifier: ^1.1.1
+        version: 1.1.1
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
@@ -3016,6 +3019,9 @@ packages:
 
   uniorg-rehype@1.2.0:
     resolution: {integrity: sha512-VDCdfsnity1rraQBgPSlEq3zbBnHJO1oG+c7JxPBjPP5xX8UDBhEFY7oY+PyF7gz+uAHzExNKvij9WSCpSZT1w==}
+
+  uniqolor@1.1.1:
+    resolution: {integrity: sha512-HUwezlXCwm5bzsEXW7AP7ybezH13uWENRgYT+3dOdhJPvpYucSqvIGckMiLn+Uy2j0NVf3fPp43uZ4aun3t4Ww==}
 
   unist-builder@4.0.0:
     resolution: {integrity: sha512-wmRFnH+BLpZnTKpc5L7O67Kac89s9HMrtELpnNaE6TAobq5DTZZs5YaTQfAZBA9bFPECx2uVAPO31c+GVug8mg==}
@@ -6618,6 +6624,8 @@ snapshots:
     dependencies:
       hastscript: 8.0.0
       unist-builder: 4.0.0
+
+  uniqolor@1.1.1: {}
 
   unist-builder@4.0.0:
     dependencies:
