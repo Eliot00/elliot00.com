@@ -27,12 +27,12 @@ export async function GET() {
         <title>编码与禅</title>
         <link>${baseUrl}</link>
         <description>Elliot's blog feed</description>
+        <follow_challenge>
+            <feedId>67437090448621568</feedId>
+            <userId>67386573774055424</userId>
+        </follow_challenge>
         ${itemsXml}
     </channel>
-    <follow_challenge>
-        <feedId>67437090448621568</feedId>
-        <userId>67386573774055424</userId>
-    </follow_challenge>
   </rss>`
 
   return new Response(rssFeed, {
