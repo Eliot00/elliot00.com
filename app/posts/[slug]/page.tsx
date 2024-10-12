@@ -36,8 +36,10 @@ export default function PostDetail({ params }: Props) {
     <>
       <article className={styles.typography}>
         <header>
-          <h1 className="font-serif lg:text-center text-3xl">{title}</h1>
-          <div className="flex flex-col justify-center items-start gap-2 lg:gap-4 lg:items-center lg:flex-row text-gray-400 mx-auto py-4">
+          <h1 className="font-serif font-bold my-4 lg:text-center text-3xl">
+            {title}
+          </h1>
+          <div className="flex flex-col justify-center items-start gap-2 lg:gap-4 lg:items-center lg:flex-row text-gray-400 mx-auto my-6">
             <span className="text-center">
               创建于：
               <time className="link">
@@ -63,15 +65,15 @@ export default function PostDetail({ params }: Props) {
           </div>
         </header>
         <DualContent post={post} />
-        <Divider>EOF</Divider>
-        <div className="text-center font-medium">
-          <Link className="link" href="/sponsor">
-            文章有帮助？为我充个
-            <Lightning />吧
-          </Link>
-        </div>
-        <Copyright slug={slug} title={title} />
       </article>
+      <Divider>EOF</Divider>
+      <div className="text-center font-medium">
+        <Link className="link" href="/sponsor">
+          文章有帮助？为我充个
+          <Lightning />吧
+        </Link>
+      </div>
+      <Copyright slug={slug} title={title} />
       <Comment />
     </>
   )

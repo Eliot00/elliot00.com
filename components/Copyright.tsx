@@ -23,30 +23,31 @@ const Copyright: React.FC<Props> = ({ slug, title }) => {
         <div className="text-yellow-800 font-semibold tracking-wider">
           版权声明
         </div>
-        <p className="pt-2 text-yellow-700">
-          标题：
-          <a href={selfUrl} className="link hover:underline">
-            {title}
-          </a>
-          <br />
-          作者：
-          <Link href="/about" className="link hover:underline">
-            Elliot
-          </Link>
-          <br />
-          链接：
-          <a href={selfUrl} className="link hover:underline">
-            {selfUrl}
-          </a>
-          <br />
-          许可协议：
-          <a
-            href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-            className="link hover:underline"
-          >
-            署名-非商业性使用-相同方式共享 4.0 国际
-          </a>
-        </p>
+        <ul className="pt-2">
+          <li>
+            <span>标题：</span>
+            <span className="text-gray-700">{title}</span>
+          </li>
+          <li>
+            <span>作者：</span>
+            <span className="text-gray-700">Elliot</span>
+          </li>
+          <li>
+            <span>链接：</span>
+            <span className="text-gray-700">{selfUrl}</span>
+          </li>
+          <li>
+            <span>许可协议：</span>
+            <span className="text-gray-700">
+              <a
+                href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                className="link hover:underline"
+              >
+                署名-非商业性使用-相同方式共享 4.0 国际
+              </a>
+            </span>
+          </li>
+        </ul>
       </div>
     </div>
   )
