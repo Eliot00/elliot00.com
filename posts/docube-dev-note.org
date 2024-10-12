@@ -137,7 +137,7 @@ weight: 10
 
 如果我在我的库里直接依赖一个实现，那么既便我为用户提供了自定义解析这段文本的配置，用户也必须下载一个他用不到的第三方库，甚至就算是不需要front matter的用户也不得不安装。为此我使用了可选依赖，可选依赖定义在package.json的​*optionalDependencies*​，我在开发中使用的是bun，使用​~bun add gray-matter --optional~​就可以将这个​=gray-matter=​包安装为可选模式。
 
-在我的库代码里，可以用​=tye-catch=加​=import=​来判断用户有没有安装我默认的依赖，大致逻辑如下：
+在我的库代码里，可以用​=try-catch=​加​=import=​来判断用户有没有安装我默认的依赖，大致逻辑如下：
 
 #+begin_src typescript
 if (options.frontMatterExtractor) {
