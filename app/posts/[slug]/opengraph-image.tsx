@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og'
-import OpenGraphImage from '@/components/OpenGraphImage'
 import { allPosts } from '@docube/generated'
 import { notFound } from 'next/navigation'
 import uniqolor from 'uniqolor'
@@ -37,14 +36,127 @@ export default async function Image({ params }: { params: { slug: string } }) {
 
   return new ImageResponse(
     (
-      <OpenGraphImage
-        background={{
-          accent: bgAccent,
-          light: bgAccentLight,
-          ultraLight: bgAccentUltraLight,
+      <div
+        style={{
+          display: 'flex',
+          height: '100%',
+          width: '100%',
+          fontFamily: 'Noto Sans, Inter, "Material Icons"',
+          padding: '80px 12rem',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: `linear-gradient(37deg, ${bgAccent} 27.82%, ${bgAccentLight} 79.68%, ${bgAccentUltraLight} 100%)`,
         }}
-        title={post.title}
-      />
+      >
+        <div
+          style={{
+            position: 'absolute',
+            top: '32px',
+            left: '32px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-around',
+            height: '128px',
+            width: '128px',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <div
+              style={{
+                padding: '4px',
+                width: '40px',
+                height: '40px',
+                boxShadow: `4px 4px 8px ${bgAccentLight}, -4px -4px 8px ${bgAccent}`,
+              }}
+            ></div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+            }}
+          >
+            <div
+              style={{
+                padding: '4px',
+                width: '40px',
+                height: '40px',
+                boxShadow: `4px 4px 8px ${bgAccentLight}, -4px -4px 8px ${bgAccent}`,
+              }}
+            ></div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+          >
+            <div
+              style={{
+                padding: '4px',
+                width: '40px',
+                height: '40px',
+                boxShadow: `4px 4px 8px ${bgAccentLight}, -4px -4px 8px ${bgAccent}`,
+              }}
+            ></div>
+            <div
+              style={{
+                padding: '4px',
+                width: '40px',
+                height: '40px',
+                boxShadow: `4px 4px 8px ${bgAccentLight}, -4px -4px 8px ${bgAccent}`,
+              }}
+            ></div>
+            <div
+              style={{
+                padding: '4px',
+                width: '40px',
+                height: '40px',
+                boxShadow: `4px 4px 8px ${bgAccentLight}, -4px -4px 8px ${bgAccent}`,
+              }}
+            ></div>
+          </div>
+        </div>
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end',
+            flexDirection: 'column',
+            textAlign: 'right',
+          }}
+        >
+          <h1
+            style={{
+              color: 'rgba(255, 255, 255, 0.92)',
+              fontSize: '50px',
+              overflow: 'hidden',
+              maxHeight: '150px',
+              fontWeight: 'bold',
+            }}
+          >
+            {post.title}
+          </h1>
+          <h2
+            style={{
+              color: 'rgba(255, 255, 255, 0.85)',
+              fontSize: '38px',
+              fontWeight: 'lighter',
+            }}
+          >
+            Elliot
+          </h2>
+        </div>
+      </div>
     ),
     {
       ...size,
