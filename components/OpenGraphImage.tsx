@@ -21,8 +21,12 @@ export default function OpenGraphImage(props: OpenGraphImageProps) {
         backgroundSize: '100px 100px',
       }
   const logoStyle = bg
-    ? { boxShadow: `4px 4px 8px ${bg.light}, -4px -4px 8px ${bg.accent}` }
-    : { backgroundColor: '#272727' }
+    ? {
+        boxShadow: `4px 4px 8px ${bg.light}, -4px -4px 8px ${bg.accent}`,
+        width: '76px',
+        height: '76px',
+      }
+    : { backgroundColor: '#272727', width: '84px', height: '84px' }
   const textColor = bg ? '#ffffff89' : '#272727'
 
   return (
@@ -56,8 +60,6 @@ export default function OpenGraphImage(props: OpenGraphImageProps) {
         >
           <div
             style={{
-              width: '84px',
-              height: '84px',
               padding: '4px',
               ...logoStyle,
             }}
@@ -72,93 +74,104 @@ export default function OpenGraphImage(props: OpenGraphImageProps) {
         >
           <div
             style={{
-              width: '84px',
-              height: '84px',
               padding: '4px',
               ...logoStyle,
             }}
           ></div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }}>
-          <div
-            style={{
-              width: '84px',
-              height: '84px',
-              padding: '4px',
-              ...logoStyle,
-            }}
-          ></div>
-          <div
-            style={{
-              width: '84px',
-              height: '84px',
-              padding: '4px',
-              ...logoStyle,
-            }}
-          ></div>
-          <div
-            style={{
-              width: '84px',
-              height: '84px',
-              padding: '4px',
-              ...logoStyle,
-            }}
-          ></div>
-        </div>
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          marginLeft: '3rem',
-          width: '500px',
-          overflow: 'hidden',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <h3
+        <div
           style={{
-            color: textColor,
-            fontSize: '3.5rem',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Elliot
-        </h3>
-        <p
-          style={{
-            fontSize: '1.8rem',
-            height: '5.2rem',
-            overflow: 'hidden',
-            lineClamp: 2,
-            color: textColor,
-          }}
-        >
-          致虛極 守靜篤
-        </p>
-      </div>
-      {title ? (
-        <p
-          style={{
-            position: 'absolute',
-            left: 0,
-            bottom: 4,
-            backgroundColor: '#272727',
-            color: '#FFFFFF95',
-            borderRadius: '8px',
-            padding: '0 1rem',
-            width: '1200px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            overflow: 'hidden',
+            gap: bg ? '14px' : '2px',
           }}
         >
-          {title}
-        </p>
-      ) : null}
+          <div
+            style={{
+              padding: '4px',
+              ...logoStyle,
+            }}
+          ></div>
+          <div
+            style={{
+              padding: '4px',
+              ...logoStyle,
+            }}
+          ></div>
+          <div
+            style={{
+              padding: '4px',
+              ...logoStyle,
+            }}
+          ></div>
+        </div>
+      </div>
+      {title ? (
+        <div
+          style={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'flex-end',
+            flexDirection: 'column',
+            textAlign: 'right',
+          }}
+        >
+          <h1
+            style={{
+              color: 'rgba(255, 255, 255, 0.92)',
+              fontSize: '50px',
+              overflow: 'hidden',
+              maxHeight: '150px',
+              fontWeight: 'bold',
+            }}
+          >
+            {title}
+          </h1>
+          <h2
+            style={{
+              color: 'rgba(255, 255, 255, 0.85)',
+              fontSize: '38px',
+              fontWeight: 'lighter',
+            }}
+          >
+            Elliot
+          </h2>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            marginLeft: '3rem',
+            width: '500px',
+            overflow: 'hidden',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <h3
+            style={{
+              color: textColor,
+              fontSize: '3.5rem',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Elliot
+          </h3>
+          <p
+            style={{
+              fontSize: '1.8rem',
+              height: '5.2rem',
+              overflow: 'hidden',
+              lineClamp: 2,
+              color: textColor,
+            }}
+          >
+            致虛極 守靜篤
+          </p>
+        </div>
+      )}
     </div>
   )
 }

@@ -13,24 +13,24 @@ export const size = {
 export const contentType = 'image/png'
 
 export default async function Image({ params }: { params: { slug: string } }) {
-  const post = allPosts.find((p) => p._meta.slug === params.slug)
+  const { slug } = params
+  const post = allPosts.find((p) => p._meta.slug === slug)
 
   if (!post) {
     notFound()
   }
 
-  const seed = Math.random().toString(36).substring(7)
-  const bgAccent = uniqolor(seed, {
+  const bgAccent = uniqolor(slug, {
     saturation: [30, 35],
     lightness: [60, 70],
   }).color
 
-  const bgAccentLight = uniqolor(seed, {
+  const bgAccentLight = uniqolor(slug, {
     saturation: [30, 35],
     lightness: [80, 90],
   }).color
 
-  const bgAccentUltraLight = uniqolor(seed, {
+  const bgAccentUltraLight = uniqolor(slug, {
     saturation: [30, 35],
     lightness: [95, 96],
   }).color
