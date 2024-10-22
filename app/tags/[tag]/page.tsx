@@ -8,10 +8,11 @@ export const metadata: Metadata = {
 }
 
 type Props = {
-  params: { tag: string }
+  params: Promise<{ tag: string }>
 }
 
-export default function TaggedPosts({ params }: Props) {
+export default async function TaggedPosts(props: Props) {
+  const params = await props.params
   const tag = decodeURIComponent(params.tag)
   const posts = allPosts.filter((post) => post.tags.includes(tag))
 

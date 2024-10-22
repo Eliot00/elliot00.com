@@ -1,5 +1,5 @@
 import { ContentConverter, Unified } from 'docube'
-import { makeMdxConverter } from '@docube/mdx'
+import { makeMarkdownConverter } from '@docube/markdown'
 import {
   makeTransformer,
   makeAppConfig,
@@ -23,7 +23,7 @@ import rehypeProbeImageSize from './lib/rehypeImage'
 const AppConfigLive = makeAppConfig({
   name: 'Post',
   directory: './posts',
-  include: '**/*.{mdx,org}',
+  include: '**/*.{md,org}',
   fields: (s) => ({
     title: s.String,
     tags: s.Array(s.String),
@@ -53,7 +53,7 @@ const UnifiedLive = makeUnifiedLive({
   ],
 })
 
-const MdxConverterLive = makeMdxConverter({
+const MarkdownConverterLive = makeMarkdownConverter({
   remarkPlugins: [remarkGfm],
   rehypePlugins: [
     rehypeProbeImageSize,
@@ -71,7 +71,7 @@ const MyContentConverterLive = Layer.effect(
     return {
       convert: (file) =>
         Effect.gen(function* () {
-          if (file._meta.fileName.endsWith('mdx')) {
+          if (file._meta.fileName.endsWith('md')) {
             return yield* mdxConverter.convert(file)
           } else {
             const parsed = yield* file.text.pipe(
@@ -95,7 +95,7 @@ const MyContentConverterLive = Layer.effect(
         }),
     }
   })
-).pipe(Layer.provide(MdxConverterLive), Layer.provide(UnifiedLive))
+).pipe(Layer.provide(MarkdownConverterLive), Layer.provide(UnifiedLive))
 
 const transformer = makeTransformer({
   loader: LoaderLive.pipe(Layer.provide(AppConfigLive)),

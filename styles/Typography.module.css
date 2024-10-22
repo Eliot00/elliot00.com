@@ -120,3 +120,24 @@
   > [data-line]::before {
   width: 2.25rem;
 }
+
+.typography table {
+  @apply table-auto w-full;
+}
+
+.typography th,
+.typography td {
+  @apply px-4 py-2;
+}
+
+.typography th {
+  @apply bg-gray-100 font-semibold text-left;
+}
+
+.typography tr:nth-child(even) {
+  @apply bg-gray-50;
+}
+
+.typography tr:hover {
+  @apply bg-gray-200;
+}

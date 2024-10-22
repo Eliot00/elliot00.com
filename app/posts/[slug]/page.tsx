@@ -1,7 +1,5 @@
 import { allPosts, Post } from '@docube/generated'
-import { getMDXComponent } from 'mdx-bundler/client'
 import { notFound } from 'next/navigation'
-import components from '@/components/typography'
 import styles from '@/styles/Typography.module.css'
 import Divider from '@/components/Divider'
 import Link from 'next/link'
@@ -14,10 +12,11 @@ import Comment from '@/components/Comment'
 import SmartImage from '@/components/typography/SmartImage'
 
 type Props = {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
-export default function PostDetail({ params }: Props) {
+export default async function PostDetail(props: Props) {
+  const params = await props.params
   // Find the post for the current page.
   const post = allPosts.find((post) => post._meta.slug === params.slug)
 
@@ -80,42 +79,37 @@ export default function PostDetail({ params }: Props) {
 }
 
 function DualContent({ post }: { post: Post }) {
-  if (post._meta.sourceFileType === 'mdx') {
-    const MDXContent = getMDXComponent(post.body)
-    return <MDXContent components={components} />
-  } else {
-    return (
-      <>
-        {reactParse(post.body, {
-          replace: (dom) => {
-            if (
-              'attribs' in dom &&
-              dom.name === 'button' &&
-              dom.attribs['class'] === 'rehype-pretty-copy'
-            ) {
-              delete dom.attribs.onclick
-              return <CopyCodeButton code={dom.attribs.data} />
-            }
+  return (
+    <>
+      {reactParse(post.body, {
+        replace: (dom) => {
+          if (
+            'attribs' in dom &&
+            dom.name === 'button' &&
+            dom.attribs['class'] === 'rehype-pretty-copy'
+          ) {
+            delete dom.attribs.onclick
+            return <CopyCodeButton code={dom.attribs.data} />
+          }
 
-            if ('attribs' in dom && dom.name === 'img') {
-              return (
-                <SmartImage
-                  src={dom.attribs.src}
-                  alt={dom.attribs.alt}
-                  width={
-                    dom.attribs.width ? Number(dom.attribs.width) : undefined
-                  }
-                  height={
-                    dom.attribs.height ? Number(dom.attribs.height) : undefined
-                  }
-                />
-              )
-            }
-          },
-        })}
-      </>
-    )
-  }
+          if ('attribs' in dom && dom.name === 'img') {
+            return (
+              <SmartImage
+                src={dom.attribs.src}
+                alt={dom.attribs.alt}
+                width={
+                  dom.attribs.width ? Number(dom.attribs.width) : undefined
+                }
+                height={
+                  dom.attribs.height ? Number(dom.attribs.height) : undefined
+                }
+              />
+            )
+          }
+        },
+      })}
+    </>
+  )
 }
 
 export async function generateStaticParams() {
@@ -124,7 +118,8 @@ export async function generateStaticParams() {
   }))
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params
   const { slug } = params
   const post = allPosts.find((post) => post._meta.slug === slug)
 
