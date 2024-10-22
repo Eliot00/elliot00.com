@@ -2,6 +2,7 @@ import PostsList from '@/components/PostsList'
 import Link from 'next/link'
 import { allPosts } from '@docube/generated'
 import { compareDesc } from 'date-fns'
+import AdBanner from '@/components/AdBanner'
 
 export default function Home() {
   const posts = allPosts
@@ -15,6 +16,11 @@ export default function Home() {
       <Link href="/posts" className="link px-2">
         查看更多
       </Link>
+      <AdBanner
+        dataAdSlot="5815862716"
+        dataAdFormat="fluid"
+        dataFullWidthResponsive
+      />
     </>
   )
 }
