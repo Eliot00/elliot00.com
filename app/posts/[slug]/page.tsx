@@ -63,7 +63,7 @@ export default async function PostDetail(props: Props) {
             </span>
           </div>
         </header>
-        <DualContent post={post} />
+        <PostContent post={post} />
       </article>
       <Divider>EOF</Divider>
       <div className="text-center font-medium">
@@ -78,7 +78,7 @@ export default async function PostDetail(props: Props) {
   )
 }
 
-function DualContent({ post }: { post: Post }) {
+function PostContent({ post }: { post: Post }) {
   return (
     <>
       {reactParse(post.body, {
