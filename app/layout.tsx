@@ -29,8 +29,8 @@ export default function RootLayout({
       <head>
         <AdSense pid="4587152222007322" />
       </head>
-      <body className="flex p-8 md:h-screen md:max-h-screen md:py-20 md:px-40 md:grid md:grid-cols-3 md:grid-rows-[1fr_auto] md:gap-16">
-        <header className="px-4 flex flex-col items-start justify-between md:col-start-3 md:col-span-1 md:row-start-1">
+      <body className="flex p-8 md:h-screen md:max-h-screen md:py-20 md:px-40 md:grid md:grid-cols-3 md:grid-rows-[1fr_min-content] md:auto-rows-min">
+        <header className="md:pl-16 md:pb-16 flex flex-col items-start justify-between md:col-start-3 md:col-span-1 md:row-start-1">
           <Link
             href="/"
             className="px-4 writing-vertical font-serif hover:text-zinc-700 hover:bg-zinc-100 hover:pt-4 pb-8 hover:pb-4 duration-700 ease-in-out"
