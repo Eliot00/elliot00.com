@@ -51,11 +51,14 @@
   @apply leading-tight text-sm font-semibold text-gray-600 mb-4 mt-6;
 }
 
-.typography figure pre {
-  padding: 16px; /* 内边距 */
+.typography > figure > pre {
   border-radius: 8px; /* 圆角 */
-  overflow-x: auto; /* 水平滚动条 */
   margin: 16px 0; /* 外边距 */
+}
+
+.typography > figure > pre > code {
+  padding: 16px; /* 内边距 */
+  overflow-x: auto;
 }
 
 .typography :not(pre) > code {

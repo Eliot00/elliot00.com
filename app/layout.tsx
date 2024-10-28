@@ -1,10 +1,11 @@
 import { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
-import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import AdSense from '@/components/AdSense'
 import './globals.css'
+import Link from 'next/link'
+import { AdBlock } from '@/components/Ads'
 
 export const metadata: Metadata = {
   title: 'Elliot - 致虛極 守靜篤',
@@ -28,9 +29,43 @@ export default function RootLayout({
       <head>
         <AdSense pid="4587152222007322" />
       </head>
-      <body className="flex flex-col min-h-screen">
-        <Header />
-        <main className="flex-1 w-full max-w-3xl self-center p-4 sm:px-6 md:px-8 lg:px-0">
+      <body className="flex p-8 md:h-screen md:max-h-screen md:py-20 md:px-40 md:grid md:grid-cols-3 md:grid-rows-[1fr_auto] md:gap-16">
+        <header className="px-4 flex flex-col items-start justify-between md:col-start-3 md:col-span-1 md:row-start-1">
+          <Link
+            href="/"
+            className="px-4 writing-vertical font-serif hover:text-zinc-700 hover:bg-zinc-100 hover:pt-4 pb-8 hover:pb-4 duration-700 ease-in-out"
+          >
+            <hgroup>
+              <h1 className="text-2xl font-semibold">Elliot</h1>
+              <p className="text-4xl font-bold">编码与禅</p>
+            </hgroup>
+          </Link>
+          <AdBlock />
+          <nav className="flex flex-col text-zinc-700">
+            <Link
+              href="/posts"
+              className="rounded-t-md py-1 px-2 bg-zinc-50 hover:bg-zinc-100"
+            >
+              文章
+            </Link>
+            <Link
+              href="/archives"
+              className="py-1 px-2 bg-zinc-50 hover:bg-zinc-100"
+            >
+              归档
+            </Link>
+            <Link
+              href="/posts"
+              className="rounded-b-md py-1 px-2 bg-zinc-50 hover:bg-zinc-100"
+            >
+              关于
+            </Link>
+          </nav>
+        </header>
+        <main
+          className="md:col-start-1 md:col-span-2 md:row-start-1 md:row-span-4 md:overflow-y-auto md:no-scrollbar text-gray-700"
+          role="main"
+        >
           {children}
         </main>
         <Footer />

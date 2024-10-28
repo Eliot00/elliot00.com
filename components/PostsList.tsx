@@ -7,24 +7,26 @@ interface Props {
   title?: string
 }
 
-const PostsList: React.FC<Props> = ({ posts, title = '最新文章' }) => {
+const PostsList: React.FC<Props> = ({ posts, title = '最新发布' }) => {
   return (
     <>
-      <h2 className="text-gray-800 text-2xl">{title}</h2>
+      <h2 className="font-sans font-medium text-2xl underline decoration-2">
+        {title}
+      </h2>
       <ul className="divide-y divide-gray-100 font-serif">
         {posts.map((post) => (
           <li key={post._meta.slug} className="py-4">
             <Link
               href={`/posts/${post._meta.slug}`}
-              className="text-black font-meduim text-2xl hover:text-indigo-700 transition duration-150 ease-in-out"
+              className="font-medium text-2xl transition duration-150 ease-in-out"
             >
-              <h2 className="py-2">{post.title}</h2>
+              <h2 className="my-2 hover:bg-zinc-100">{post.title}</h2>
             </Link>
             <span className="flex gap-2 items-center text-sm font-mono">
               {post.tags.map((tag) => (
                 <Link
                   href={`/tags/${tag}`}
-                  className="inline-flex items-center justify-center gap-1 rounded-full bg-purple-100 px-2.5 py-0.5 text-purple-700"
+                  className="inline-flex items-center justify-center gap-1 rounded-full bg-purple-100 px-2.5 py-0.5 text-purple-700 hover:bg-purple-200 hover:text-purple-800"
                   key={tag}
                 >
                   <svg
