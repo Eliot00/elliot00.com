@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { allPosts } from '@docube/generated'
 import { compareDesc } from 'date-fns'
 import ProjectsWall from '@/components/ProjectLink'
+import ReadMore from '@/components/ReadMore'
 
 export default function Home() {
   const posts = allPosts
@@ -14,12 +15,7 @@ export default function Home() {
     <>
       <PostsList title="文字" posts={posts} />
       <div className="text-center my-2">
-        <Link
-          href="/posts"
-          className="text-center underline relative transition duration-700 after:content-['>>>'] after:absolute after:opacity-0 after:transition-opacity after:duration-700 hover:after:opacity-100 after:left-full after:ml-2"
-        >
-          查看更多
-        </Link>
+        <ReadMore href="/posts" />
       </div>
       <section className="mt-4">
         <h2 className="font-sans font-medium text-2xl underline decoration-2">
@@ -44,13 +40,8 @@ export default function Home() {
             },
           ]}
         />
-        <div className="text-center my-2">
-          <a
-            href="https://github.com/Eliot00?tab=repositories"
-            className="text-center underline relative transition duration-700 after:content-['>>>'] after:absolute after:opacity-0 after:transition-opacity after:duration-700 hover:after:opacity-100 after:left-full after:ml-2"
-          >
-            查看更多
-          </a>
+        <div className="my-2">
+          <ReadMore href="https://github.com/Eliot00?tab=repositories" />
         </div>
       </section>
     </>
