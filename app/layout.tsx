@@ -4,8 +4,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from '@/components/Footer'
 import AdSense from '@/components/AdSense'
 import './globals.css'
-import Link from 'next/link'
-import { AdBlock } from '@/components/Ads'
+import { DefaultHeader } from '@/components/Header'
 
 export const metadata: Metadata = {
   title: 'Elliot - 致虛極 守靜篤',
@@ -29,41 +28,10 @@ export default function RootLayout({
       <head>
         <AdSense pid="4587152222007322" />
       </head>
-      <body className="flex p-8 md:h-screen md:max-h-screen md:py-20 md:px-40 md:grid md:grid-cols-3 md:grid-rows-[1fr_min-content] md:auto-rows-min">
-        <header className="md:pl-16 md:pb-16 flex flex-col items-start justify-between md:col-start-3 md:col-span-1 md:row-start-1">
-          <Link
-            href="/"
-            className="px-4 writing-vertical font-serif hover:text-zinc-700 hover:bg-zinc-100 hover:pt-4 pb-8 hover:pb-4 duration-700 ease-in-out"
-          >
-            <hgroup>
-              <h1 className="text-2xl font-semibold">Elliot</h1>
-              <p className="text-4xl font-bold">编码与禅</p>
-            </hgroup>
-          </Link>
-          <AdBlock />
-          <nav className="flex flex-col text-zinc-700">
-            <Link
-              href="/posts"
-              className="rounded-t-md py-1 px-2 bg-zinc-50 hover:bg-zinc-100"
-            >
-              文章
-            </Link>
-            <Link
-              href="/archives"
-              className="py-1 px-2 bg-zinc-50 hover:bg-zinc-100"
-            >
-              归档
-            </Link>
-            <Link
-              href="/posts"
-              className="rounded-b-md py-1 px-2 bg-zinc-50 hover:bg-zinc-100"
-            >
-              关于
-            </Link>
-          </nav>
-        </header>
+      <body className="flex flex-col gap-4 p-8 min-h-screen lg:h-screen lg:max-h-screen lg:gap-0 lg:py-20 lg:px-40 lg:grid lg:grid-cols-3 lg:grid-rows-[1fr_min-content] lg:auto-rows-min">
+        <DefaultHeader />
         <main
-          className="md:col-start-1 md:col-span-2 md:row-start-1 md:row-span-4 md:overflow-y-auto md:no-scrollbar text-gray-700"
+          className="lg:col-start-1 lg:col-span-2 lg:row-start-1 lg:row-span-4 lg:overflow-y-auto lg:no-scrollbar text-gray-700"
           role="main"
         >
           {children}

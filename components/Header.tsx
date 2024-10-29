@@ -1,102 +1,44 @@
 'use client'
 
-import React, { useState } from 'react'
 import Link from 'next/link'
+import { AdBlock } from '@/components/Ads'
 import { usePathname } from 'next/navigation'
 
-const ENTRIES = [
-  {
-    href: '/posts',
-    content: 'Blog',
-  },
-  {
-    href: '/archives',
-    content: 'Archive',
-  },
-  {
-    href: '/about',
-    content: 'About',
-  },
-] as const
-
-const Header: React.FC = () => {
-  const [menuVisible, setMenuVisible] = useState(false)
+export function DefaultHeader() {
   const pathname = usePathname()
 
   return (
-    <header className="font-mono bg-white shadow-sm">
-      <nav className="mx-auto max-w-3xl flex flex-wrap items-center justify-between p-4 sm:px-6 md:px-8 lg:px-0">
-        <Link href="/" className="text-2xl font-semibold">
-          Elliot
-        </Link>
-        <ul className="hidden lg:flex gap-10 items-end">
-          {ENTRIES.map((entry) => (
-            <li key={entry.href}>
-              <Link
-                href={entry.href}
-                className={`font-medium hover:text-sky-500 ${
-                  pathname === entry.href
-                    ? 'underline underline-offset-4 decoration-wavy decoration-2'
-                    : ''
-                }`}
-              >
-                {entry.content}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <button
-          className="flex items-center lg:hidden"
-          onClick={() => setMenuVisible((v) => !v)}
+    <header className="lg:pl-16 lg:pb-16 flex flex-col items-start justify-between lg:col-start-3 lg:col-span-1 lg:row-start-1">
+      <Link
+        href="/"
+        className="px-4 lg:writing-vertical font-serif hover:text-zinc-700 hover:bg-zinc-100 hover:pt-4 pb-8 hover:pb-4 duration-700 ease-in-out"
+      >
+        <hgroup>
+          <h1 className="text-2xl font-semibold">Elliot</h1>
+          <p className="text-4xl font-bold">编码与禅</p>
+        </hgroup>
+      </Link>
+      <AdBlock />
+      <nav className="flex flex-row lg:flex-col text-zinc-700">
+        <Link
+          href="/posts"
+          className={`${pathname === '/posts' ? 'bg-zinc-200' : 'bg-zinc-50 hover:bg-zinc-100'} rounded-l-md lg:rounded-t-md py-1 px-2`}
         >
-          <div className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:(text-gray-500 bg-gray-100) focus:(outline-none bg-gray-100 text-gray-500) transition duration-150 ease-in-out">
-            {menuVisible ? (
-              <svg
-                className="h-6 w-6"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            ) : (
-              <svg
-                className="h-6 w-6"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h16M4 18h7"
-                />
-              </svg>
-            )}
-          </div>
-        </button>
+          文章
+        </Link>
+        <Link
+          href="/archives"
+          className={`${pathname === '/archives' ? 'bg-zinc-200' : 'bg-zinc-50 hover:bg-zinc-100'} py-1 px-2`}
+        >
+          归档
+        </Link>
+        <Link
+          href="/about"
+          className={`${pathname === '/about' ? 'bg-zinc-200' : 'bg-zinc-50 hover:bg-zinc-100'} rounded-r-md lg:rounded-b-md py-1 px-2`}
+        >
+          关于
+        </Link>
       </nav>
-      {menuVisible && (
-        <div className="px-2 py-3 transition ease-in-out lg:hidden">
-          {ENTRIES.map(({ href, content }) => (
-            <Link
-              href={href}
-              key={href}
-              className="block px-3 py-2 rounded-md text-base font-medium text-gray-900 transition duration-150 ease-in-out"
-            >
-              {content}
-            </Link>
-          ))}
-        </div>
-      )}
     </header>
   )
 }
-
-export default Header
