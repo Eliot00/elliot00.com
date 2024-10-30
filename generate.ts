@@ -30,6 +30,7 @@ const AppConfigLive = makeAppConfig({
     series: s.String,
     createdAt: s.String,
     publishedAt: s.String,
+    updatedAt: s.optional(s.String),
     summary: s.String,
   }),
 })
