@@ -28,7 +28,7 @@
 }
 
 .typography > p {
-  @apply font-serif text-lg mb-4 break-all;
+  @apply font-serif text-lg my-4 break-all;
 }
 
 .typography > h2 {
@@ -143,4 +143,8 @@
 
 .typography tr:hover {
   @apply bg-gray-200;
+}
+
+.typography :global(.katex-html) {
+  display: none;
 }

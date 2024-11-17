@@ -10,6 +10,7 @@ import reactParse from 'html-react-parser'
 import CopyCodeButton from '@/components/typography/CopyCodeButton'
 import Comment from '@/components/Comment'
 import SmartImage from '@/components/typography/SmartImage'
+import 'rehype-callouts/theme/obsidian'
 
 type Props = {
   params: Promise<{ slug: string }>

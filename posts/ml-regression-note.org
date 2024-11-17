@@ -1,0 +1,686 @@
+#+title: 初中生也能懂的机器学习（一）
+#+tags: 机器学习 线性回归
+#+series: 机器学习笔记
+#+created_at: 2024-11-12T10:48:52.209040+08:00
+#+published_at: 2024-11-17T16:54:22.273424+08:00
+#+summary: 本文旨在为对机器学习感兴趣的初学者提供一份详细的线性回归入门教程。文章从基础概念入手，逐步深入，并结合实际案例进行讲解。通过阅读本文，读者可以了解线性回归的原理、实现步骤，并掌握基本的Python编程技巧。
+
+* 前言
+
+虽然曾经有看过一些关于机器学习的书及视频，但总感觉没有特别确切地理解了机器学习。本着费曼学习法的原则，我想尝试假设为一位仅有初中数学知识的学生讲解什么是机器学习，看我是否能较为清晰地解释机器学习的基本概念。
+
+本文假定的读者是一位刚刚上初三的学生，已经掌握：
+
+1. 整数、小数四则运算
+2. 平面直角坐标系
+3. 一元函数
+
+当然文中会列出一些代码，但并不会影响到对机器学习的理解，可以跳过。
+
+* 机器也可以学习吗？
+
+人类，显然可以做学习的主语，但，人类的造物是否也可以学习呢？首先来考察下，人类通常如何学习？
+
+当我们看到天空乌云密布，就可以知道不久将要下雨；面包上出现了霉点，就不应当再食用，否则可能中毒；农民会根据节气安排劳作。至少可以说，人类拥有利用经验的能力，通过经验，预测或判断天气、食物是否安全、何时播种等。
+
+机器是否也能像人一样，利用经验去解决问题呢？这正是「机器学习」这门学科的研究方向。
+
+软件工程师应该很熟悉用代码来表示一个计算过程，对于一个已知的计算过程，例如分析物体受的外力，有牛顿第二定律：
+
+\begin{equation}
+F = ma
+\end{equation}
+
+如果用Python代码来表达的话，可以写成这样：
+
+#+begin_src python
+def F(m, a):
+    return m * a
+#+end_src
+
+只要有物体的重量和加速度，即可求得对物体施加的外力，这是一个「演绎」的过程。
+
+如果在另一条时间线上，人类没有发现这条定律，但是通过实验，记录了很多组F、m、a的数据，如何逆向「归纳」出m、a和F的关系呢？这就是机器学习要解决的问题了。
+
+如果将已知计算方法，给定参数求结果的过程看作一台流水线机器，给它原材料，它会输出产品；那么机器学习要做的事就是在没有机器图纸的情况下，「逆向工程」破解这台机器。
+
+** 一些术语
+
+如前所述，对机器学习来说数据是非常重要的，这里用kaggle上的一个[[https://www.kaggle.com/datasets/nehalbirla/vehicle-dataset-from-cardekho/data][二手车辆数据]]来举例：
+
+| 品牌   | 买车年份 | 行驶里程 |   价格 |
+|--------+---------+---------+--------|
+| Honda  |    2014 |   14100 | 450000 |
+| Maruti |    2007 |   70000 |  60000 |
+
+这样一系列的数据称为「​*数据集*​」（data set），每一行称为一个「​*样本*​」（sample），每一列反映了车辆数据的一个属性，称为「​*特征*​」（feature）。
+
+数据之间存在一种潜在的关系（哲学地说，没有关系也是一种关系），如行驶里程和价格的关系，通过数据集归纳总结数据的关系的过程可以称为「​*学习*​」（learning）或「​*训练*​」（train）。
+
+在数据中如果有一个标记值，如价格，我们训练的目的是通过数据得到车辆行驶里程和价格的关系，把真实世界中里程和价格的关系称为「​*真实*​」（ground truth），训练的结果就叫做「​*模型*​」（model）或「​*假设*​」（hypothesis）。
+
+如果标记值是一个连续的量（可以用连续的数字表示），如行驶里程、轴长等，求特征值和标记值之间的关系，这种训练任务叫做「​*回归*​」（regression）；如果标记值是离散的量（有限的类别值），如新车或旧车，就叫「​*分类*​」（classification）。
+
+回归和分类的共同点是数据集中已有确定的标记信息，这种有标记信息的学习任务被称为「​*监督学习*​」（supervised learning），相对的，另一类样本中没有标记信息的学习任务被称为「​*无监督学习*​」（unsupervised learning），其代表为「​*聚类*​」（clustering）。
+
+通过分析数据，可以根据特征之间的相似性，将数据分组，每个组称为「​*簇*​」（cluster），如将有相似价格、燃油类型、行驶里程等特征的车分到同一簇，便于进一步分析。与分类不同，在数据样本里没有直接已知的分类标准，分簇的标准是数据间的潜在联系。
+
+最后，对于训练得到的模型，需要有种手段去验证它，就需要将已有的数据集分出一部分来，用于检验模型的好坏。这部分数据样本称为「​*测试样本*​」（testing sample），那么数据集中用来做训练的样本，自然就叫做「​*训练*​」（training sample）了。
+
+* 线性回归
+
+** 函数
+
+在了解什么是线性回归前，让我们一起稍稍回顾下函数的概念。
+
+将一群对象的整体称为集合，集合中的对象就称为元素。如中国人是一个集合，每个中国人就是这个集合的一个元素；自然数也是一个集合，1、2、3……就是这个集合的元素。一个元素都没有的集合被叫做空集。
+
+设有两个非空的集合X、Y，如果X中的每一个元素x，都在Y集合中有​*唯一*​的元素y与之对应的话，就把X到Y的这种关系称为X到Y的一个函数，记作f（这里的字母没有特别意义，可以随便用abcd替代）。例如正整数集合，对每个元素加一，结果还是属于正整数，这样的关系可以描述成函数：
+
+\begin{equation}
+f(x) = x + 1, \quad x \in \mathbb{Z}^+
+\end{equation}
+
+也可以写成：
+
+\begin{equation}
+y = x + 1, \quad x \in \mathbb{Z}^+
+\end{equation}
+
+把集合X称为函数f的​*作用域*​，也就是x的取值范围，在这里是正整数，数学符号是​$$\mathbb{Z}^+$$​，函数f所有可能的输出的集合，称为f的​*值域*​。
+
+再回看对回归的定义，如果把数据集中的特征值集合当作输入X，标记值当作输出Y，就可以认为真实世界里有一个X到Y的函数记为t（truth），回归学习的任务就是从输入和输出上尽可能地还原出t，从这个角度说，回归这个命名是非常传神的。
+
+函数有很多种，线性函数、高次函数、多元函数等等，相对应地，本文要讲的线性回归任务，即把输入和输出之间看作是一个线性函数的关系。
+
+那什么是线性函数呢？简单地说就是在函数图像上表现为一条直线的函数。可以表示为​$$f(x) = mx + b$$​，其中m和b是未知的常数。如果你是在我的博客上看到这篇文章，那么应该可以在下面看到一个交互式的函数图，可以试看拖动调整m和b的值，查看这两个未知变量对函数图像的影响。
+
+#+begin_export html
+<iframe src="https://www.desmos.com/calculator/hl3fkigwsj" width="100%" height="500"></iframe>
+#+end_export
+
+如果没有看到这个嵌入的交互网页，可以用浏览器打开[[https://www.desmos.com/calculator/hl3fkigwsj][desmos]]查看。
+
+#+attr_html: :alt 线性函数
+[[https://r2.elliot00.com/ml/linear-function-nR08kb.webp]]
+
+如果只看图像的右半部分，也就是横轴x大于0的部分，可以发现当w变化时，直线和横轴之间的夹角也会发生变化，w就被称为函数的斜率，它影响了函数图像的倾斜程度。当w不变时，改变b，会发现直线在上下移动，b就称为函数的截距（b的绝对值就是直线和y轴交点到0点的距离）。
+
+** 实践任务
+
+现在来找一个问题做个实践。仍然以车辆数据为例，一般来说可以认为车辆越旧（买入年代越早），卖价就会越低，这样就可以将特征（年份）和标记值（价格）联系起来，记年份为x，价格为y，x和y的真实关系为函数t。
+
+现在假设这个关系是个线性关系，记作​~f(x) = wx + b~​，其中w和b是未知的，我们的训练任务应该是求w和b的值，使得综合来看f(x)和t最接近。
+
+** 代价函数
+
+那么怎么判断选定了w和b后的f(x)和t是否接近呢？
+
+数学家勒让德给出了一种方法：​*最小二乘法*​。 首先给我们的数据编个号，设有m行数据，定义序号i属于1到m，用​x_i​表示第i个年份，用​y_i​表示第i个价格，这样就有了m组​(x_i, y_i)​。对每一组样本数据，将​x_i​代入假设函数，也能得到一个输出值，把这个输出值记作估计值​$$\hat{y_{i}}$$​，y上的小帽子代表估计。
+
+每一组训练样本中，用​*估计值*​减去​*y*​，得到的值称为​*误差*​，再把误差求平方，再把每一组数据上的误差加起来求和，这样看起来是不是能让这个误差平方和最小的假设函数就是最好的假设函数呢？
+
+#+begin_quote
+[!TIP]
+和微积分一样，最小二乘法的发现者也具有争议。勒让德于1806年率先提出了最小二乘法，后来高斯声称他其实更早就已经发现，并在1829年给出了最小二乘法法优于其他方法的证明。
+#+end_quote
+
+这样我们训练的目的，就是找出一对w和b，使得假设函数f(x) = wx + b在每一组样本上得到的估计值，与观测值y的误差的平方的和最小。用数学符号表示为：
+
+\begin{equation}
+\min_{w, b} \sum_{i=1}^m \left( \hat{y}_{i} - y_{i} \right)^2
+\end{equation}
+
+最终得到的最好的假设函数就是我们要训练的结果，也可以叫做模型，而w和b就是模型的参数。
+
+#+begin_quote
+[!NOTE]
+注意前面我将y称为观测值，而不是真实值。回想一下小学几何知识：「两点确定一条直线」，理论上根本不需要复杂的计算，有两个样本数据不就可以得到线性函数了吗？但要考虑到人类的观测都是有误差的，所以对于观测的样本数据，不能直接说它是真实数据，训练以使假设函数和数据样本「适配」的过程，也被称为「​*拟合*​」，而不是求真。
+#+end_quote
+
+但在实践中，我们要在这个方法上做点变形，使用​*均方误差*​。也就是对于m组数据，求误差的平方的和，再除以m求平均值，再除个2。对于不同的w和b的取值，都可以在训练数据上计算出一个均方误差来，那么是不是可以把它表示成一个关于w和b的二元二次函数呢？这个函数在机器学习中就叫「​*代价函数*​」（cost function）。用数学符号表示为：
+
+\begin{equation}
+J(w, b) = \frac{1}{2m} \sum_{i=1}^m (f_{w, b}(x^{(i)}) - y^{(i)})^2
+\end{equation}
+
+#+begin_quote
+[!NOTE]
+如果读者已经忘了什么是二元二次函数，这里做个不严谨的解释：J(w, b)，括号里有两个量，会影响到函数的取值，就称为二元函数，f(x)就是一元函数，二次指的是函数表达式里有个平方（二次方）。
+#+end_quote
+
+用一个表格来举个例子：
+
+| x | y | 设w=2,b=2 | 误差 |
+|---+---+-----------+------|
+| 2 | 3 |         6 |    3 |
+| 3 | 5 |         8 |    3 |
+| 4 | 9 |        10 |    1 |
+
+这里当w取2，b也取2时，代价函数的值，也就是均方误差是多少呢？就是3的平方加3的平方加1的平方，再除训练样本数量3，再除2，结果是六分之十九。
+
+#+begin_quote
+[!TIP]
+求平均值直接除m不就可以了吗？为什么要额外除个2呢？数学直觉比较好的朋友可以想想。提示：试试对代价函数求偏导。
+#+end_quote
+
+总结一下，现在我们有了两个函数：
+
+1. 假设函数f(x)
+2. 代价函数J(w, b)
+
+我们的任务就是找出一对参数w和b，使得J(w, b)最小，这样代入假设函数就得到最后的模型了。那具体用什么方法去做呢？在回答这个问题之前，让我们先观察一下数据和代价函数的图像。
+
+** 数据处理
+
+下面用Python来处理数据并画图：
+
+#+begin_src python
+import pandas as pd
+import matplotlib.pyplot as plt
+
+cars = pd.read_csv('./data/car_details_v4.csv')
+cars = cars[['Price', 'Year']].dropna(subset=['Price', 'Year'])
+
+plt.scatter(cars['Year'], cars['Price'], alpha=0.7, edgecolors='w', linewidth=0.5)
+plt.xlabel('Year')
+plt.ylabel('Price')
+plt.show()
+#+end_src
+
+#+attr_html: :alt 年份价格关系图
+[[https://r2.elliot00.com/ml/year-price-1Uu2sA.webp]]
+
+#+begin_src python
+import numpy as np
+
+X = cars[['Year']].values
+y = cars[['Price']].values
+
+def cost(w, b, X, y):
+    m = len(y)
+    f = w * X + b
+    errors = f - y
+    return (1 / (2 * m)) * np.sum(errors ** 2)
+
+# 不能在图上表示无限的w和b，所以只展示部分参数范围
+w_range = np.linspace(-10000, 10000, 100)
+b_range = np.linspace(-10000, 10000, 100)
+
+# 计算代价函数值
+cost_values = np.zeros((len(w_range), len(b_range)))
+
+for i, w in enumerate(w_range):
+    for j, b in enumerate(b_range):
+        cost_values[i, j] = cost(w, b, X, y)
+
+# 画出代价函数图像
+w_grid, b_grid = np.meshgrid(w_range, b_range)
+fig = plt.figure(figsize=(12, 8))
+ax = fig.add_subplot(111, projection='3d')
+ax.plot_surface(w_grid, b_grid, cost_values.T, cmap='viridis')
+
+ax.set_xlabel('w (Slope)')
+ax.set_ylabel('b (Intercept)')
+ax.set_zlabel('Cost')
+
+plt.title('Cost Function Surface')
+plt.show()
+#+end_src
+
+#+attr_html: :alt 代价函数图
+[[https://r2.elliot00.com/ml/cost-function-8kR10q.webp]]
+
+从图形上看，代价函数处在三维空间里，像是一个山谷的形状，这个「山谷」的谷底就是我们要找的那一点。但是机器学习不能靠用肉眼去看图像，应该用计算公式（算法）来找这一点。
+
+** 梯度与极值
+
+三维空间的图形分析起来有一点麻烦，所以让我们先对代价函数做一次「降维打击」吧。
+
+先假设b参数固定不变，当作一个常数，那么代价函数就从二元二次函数变成了一元二次函数。想象有一个碗，从中间切开它，忽略它的厚度，切面是不是就相当于一个U型的线呢？固定b，就相当于从图像上与b轴平行的位置「切了一刀」。
+
+我们来看看这样一个二次函数有什么性质：
+
+#+begin_export html
+<iframe src="https://www.desmos.com/calculator/x00harweci" width="100%" height="500"></iframe>
+#+end_export
+
+二次函数构成的曲线图像也是有斜率的，只是与直线有固定的斜率不同，曲线的斜率是动态的。拖动Q点的位置，查看曲线斜率的变化。如果你没有看到交互式的图像，这里还准备了一张静态图：
+
+#+attr_html: :alt 一元二次函数
+[[https://r2.elliot00.com/ml/slope-mR1q8z.webp]]
+
+静态图中标出了5个点的斜率（就是图中的slope，绘图库默认没有中文字体就用英文表示了）。
+
+总之，从图上可以看出，图像显示区域内，最低的那一点，它的斜率是0，切线是水平线，在这一点越往右边，斜率越大；越往左边，斜率越小。并且，左边的斜率都是负数，右边的都是正数。
+
+如何去求任一点的斜率？在数学上有个方法，对函数「​*求导*​」，得到一个导函数，代入原函数上一点的x值，得到「​*导数*​」，这个导数就是这一点的斜率。先不用管导数是什么，只要记住有这么个方法就行了。
+
+#+begin_quote
+[!TIP]
+这里举例的函数，实际上有个简单的方法去求它的极小值。搜索关键词：导数、驻点、极值
+#+end_quote
+
+** 梯度下降法
+
+前置的理论介绍得差不多了，接下来进入实操阶段，这里介绍真正用来做线性回归训练的算法：梯度下降法。
+
+首先要给参数w和b设置一个初始值，通常会先都设为0。接下来：
+
+1. 更新w为​$$w - \alpha \frac{\partial J(w, b)}{\partial w}$$​
+2. 更新b为​$$b - \alpha \frac{\partial J(w, b)}{\partial b}$$​
+
+还是先以将b固定，只考虑w的情况来讨论，w的更新公式里有个希腊字母α（alpha），它表示的是「​*学习率*​」（learning rate），一般是0到1之间的正数。学习率后面那个复杂的符号叫做代价函数J上对w的偏导，可以视为忽略b后的二次函数的导数，也就是一元二次函数曲线上w点的斜率。
+
+两个偏导用数学符号表示为：
+
+\begin{equation}
+\frac{\partial J(w, b)}{\partial w} = \frac{1}{m} \sum_{i=1}^{m} \left( \hat{y}^{(i)} - y^{(i)} \right) x^{(i)}
+\end{equation}
+
+\begin{equation}
+\frac{\partial J(w, b)}{\partial b} = \frac{1}{m} \sum_{i=1}^{m} \left( \hat{y}^{(i)} - y^{(i)} \right)
+\end{equation}
+
+如果你有学过微积分，可以试着自己推导一下，本文最后也会放上求偏导的过程。
+
+#+begin_quote
+[!TIP]
+参数w和b是在学习中逐渐更新求得的，而像学习率这样事先给定的控制学习过程的量，又被叫做「​*超参数*​」（hyperparameter）。
+#+end_quote
+
+回顾刚刚提到的只考虑w的一元二次代价函数的性质，如果我们选的初始w值在极小值点的右边，那么斜率是一个正数，乘上正的学习率，结果还是正数，w更新为w减一个正数，是不是就越来越小了呢？也就是w向左移动（向极小值点的方向移动）了。
+
+反过来，如果w在极小值点的左边，那么斜率是一个负数，乘上正的学习率，结果是负数，w更新为w减一个负数，岂不是就相当于加一个正数？那么w不就增大了吗？此时w向右（也就是极小值所在的方向）移动了。
+
+那么再来看看学习率这个数字有什么用。如果学习率非常小，是不是可以认为每一步对w的更新都很小呢？也就是学习的速度变慢了。如果学习率取值非常大呢？就用前面图像所示的​~f(x) = 2x^2 + 4x + 3~​为例，这里直接给出它的导函数：​~f'(x) = 4x + 4~​，如果学习率设为1000，w初始为0，第一次更新后，w变为0 - 4 * 1000等于-4000，再次更新后会变为15992000，诶，怎么左脚踩右脚上天了呢？可见，学习率​*既不能太小，也不能太大*​。
+
+另一方面，当w离极小值点越远，绝对值就越大；离极值点越近，绝对值就越小。也就是说，w从右到左靠近极值点时，每一步更新减去的值会越来越小；从左到右靠近极值点时，每一步的更新增加的值也是越来越小的。可见这个斜率（导数）的性质相当好，居然具有自我调节的作用。
+
+最后，如果w已经在极小值点上了，这时这点的斜率为0，任何数减去或加上0，结果还是这个数本身。所以，在梯度下降法中，只要最后参数不再变化了，就说明模型训练完成了。
+
+** 代码实现
+
+现在尝试将梯度下降法用代码实现出来。
+
+首先得注意，在计算机中，所有数据都是用二进制表示的。什么是二进制？我们说n进制，就代表将数字的每一位，用0到n-1来表示，如生活中常用的十进制，代表每一位数学只能用0到9来表示，大于9就要向前进一位。二进制就显然每一位只能是0或1了。
+
+由于存储设备空间是有限的，同时也为了处理方便，计算机通常用固定的位数——如32位——来存储数学，这就意味着数学上像π这样的无限不循环小数无法被精确的表示。另外，十进制的有些数，如0.1，转换成二进制表示会变成一无限循环小数，存储时也要损失精度。
+
+这样一来，前面说的用斜率是否为0去判断模型训练是否完成就行不通了。怎么办呢？可以定义一个非常小的小数，这里管它叫epsilon，如果某次参数更新后，代价函数值变化小于这个epsilon了，就可以认为训练成功了。为了双重保险，再加上一个最大更新次数，更新参数的次数超过这个值，算法也直接停止。
+
+#+begin_src python
+epislon = 1e-6 # 0.000001的简写
+max_iterations = 10000
+#+end_src
+
+#+begin_quote
+[!NOTE]
+这种判断方法其实也还有问题，但这里例子中的年份和价格本身相关性也不是很好，所以更细节的内容留到下一篇讲多元线性回归再讲吧。
+#+end_quote
+
+下一步设置学习率alpha和初始参数w和b，并读入车辆数据：
+
+#+begin_src python
+import numpy as np
+import pandas as pd
+
+alpha = 0.01
+
+class LinearModel:
+    def __init__(self, data_path):
+        cars = pd.read_csv(data_path)
+        cars = cars[['Price', 'Year']].dropna(subset=['Price', 'Year'])
+        self.X = cars[['Year']].values
+        self.y = cars[['Price']].values
+        self.w = 0.0
+        self.b = 0.0
+#+end_src
+
+这里使用了Python中的类，虽说日常写代码我更喜欢用函数定义，但既然在机器学习中常常说模型，这里就用类来定义它，做个名称上的对应吧。
+
+具体的代码里引用了numpy和pandas这两个库，用于简化代码，例如这里通过​=cars[['Year']].values=​就取出了csv文件中所有的年份这一列，后续还可以直接用​=w * X=​的形式计算对所有特征值做乘积。
+
+接着就要定义出类方法形式的代价函数和应用梯度下降法的训练过程了：
+
+#+begin_src python
+    def train(self):
+        iteration = 0
+        prev_cost = float('inf')
+        while iteration < max_iterations:
+            cost = self.cost()
+            if abs(prev_cost - cost) < epsilon:
+                break
+            prev_cost = cost
+            self.gradient_descent()
+            iteration += 1
+        print(f"训练经过了{iteration}次迭代")
+        print(f"最终 w={self.w} b={self.b}")
+
+    def cost(self):
+        m = len(self.y)
+        f = self.w * self.X + self.b
+        errors = f - self.y
+        return (1 / (2 * m)) * np.sum(errors ** 2)
+
+    def gradient_descent(self):
+        dw, db = self.compute_gradients()
+        self.w -= alpha * dw
+        self.b -= alpha * db
+
+    def compute_gradients(self):
+        m = len(self.y)
+        f = self.w * self.X + self.b
+        errors = f - self.y
+        dw = (1 / m) * np.sum(errors * self.X)
+        db = (1 / m) * np.sum(errors)
+        return dw, db
+#+end_src
+
+整个模型的定义就已经完成了，最后一步就是读取数据并执行train方法了：
+
+#+begin_src python
+if __name__ == '__main__':
+    model = LinearModel('./data/car_details_v4.csv')
+    model.train()
+#+end_src 
+
+但执行起来就会发现不对了，最后的输出显示w和b都变成了​~nan~​，Python解释器也抛出了错误：​=RuntimeWarning: overflow encountered in reduce=​。还是因为之前提到的问题，计算机用固定位数能表示的数是有限的，计算过程中发生了溢出（超出了能表示的范围），怎么解决这个问题呢？
+
+可以先分析下数据本身，通过pandas库的​~describe~​方法，简单分析一下数据集：
+
+#+begin_src plaintext
+              Price         Year
+count  2.059000e+03  2059.000000
+mean   1.702992e+06  2016.425449
+std    2.419881e+06     3.363564
+min    4.900000e+04  1988.000000
+25%    4.849990e+05  2014.000000
+50%    8.250000e+05  2017.000000
+75%    1.925000e+06  2019.000000
+max    3.500000e+07  2022.000000
+#+end_src
+
+可以看到年份的范围太小了，而相对的价格的范围又太大了，最便宜的车不到五万块，最贵的却有3500万！
+
+#+begin_quote
+[!TIP]
+事实上我具体看了下价格最大的那行数据，是一台法拉利 488 GTB，只能说法拉利，不愧是你。
+#+end_quote
+
+那么能不能通过调节alpha和最大迭代次数，让学习速度慢一点？可以这么做，但是在实践中发现这样太慢了。能不能在特征数据上做些处理？
+
+** 特征缩放
+
+在一些有裁判打分的体育比赛中，为了公平起见，通常会去掉一个最高分和一个最低分，避免异常数据干扰结果。在线性回归中，为了避免特征数据过散或过紧凑等问题，需要对数据做一个处理，这个过程称为「​*特征缩放*​」（feature scaling）。
+
+特征缩放的途径有多种，这里选用一种叫做标准化的方法：
+
+第一步先求特征的平均值（mean），表示为：
+
+\begin{equation}
+\mu = \frac{1}{N} \sum_{i=1}^{N} x_i
+\end{equation}
+
+再求标准差（standard deviation），即用所有特征值减均值，求平方，再求和，再求平均，再开平方。表示为：
+
+\begin{equation}
+\sigma = \sqrt{\frac{1}{N} \sum_{i=1}^{N} (x_i - \mu)^2}
+\end{equation}
+
+最后，用原特征值减去均值，再除以标准差，就得到了标准化的特征。表示为：
+
+\begin{equation}
+x' = \frac{x - \mu}{\sigma}
+\end{equation}
+
+numpy这个库提供了方法用于快速计算均值和标准差，下面修改代码：
+
+#+begin_src python
+class LinearModel:
+    def __init__(self, data_path):
+        cars = pd.read_csv(data_path)
+        cars = cars[['Price', 'Year']].dropna(subset=['Price', 'Year'])
+
+        self.X_mean = cars['Year'].mean()
+        self.X_std = cars['Year'].std()
+        self.y_mean = cars['Price'].mean()
+        self.y_std = cars['Price'].std()
+
+        self.X = ((cars[['Year']].values - self.X_mean) / self.X_std)
+        self.y = ((cars[['Price']].values - self.y_mean) / self.y_std)
+
+        self.w = 0.0
+        self.b = 0.0
+#+end_src
+
+初始化数据时，将X和y都标准化，标准化前后数据对比：
+
+#+begin_src plaintext
+原始数据概况:
+              Price         Year
+count  2.059000e+03  2059.000000
+mean   1.702992e+06  2016.425449
+std    2.419881e+06     3.363564
+min    4.900000e+04  1988.000000
+25%    4.849990e+05  2014.000000
+50%    8.250000e+05  2017.000000
+75%    1.925000e+06  2019.000000
+max    3.500000e+07  2022.000000
+
+标准化后的数据概况:
+               Year         Price
+count  2.059000e+03  2.059000e+03
+mean   1.693880e-14 -4.917549e-17
+std    1.000000e+00  1.000000e+00
+min   -8.450992e+00 -6.835014e-01
+25%   -7.210951e-01 -5.033276e-01
+50%    1.708161e-01 -3.628244e-01
+75%    7.654235e-01  9.174349e-02
+max    1.657335e+00  1.375977e+01
+#+end_src
+
+注意这样最后训练出的参数是在标准化后的数据上得到的，也可以把参数还原，标准化时做了减法和除法，所以还原时用乘法和加法：
+
+#+begin_src python
+    def train(self):
+        iteration = 0
+        prev_cost = float('inf')
+        while iteration < max_iterations:
+            cost = self.cost()
+            if abs(prev_cost - cost) < epsilon:
+                break
+            prev_cost = cost
+            self.gradient_descent()
+            iteration += 1
+
+        print(f"\n训练经过了{iteration}次迭代")
+        print(f"标准化空间中的参数: w={self.w} b={self.b}")
+
+        # 将参数转换回原始空间
+        self.w_original = self.w * (self.y_std / self.X_std)
+        self.b_original = self.y_mean - self.w_original * self.X_mean + self.b * self.y_std
+
+        print(f"\n原始空间中的参数:")
+        print(f"w={self.w_original:.2f}")
+        print(f"b={self.b_original:.2f}")
+#+end_src
+
+再次运行代码，终于，经过343次迭代后，梯度下降算法收敛，结果如下：
+
+#+begin_src plaintext
+训练经过了343次迭代
+标准化空间中的参数: w=0.3014701935037997 b=-4.573355347224044e-15
+
+原始空间中的参数:
+w=216889.58
+b=-435638671.20
+#+end_src
+
+** 预测
+
+现在线性回归的模型已经训练结束了，但是这个模型目前似乎仅仅向我们展示了两个参数的值，没有起到什么作用。给模型类添加一个predict方法：
+
+#+begin_src python
+    def predict(self, year):
+        # 将输入年份标准化
+        year_normalized = (year - self.X_mean) / self.X_std
+        # 在标准化空间中预测
+        price_normalized = self.w * year_normalized + self.b
+        # 将预测结果转换回原始空间
+        price = price_normalized * self.y_std + self.y_mean
+        return price
+#+end_src
+
+只是要注意，特征经过标准化后，训练得到的模型参数也是基于标准化后的数据的，因此在预测时要么将输入的年份标准化，要么将参数还原，否则得到的结果是不对的。
+
+看下2014年的二手车能卖多少钱：
+
+#+begin_src python
+model.predict(2014) # 输出1176937.0349997955
+#+end_src
+
+* 问题
+
+以上就展示了对二手车数据中销售年份与销售价格之间关系的线性回归训练过程，但是实际上还有很多问题没有解决，这些问题需要再用更多篇幅详细解释，但在这里先简单列一下。
+
+** 测试集与模型评估
+
+作为机器学习的结果，这个模型显然不应该只是去「fit」训练数据，如果我们得出了售出年份和价格的关系，那么给出一个在训练样本中没有出现过的年份，应该也能「​*预测*​」出车的价格。
+
+为了能评估模型，最好能将数据集分成两个部分，一部分用于训练，另一部分用于测试。由于现实任务中数据量大小不一，各种模型复杂度不同，所以没有一个通用的最好的划分方式。一般有按比例如3分测试7分训练；还有交叉验证如将数据分10份，做10次训练和测试，每次用不同的一份数据做测试，其余的做训练，最后取测试结果的平均值。
+
+我们将模型在未见过的新数据上的表现，称为模型的「​*泛化*​」（generalization），怎么评估模型在测试集上的泛化能力好不好？
+
+其中一种方法是使用前面提过的均方误差，均方误差应该越小越好。
+
+** 多元特征
+
+实际上，以我们的经验来说，二手车价格肯定不会只和年份有关。就像前面数据显示的那样，两年前买的五菱和两年前买的法拉利，二手价格显然是截然不同的。怎么综合如品牌、燃油类型、行驶里程等特征，训练一个更「实用」模型呢？
+
+** 更多的特征缩放方式
+
+除了标准化以外，还有多种其它方式没有介绍，它们各有什么优缺点呢？还有关于将数据集划分为训练集和测试集的问题，应该先缩放再划分呢？还是先划分再缩放？
+
+* 一点点数学
+
+最后的最后，再来一点点数学吧。如果你觉得了解了线性回归后感到很兴奋以至于无法入睡，以下内容将对你的睡眠问题起到很大的帮助。
+
+** 梯度到底是个啥
+
+在梯度下降法中，我没有解释这个方法的名称，参数的更新公式中有学习率，有代价函数的偏导数，那么梯度在哪里？
+
+以二元函类为例，对于函数f(x, y)，它对x的偏导数，其实就是它在x方向上的变化率。现在设在xoy平面上，有一以点(x_0, y_0)
+为起点的射线l，函数沿着这个射线方向上的变化率，就是函数在这个方向上的方向导数，记作：
+
+\begin{equation}
+D_{\mathbf{l}} f(x, y) = \lim_{t \to 0} \frac{f(x + t l_x, y + t l_y) - f(x, y)}{t}
+\end{equation}
+
+什么是梯度呢？设函数f(x, y)在区域D内有一阶连续偏导数，那么就称向量​$$f_x'(x_0, y_0)\vec{i} + f_y'(x_0, y_0)\vec{j}$$​为函数在点(x_0, y_0)的梯度，记作​$$\nabla f(x_0, y_0)$$​。多元函数以此类推。
+
+再回到方向导数，如果函数z = f(x, y)在(x_0, y_0)处可微，则意味着期沿着任意非零向量的方向导数都存在，有：
+
+\begin{equation}
+D_{\mathbf{l}} f(x_0, y_0) = f_x'(x_0, y_0)l_x + f_y'(x_0, y_0)l_y
+\end{equation}
+
+其中(l_x, l_y)是方向向量​$$\mathbf{l}$$​的单位向量，即​$$l_x^2 + l_y^2 = 1$$​。
+
+这个式子可以用向量的内积形式写成：
+
+\begin{equation}
+D_{\mathbf{l}} f(x_0, y_0) = \nabla f(x_0, y_0) \cdot \mathbf{l}
+\end{equation}
+
+根据柯西-施瓦茨不等式，我们有：
+
+\begin{equation}
+|\nabla f(x_0, y_0) \cdot \mathbf{l}| \leq |\nabla f(x_0, y_0)| \cdot |\mathbf{l}| = |\nabla f(x_0, y_0)|
+\end{equation}
+
+当且仅当向量​$$\mathbf{l}$$​与梯度向量方向相同时，等号成立。这说明：
+
+1. 函数在梯度方向上的方向导数最大，其值等于梯度的模
+2. 在与梯度方向相反的方向上，方向导数取得最小值，等于梯度的模的相反数
+3. 在与梯度正交的方向上，方向导数为零
+
+这就是为什么在梯度下降法中，我们用减去偏导数的形式更新参数，实质上是沿着梯度的反方向更新参数，就是代价函数值下降最快的方向。
+
+** 代价函数中的1/2
+
+前面有提过，代价函数里特意除了一个2，这里我们来看下其求偏导的过程，你就能知道为什么要特意除以2了。
+
+首先求J(w,b)关于w的偏导数：
+
+\begin{align*}
+\frac{\partial J}{\partial w} &= \frac{\partial}{\partial w}[\frac{1}{2m}\sum_{i=1}^m(wx^{(i)} + b - y^{(i)})^2] \\
+&= \frac{1}{2m}\sum_{i=1}^m\frac{\partial}{\partial w}(wx^{(i)} + b - y^{(i)})^2 \\
+&= \frac{1}{2m}\sum_{i=1}^m 2(wx^{(i)} + b - y^{(i)}) \cdot x^{(i)} \\
+&= \frac{1}{m}\sum_{i=1}^m(wx^{(i)} + b - y^{(i)})x^{(i)}
+\end{align*}
+
+然后求J(w,b)关于b的偏导数：
+
+\begin{align*}
+\frac{\partial J}{\partial b} &= \frac{\partial}{\partial b}[\frac{1}{2m}\sum_{i=1}^m(wx^{(i)} + b - y^{(i)})^2] \\
+&= \frac{1}{2m}\sum_{i=1}^m\frac{\partial}{\partial b}(wx^{(i)} + b - y^{(i)})^2 \\
+&= \frac{1}{2m}\sum_{i=1}^m 2(wx^{(i)} + b - y^{(i)}) \cdot 1 \\
+&= \frac{1}{m}\sum_{i=1}^m(wx^{(i)} + b - y^{(i)})
+\end{align*}
+
+其实代价函数里的1/2就是为了在求偏导时方便消去。
+
+** Convex function
+
+其实前面在讲一元二次函数在极小值点两边的导数性质时，忽略了一件事，就是如​~y = -x^2~​这样的函数，它的图像不是一个U型的，而是N型的，那怎么证明我们的偏导是个U型，或者说代价函数是个「山谷」型的呢？需要证明代价函数是一个[[https://en.wikipedia.org/wiki/Convex_function][Convex function]]，就是要证明其[[https://zh.wikipedia.org/zh-cn/%E9%BB%91%E5%A1%9E%E7%9F%A9%E9%99%A3][Hessian矩阵]]为半正定的。
+
+#+begin_quote
+[!NOTE]
+Convex function直接翻译是凸函数，但按国内的理解，U型的函数应该是凹的，国内的一些教材对凹凸函数的定义也确实和国外相反。
+#+end_quote
+
+首先计算代价函数的二阶偏导数：
+
+\begin{align*}
+\frac{\partial^2 J}{\partial w^2} &= \frac{\partial}{\partial w}[\frac{1}{m}\sum_{i=1}^m(wx^{(i)} + b - y^{(i)})x^{(i)}] \\
+&= \frac{1}{m}\sum_{i=1}^m(x^{(i)})^2
+\end{align*}
+
+\begin{align*}
+\frac{\partial^2 J}{\partial b^2} &= \frac{\partial}{\partial b}[\frac{1}{m}\sum_{i=1}^m(wx^{(i)} + b - y^{(i)})] \\
+&= \frac{1}{m}\sum_{i=1}^m1 = 1
+\end{align*}
+
+\begin{align*}
+\frac{\partial^2 J}{\partial w\partial b} &= \frac{\partial}{\partial w}[\frac{1}{m}\sum_{i=1}^m(wx^{(i)} + b - y^{(i)})] \\
+&= \frac{1}{m}\sum_{i=1}^mx^{(i)} \\
+&= \frac{\partial^2 J}{\partial b\partial w}
+\end{align*}
+
+其Hessian矩阵为：
+
+\begin{equation}
+H = \begin{bmatrix} 
+\frac{\partial^2 J}{\partial w^2} & \frac{\partial^2 J}{\partial w\partial b} \\
+\frac{\partial^2 J}{\partial b\partial w} & \frac{\partial^2 J}{\partial b^2}
+\end{bmatrix} = 
+\begin{bmatrix} 
+\frac{1}{m}\sum_{i=1}^m(x^{(i)})^2 & \frac{1}{m}\sum_{i=1}^mx^{(i)} \\
+\frac{1}{m}\sum_{i=1}^mx^{(i)} & 1
+\end{bmatrix}
+\end{equation}
+
+要证明H是半正定的，需要证明其所有顺序主子式都非负。
+
+对于2×2矩阵，只需要：
+   - $$\frac{\partial^2 J}{\partial w^2} \geq 0$$ 显然成立，因为是平方和
+   - $$det(H) \geq 0$$:
+
+   \begin{align*}
+   det(H) &= \frac{1}{m}\sum_{i=1}^m(x^{(i)})^2 \cdot 1 - (\frac{1}{m}\sum_{i=1}^mx^{(i)})^2 \\
+   &= \frac{1}{m}\sum_{i=1}^m(x^{(i)})^2 - (\frac{1}{m}\sum_{i=1}^mx^{(i)})^2 \\
+   &\geq 0 \text{ (根据柯西不等式)}
+   \end{align*}
+
+因此，Hessian矩阵是半正定的，所以J(w,b)是凸函数。也就证明它有局部极小值点，而且也是全局极小值。

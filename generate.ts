@@ -9,14 +9,21 @@ import {
   ContentValidatorLive,
   ModuleResolverLive,
 } from '@docube/common'
-import { makeUnifiedLive } from '@docube/org'
 import remarkGfm from 'remark-gfm'
 import { Effect, Layer } from 'effect'
 import rehypeShiftHeading from 'rehype-shift-heading'
 import rehypePrettyCode from 'rehype-pretty-code'
 import { transformerCopyButton } from '@rehype-pretty/transformers'
 import slug from 'rehype-slug-custom-id'
+import parse from 'uniorg-parse'
+import uniorg2rehype from 'uniorg-rehype'
+import stringify from 'rehype-stringify'
+import extractKeywords from 'uniorg-extract-keywords'
+import { unified } from 'unified'
+import raw from 'rehype-raw'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import rehypeKatex from 'rehype-katex'
+import rehypeCallouts from 'rehype-callouts'
 
 import rehypeProbeImageSize from './lib/rehypeImage'
 
@@ -44,15 +51,46 @@ const rehypePrettyOptions = {
   transformers: [transformerCopyButton()],
 }
 
-const UnifiedLive = makeUnifiedLive({
-  rehypePlugins: [
-    rehypeProbeImageSize,
-    [rehypeShiftHeading, { shift: 1 }],
-    [rehypePrettyCode, rehypePrettyOptions],
-    slug,
-    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-  ],
-})
+const orgProcessor = unified()
+  .use(parse)
+  .use(extractKeywords)
+  .use(uniorg2rehype, {
+    imageFilenameExtensions: [
+      'png',
+      'jpeg',
+      'jpg',
+      'gif',
+      'tiff',
+      'tif',
+      'xbm',
+      'xpm',
+      'pbm',
+      'pgm',
+      'ppm',
+      'pnm',
+      'svg',
+      'webp',
+    ],
+  })
+  // @ts-ignore
+  .use(raw)
+  .use(rehypeProbeImageSize)
+  .use(rehypeShiftHeading, { shift: 1 })
+  .use(rehypePrettyCode, rehypePrettyOptions as any)
+  .use(slug)
+  .use(rehypeAutolinkHeadings, { behavior: 'wrap' })
+  .use(rehypeKatex)
+  .use(rehypeCallouts)
+  .use(stringify)
+
+const UnifiedLive = Layer.succeed(
+  Unified,
+  Unified.of({
+    process(content) {
+      return Effect.promise(() => orgProcessor.process(content))
+    },
+  })
+)
 
 const MarkdownConverterLive = makeMarkdownConverter({
   remarkPlugins: [remarkGfm],

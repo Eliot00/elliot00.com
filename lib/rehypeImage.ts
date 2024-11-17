@@ -34,7 +34,8 @@ export default function rehypeProbeImageSize() {
 
       if (
         src &&
-        src.startsWith('https://elliot-blog.oss-cn-shanghai.aliyuncs.com')
+        (src.startsWith('https://elliot-blog.oss-cn-shanghai.aliyuncs.com') ||
+          src.startsWith('https://r2.elliot00.com'))
       ) {
         const promise = setImageSize(src, node)
         promises.push(promise)
