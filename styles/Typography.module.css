@@ -145,6 +145,11 @@
   @apply bg-gray-200;
 }
 
+.typography :global(.katex-display) {
+  display: block;
+  overflow-x: scroll;
+}
+
 .typography :global(.katex-html) {
   display: none;
 }
