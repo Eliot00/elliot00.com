@@ -15,11 +15,9 @@ const AdBanner = ({
 }: AdBannerTypes) => {
   useEffect(() => {
     try {
-      ;((window as any).adsbygoogle = (window as any).adsbygoogle || []).push(
-        {}
-      )
-    } catch (error: any) {
-      console.log(error.message)
+      ;(window.adsbygoogle = window.adsbygoogle || []).push({})
+    } catch (error: unknown) {
+      console.log(error)
     }
   }, [])
 

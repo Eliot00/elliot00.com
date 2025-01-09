@@ -1,5 +1,4 @@
 import PostsList from '@/components/PostsList'
-import Link from 'next/link'
 import { allPosts } from '@docube/generated'
 import { compareDesc } from 'date-fns'
 import ProjectsWall from '@/components/ProjectLink'

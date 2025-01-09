@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { visit } from 'unist-util-visit'
-// @ts-ignore
+// @ts-expect-error this package is not typed
 import probe from 'probe-image-size'
 import path from 'node:path'
 import fs from 'node:fs/promises'
