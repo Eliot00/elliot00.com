@@ -1,0 +1,221 @@
+#+title: CPS变换浅析
+#+tags: CPS LISP
+#+series: 随笔
+#+created_at: 2025-02-22T09:39:04.689422+08:00
+#+published_at: 2025-02-23T14:25:50.485070+08:00
+#+summary: 本文介绍了CPS（Continuation-passing style）的基本概念，通过具体的代码示例解释了什么是continuation以及如何进行CPS变换。文章使用阶乘和斐波那契数列的实现来展示CPS变换的过程，并探讨了CPS变换在控制程序执行流程方面的作用。
+
+* 什么是CPS
+
+CPS全称「Continuation-passing style」，可见这是一种编码的风格，一种传递「Continuation」的风格。那么这个Continuation又是什么呢？用代码来说明，考虑一个求平均值的运算：
+
+#+begin_src racket
+(/ (+ 3 5) 2)
+#+end_src
+
+将3和5加起来后，再除以2，这个将加法的结果除以2的过程，就是过程​=(+ 3 5)=​的continuation了，如果直白的翻译就是「后续部分」，用代码表示就是：
+
+#+begin_src racket
+(λ (x) (/ x 2))
+#+end_src
+
+CPS指的就是将这个后续操作，作为一个显式的参数传递：
+
+#+begin_src racket
+(define (add-cps x y cont)
+  (cont (+ a b)))
+
+(add-cps x y (λ (x) (/ x 2)))
+#+end_src
+
+虽然可能CPS这个名词可能不为广大程序员所熟知，但应该很多程序员都写过这种形式的代码。Continuation表示后续的操作，如在JS中，表示延时1秒后再执行一个操作：
+
+#+begin_src typescript
+setTimeout(() => {
+    console.log("Hello World!")
+}, 1000)
+#+end_src
+
+将一个匿名函数传递给​=setTimeout=​，1秒后这个从参数传递的函数会被调用，只是在JS里这个表达后续操作的函数通常被称为​=回调函数=​，表示并不立即调用而是回头再调用的意思。
+
+* CPS变换
+
+所谓CPS变换，就是将代码转换为CPS这种风格的意思。如这段计算阶乘的代码：
+
+#+begin_src racket
+#lang racket
+
+(define (factorial n)
+  (if (= n 0)
+      1
+      (* n (factorial (- n 1)))))
+
+(displayln (factorial 5))
+#+end_src
+
+将最后这个打印的操作显式传递，改写函数：
+
+#+begin_src racket
+#lang racket
+
+(define (factorial-cps n cont)
+  (if (= n 0)
+      (cont 1)
+      (factorial-cps (- n 1) (λ (result)
+                               (cont (* n result))))))
+
+(factorial-cps 5 (λ (result) (displayln result)))
+;; 也可以eta化简一下 (factorial-cps 5 displayln)
+#+end_src
+
+一个有趣的点是，做了CPS变换后，函数变成了「​*尾递归*​」的形式。
+
+现在把难度提高一点，如果把阶乘函数内用到的内置函数也做变换呢？
+
+#+begin_src racket
+#lang racket
+
+(define (=* a b cont)
+  (cont (= a b)))
+
+(define (-* a b cont)
+  (cont (- a b)))
+
+(define (** a b cont)
+  (cont (* a b)))
+
+(define (factorial-cps n cont)
+  (=* n 0 (λ (b)
+            (if b
+              (cont 1)
+              (-* n 1 (λ (n*)
+                        (factorial-cps n* (λ (f)
+                                            (** n f cont)))))))))
+#+end_src
+
+* 作用管窥
+
+那么CPS变换究竟有什么作用呢？从前面计算阶乘的代码来看，它似乎只让代码变得更加难读懂了。这一点既是CPS代码的缺点，也是其优点，这实际上是因为程序的控制流程被显式暴露出来了。
+
+再看一个计算斐波那契数的例子：
+
+#+begin_src racket
+#lang racket
+
+(define (fib n)
+  (cond
+    [(= n 0) 0]
+    [(= n 1) 1]
+    [else (+ (fib (- n 1))
+             (fib (- n 2)))]))
+
+(fib 42) ;; 267914296
+
+;; 转换后
+(define (=* a b k)
+  (k (= a b)))
+
+(define (+* a b k)
+  (k (+ a b)))
+
+(define (-* a b k)
+  (k (- a b)))
+
+(define (fib* n k)
+  (=* n 0
+    (λ (k1)
+      (if k1
+        (k 0)
+        (=* n 1
+          (λ (k2)
+            (if k2
+              (k 1)
+              (-* n 1
+                (λ (k3)
+                  (fib* k3
+                    (λ (k4)
+                      (-* n 2
+                        (λ (k5)
+                          (fib* k5
+                            (λ (k6)
+                              (+* k4 k6
+                                (λ (k7)
+                                  (k k7))))))))))))))))))
+#+end_src
+
+可以看到，通过continuation的传递，这里显式地确定了，先计算​=n - 1=​，再计算​=n - 2=​，计算顺序是由我们自主控制的；如果把它改成：
+
+#+begin_src racket
+(define (fib* n k)
+  (=* n 0
+    (λ (k1)
+      (if k1
+        (k 0)
+        (=* n 1
+          (λ (k2)
+            (if k2
+              (k 1)
+              (-* n 2
+                (λ (k3)
+                  (fib* k3
+                    (λ (k4)
+                      (-* n 1
+                        (λ (k5)
+                          (fib* k5
+                            (λ (k6)
+                              (+* k4 k6
+                                (λ (k7)
+                                  (k k7))))))))))))))))))
+#+end_src
+
+则改变了运算顺序，结果不变。
+
+利用这种能力，可以在函数式语言中实现一个类似C语言的for循环：
+
+#+begin_src racket
+#lang racket
+
+(define (for-loop-cps init cond? update body k)
+  (init
+    (λ (initial-state)
+      (define (loop state)
+        (cond?
+          state
+          (λ (continue?)
+            (if continue?
+                (body
+                  state
+                  (λ ()
+                    (update
+                      state
+                      (λ (new-state)
+                        (loop new-state)))))
+                (k state)))))
+      (loop initial-state))))
+
+(define (init-for k)
+  (k 0))
+
+(define (cond-for i k)
+  (k (< i 10)))
+
+(define (update-for i k)
+  (k (+ i 1)))
+
+(define (body-for i k)
+  (display "i = ")
+  (display i)
+  (newline)
+  (k))
+
+(for-loop-cps
+  init-for
+  cond-for
+  update-for
+  body-for
+  (λ (final-state)
+    (display "Loop ended. Final i = ")
+    (display final-state)))
+#+end_src
+
+当然CPS变换的作用不止于此，还可以用它来实现生成器、协程，并且CPS变换的过程也可以通过程序来自动实现，这些内容篇幅较长，以后再单独来展开。
