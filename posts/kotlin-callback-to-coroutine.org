@@ -1,0 +1,70 @@
+#+title: Android开发拾遗：回调转协程
+#+tags: Android Kotlin
+#+series: Android开发拾遗
+#+created_at: 2025-02-26T16:05:43.592380+08:00
+#+published_at: 2025-02-26T16:59:44.303386+08:00
+#+summary: 本文介绍了如何使用Kotlin的suspendCancellableCoroutine将基于回调的Java SDK接口转换为协程风格的同步代码写法，以解决多层依赖关系下的回调地狱问题。
+
+Kotlin提供了非常易用的協程API，但是在開發過程中遇到第三方SDK通過Java暴露出來的接口全是通過回調處理數據的情況。接口使用流程大致是：
+
+#+begin_src kotlin
+val listener = object : ISomeInfoListener {
+    override fun onInfoUpdate(info: Info) {
+    }
+}
+
+SDK.getInstance().registerListener(listener)
+
+SDK.getInstance().unregisterListener(listener)
+#+end_src
+
+當多個操作/數據之間存在先後依賴關係時，就容易陷入回調地獄，寫起來非常不舒服。
+
+比如想在導航結束後，收集終點信息，存入數據庫，使用回調的形式寫：
+
+#+begin_src kotlin
+val listener = object : IGuidanceListener {
+    override fun onCompleted() {
+        val destinationInfoListener = object : IDestinationInfoListener {
+            override fun onArrived(info: Info) {
+                scope.launch {
+                    saveToDb(info)
+                }
+            }
+        }
+        SDK.getInstance().registerListener(destinationInfoListener)
+    }
+}
+
+SDK.getInstance().registerListener(listener)
+#+end_src
+
+以上還是高度簡化後的代碼，實際場景下流程更複雜，代碼可讀性很低，修改起來也很麻煩。那麼有沒有辦法把一個回調操作封裝成 =suspend= ，以同步方式來組織呢？
+
+可以使用 =suspendCancellableCoroutine= 來做。例如上面的操作，可以轉化爲：
+
+#+begin_src Kotlin
+suspend fun getSomeInfo(): Info = suspendCancellableCoroutine { continuation ->
+    val listener = object : ISomeInfoListener {
+        override fun onInfoUpdate(info: Info) {
+            continuation.resume(info)
+        }
+    }
+
+    SDK.getInstance().registerListener(listener)
+
+    continuation.invokeOnCancellation { SDK.getInstance().unregisterListener(listener) }
+}
+#+end_src
+
+在我使用的 /Kotlin 2.1.0/ 版本中， =continuation.resume= 的函數簽名發生了一點變化：
+
+#+begin_src kotlin
+continuation.resume(resourceToResumeWith) { cause, resourceToClose, context ->
+    // resourceToResumeWith 和 resourceToClose 實際上是同一個值
+    resourceToClose.close()
+}
+#+end_src
+
+需要傳入一個 =onCancellation= 的回調，如果resume了一個需要關閉的Resource，可以用這個回調來處理。
+
