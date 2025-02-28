@@ -7,7 +7,7 @@ publishedAt: "2024-07-15T13:05:42.559424+08:00"
 summary: "本文探讨了如何在Android应用中使用JSON格式的DataStore存储配置数据，并提供了详细的代码示例和步骤来实现这一点。"
 ---
 
-在本系列的[上一篇](https://elliot00.com/posts/android-proto-data-store)中我介绍了Android的`Proto DataStore`的用法，但是我对`protobuf`的schema定义并不熟悉，所以就想着有没有使用JSON格式结合DataStore存储数据，事实证明这是可能的。
+在本系列的[上一篇](/posts/android-proto-data-store)中我介绍了Android的`Proto DataStore`的用法，但是我对`protobuf`的schema定义并不熟悉，所以就想着有没有使用JSON格式结合DataStore存储数据，事实证明这是可能的。
 
 首先注意到`DataStore`与`protobuf`相关类是解耦的，`dataStore`函数需要的参数是一个文件名——持久化数据存放位置，以及一个`serializer`对象。现在尝试改动serializer来实现用JSON存储配置数据。
 

@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Lightning } from '@/components/icons'
 import Copyright from '@/components/Copyright'
 import { Metadata } from 'next'
-import reactParse from 'html-react-parser'
+import reactParse, { Text } from 'html-react-parser'
 import CopyCodeButton from '@/components/typography/CopyCodeButton'
 import Comment from '@/components/Comment'
 import SmartImage from '@/components/typography/SmartImage'
@@ -106,6 +106,18 @@ function PostContent({ post }: { post: Post }) {
                 }
               />
             )
+          }
+
+          if ('attribs' in dom && dom.name == 'a') {
+            const { href = '', ...restAttribs } = dom.attribs
+
+            if (href.startsWith('/') && dom.children[0] instanceof Text) {
+              return (
+                <Link href={href} {...restAttribs}>
+                  {dom.children[0].data}
+                </Link>
+              )
+            }
           }
         },
       })}
