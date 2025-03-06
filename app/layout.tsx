@@ -28,10 +28,10 @@ export default function RootLayout({
       <head>
         <AdSense pid="4587152222007322" />
       </head>
-      <body className="flex flex-col gap-4 p-8 min-h-screen lg:h-screen lg:max-h-screen lg:gap-0 lg:py-20 lg:px-40 lg:grid lg:grid-cols-3 lg:grid-rows-[1fr_min-content] lg:auto-rows-min">
+      <body className="p-8 max-w-7xl mx-auto min-h-screen lg:px-20 lg:h-screen lg:max-h-screen lg:grid lg:gap-x-6 lg:grid-cols-[3fr_1fr] lg:grid-rows-[1fr_9rem]">
         <DefaultHeader />
         <main
-          className="lg:col-start-1 lg:col-span-2 lg:row-start-1 lg:row-span-4 lg:overflow-y-auto lg:no-scrollbar text-gray-700"
+          className="lg:my-20 lg:px-4 lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3 overflow-y-auto no-scrollbar text-gray-700"
           role="main"
         >
           {children}
