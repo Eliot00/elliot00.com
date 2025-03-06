@@ -8,7 +8,7 @@ export function DefaultHeader() {
   const pathname = usePathname()
 
   return (
-    <header className="lg:pl-16 lg:pb-16 flex flex-col items-start justify-between lg:col-start-3 lg:col-span-1 lg:row-start-1">
+    <header className="lg:pl-16 lg:pb-16 flex flex-col items-start justify-between lg:mt-20 lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2">
       <Link
         href="/"
         className="lg:px-4 lg:writing-vertical font-serif hover:text-zinc-700 hover:bg-zinc-100 hover:pt-4 pb-8 hover:pb-4 duration-700 ease-in-out"

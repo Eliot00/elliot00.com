@@ -5,7 +5,7 @@ const ICON_CLASS =
 
 export default function Footer() {
   return (
-    <footer className="flex flex-col items-center text-zinc-700 px-4 text-sm lg:items-start lg:pl-16 lg:col-start-3 lg:col-span-1 lg:row-start-2">
+    <footer className="flex flex-col items-center text-zinc-700 px-4 text-sm lg:items-start lg:pl-16 lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-3">
       <div className="space-x-2 mb-2">
         <a className={ICON_CLASS} href="https://github.com/Eliot00">
           <GithubIcon />
