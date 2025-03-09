@@ -1,0 +1,126 @@
+#+title: TypeScript小技巧（二）
+#+tags: TypeScript
+#+series: 奇技淫巧
+#+created_at: 2025-03-09T15:14:18.420134+08:00
+#+published_at: 2025-03-09T16:29:50.148546+08:00
+#+summary: 本文介绍了TypeScript中引入的using关键字和satisfies操作符的使用：using简化了资源管理，自动调用[Symbol.dispose]方法释放资源，而satisfies则用于确保对象符合特定类型，同时限制对象属性的扩展。
+
+点击查看[[/posts/typescript-react-tips][上一篇]]
+
+* 使用using关键字
+
+如数据库、文件等IO相关的API，一般需要在合适的时机将资源释放，经常需要写这样的代码：
+
+#+begin_src typescript
+try {
+    db.xxx();
+} catch (e) {
+    // handle error
+} finally {
+    db.close();
+}
+#+end_src
+
+在这个[[https://github.com/tc39/proposal-explicit-resource-management][TC39提案]]里，引入了一个新的关键字​=using=​，用于简化这个流程，当然现在还没有什么浏览器支持这个特性，而TypeScript 5.2对这个关键字提供了支持（tsc会把它转换成旧语法）。首先需要有一个暴露​=[Symbol.dispose]=​方法的对象，然后在一个代码块中使用using代替const初始化这个对象。
+
+#+begin_src typescript
+function createDb() {
+  console.log("Open!")
+
+  return {
+    fetch: (params: string) => {
+      console.log(params)
+    },
+    [Symbol.dispose]: () => {
+      console.log("Close!")
+    }
+  }
+}
+
+{
+  using db = createDb()
+  db.fetch("select * from table")
+}
+#+end_src
+
+最后当离开作用域时，该对象的​=[Symbol.dispose]=​方法就会被自动调用了。
+
+它还有个对应的async版本，需要这么写：
+
+#+begin_src typescript
+function createAsyncDb() {
+  console.log("Open!")
+
+  return {
+    fetch: async (params: string) => {
+      console.log(params)
+    },
+    [Symbol.asyncDispose]: async () => {
+      console.log("Close!")
+    }
+  }
+}
+
+{
+  await using db = createAsyncDb()
+  await db.fetch("select * from table")
+}
+#+end_src
+
+不过我是不认同为了省去一个手动close的操作，引入一个新关键字的，相比之下，Kotlin的[[https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.io/use.html][use]]方式我认为更好。
+
+* satisfies
+
+有时会遇到一种情况，如果一个属性的类型是和类型，它的字面量默认不会被推断为字面的类型：
+
+#+begin_src typescript
+type Foo = Record<string, string | number | undefined>
+
+const foo: Foo = {
+  a: "nice"
+}
+
+// 这里就会收到类型错误，因为tsc不认为a是字符串类型
+// foo.a不被看作string类型，而是string | number | undefined
+foo.a.startsWith("n")
+#+end_src
+
+如果改写成：
+
+#+begin_src typescript
+const foo = {
+  a: "nice"
+} satisfies Foo
+#+end_src
+
+就不会再有错误提示了。使用​=satisfies=​的另一个区别是，它会限制对象初始化后不能拓展属性：
+
+#+begin_src typescript
+const foo = {
+  hello: "nice"
+} satisfies Foo
+
+
+// 错误
+foo.past = 1
+
+const bar: Foo = {
+  hello: "nice"
+}
+
+// 没问题
+bar.past = 1
+#+end_src
+
+同时它还可以和​=as const=​一起用：
+
+#+begin_src typescript
+const foo = {
+  hello: "nice",
+  bar: 3,
+} as const satisfies Foo
+
+// Cannot assign to 'hello' because it is a read-only property.
+foo.hello = 1
+#+end_src
+

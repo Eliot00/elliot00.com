@@ -1,7 +1,7 @@
 ---
 title: "关于TypeScript结合React开发的一些技巧"
 tags: ["React", "TypeScript"]
-series: "随笔"
+series: "奇技淫巧"
 createdAt: "2022-03-12T08:11:20.213926+00:00"
 publishedAt: "2022-03-19T11:15:36.359039+00:00"
 updatedAt: "2024-10-30T17:04:29.174052+08:00"
