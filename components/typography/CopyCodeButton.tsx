@@ -18,7 +18,7 @@ export default function CopyCodeButton({
 
   return (
     <button
-      className="rehype-pretty-copy"
+      className="flex items-center justify-center h-8 w-8 rounded-md transition-colors border hover:bg-zinc-100 absolute right-4 top-4"
       title="Copy code"
       aria-label="Copy code"
       onClick={copy}

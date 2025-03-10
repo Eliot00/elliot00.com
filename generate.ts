@@ -13,7 +13,6 @@ import remarkGfm from 'remark-gfm'
 import { Effect, Layer } from 'effect'
 import rehypeShiftHeading from 'rehype-shift-heading'
 import rehypePrettyCode from 'rehype-pretty-code'
-import { transformerCopyButton } from '@rehype-pretty/transformers'
 import slug from 'rehype-slug-custom-id'
 import parse from 'uniorg-parse'
 import uniorg2rehype from 'uniorg-rehype'
@@ -26,6 +25,7 @@ import rehypeKatex from 'rehype-katex'
 import rehypeCallouts from 'rehype-callouts'
 
 import rehypeProbeImageSize from './lib/rehypeImage'
+import { copyButtonSlotTransformer } from './lib/copyButtonSlotTransformer'
 
 const AppConfigLive = makeAppConfig({
   name: 'Post',
@@ -48,7 +48,7 @@ const rehypePrettyOptions = {
     dark: 'nord',
   },
   bypassInlineCode: true,
-  transformers: [transformerCopyButton()],
+  transformers: [copyButtonSlotTransformer()],
 }
 
 const orgProcessor = unified()
@@ -72,11 +72,11 @@ const orgProcessor = unified()
       'webp',
     ],
   })
-  // @ts-ignore
+  // @ts-expect-error library has error type
   .use(raw)
   .use(rehypeProbeImageSize)
   .use(rehypeShiftHeading, { shift: 1 })
-  .use(rehypePrettyCode, rehypePrettyOptions as any)
+  .use(rehypePrettyCode, rehypePrettyOptions)
   .use(slug)
   .use(rehypeAutolinkHeadings, { behavior: 'wrap' })
   .use(rehypeKatex)

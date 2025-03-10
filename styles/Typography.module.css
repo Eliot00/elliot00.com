@@ -70,6 +70,10 @@
   font-size: 0.9em; /* 字体大小 */
 }
 
+.typography figure pre:has(code) {
+  position: relative;
+}
+
 .typography figure pre[data-theme*=' '],
 .typography figure pre[data-theme*=' '] code span {
   color: var(--shiki-light);
