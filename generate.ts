@@ -21,7 +21,7 @@ import extractKeywords from 'uniorg-extract-keywords'
 import { unified } from 'unified'
 import raw from 'rehype-raw'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
-import rehypeKatex from 'rehype-katex'
+import rehypeMathjax from 'rehype-mathjax'
 import rehypeCallouts from 'rehype-callouts'
 
 import rehypeProbeImageSize from './lib/rehypeImage'
@@ -79,7 +79,7 @@ const orgProcessor = unified()
   .use(rehypePrettyCode, rehypePrettyOptions)
   .use(slug)
   .use(rehypeAutolinkHeadings, { behavior: 'wrap' })
-  .use(rehypeKatex)
+  .use(rehypeMathjax)
   .use(rehypeCallouts)
   .use(stringify)
 

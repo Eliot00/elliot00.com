@@ -149,6 +149,22 @@
   @apply bg-gray-200;
 }
 
+.typography > mjx-container {
+  display: flex !important;
+  justify-content: center;
+  overflow: auto;
+}
+
+.typography p > mjx-container {
+  display: inline !important;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.typography p > mjx-container > svg {
+  display: inline !important;
+}
+
 .typography :global(.katex-display) {
   display: block;
   overflow-x: scroll;
