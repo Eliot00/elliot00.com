@@ -10,7 +10,7 @@ overrides:
 
 patchedDependencies:
   rehype-pretty-code:
-    hash: e6325a75e2869bb9b38afebc400641cbff0365464063970fe7a29b1c501d7b26
+    hash: eh5yiqdcuao37li5hpwbccqqe4
     path: patches/rehype-pretty-code.patch
 
 importers:
@@ -152,7 +152,7 @@ importers:
         version: 6.0.0
       rehype-pretty-code:
         specifier: ^0.14.0
-        version: 0.14.0(patch_hash=e6325a75e2869bb9b38afebc400641cbff0365464063970fe7a29b1c501d7b26)(shiki@3.1.0)
+        version: 0.14.0(patch_hash=eh5yiqdcuao37li5hpwbccqqe4)(shiki@3.1.0)
       rehype-raw:
         specifier: ^7.0.0
         version: 7.0.0
@@ -226,6 +226,7 @@ packages:
 
   '@effect/schema@0.72.3':
     resolution: {integrity: sha512-T1TV/8TMnEm5RSYQXOPmkqEWt8NfRd8E6FSJh9+eZ+jDc8bhAmh3K4J0BQZZcdqaftH21GdflAUbYScy8DZ71Q==}
+    deprecated: this package has been merged into the main effect package
     peerDependencies:
       effect: ^3.7.2
 
@@ -5103,6 +5104,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.26.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint@9.17.0(jiti@1.21.6)):
+    dependencies:
+      debug: 3.2.7
+    optionalDependencies:
+      '@typescript-eslint/parser': 8.26.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.5.2)
+      eslint: 9.17.0(jiti@1.21.6)
+      eslint-import-resolver-node: 0.3.9
+    transitivePeerDependencies:
+      - supports-color
+
   eslint-plugin-import@2.31.0(@typescript-eslint/parser@8.26.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.5.2))(eslint@9.17.0(jiti@1.21.6)):
     dependencies:
       '@rtsao/scc': 1.1.0
@@ -5114,7 +5125,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.17.0(jiti@1.21.6)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@7.14.1(eslint@9.17.0(jiti@1.21.6))(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1)(eslint@9.17.0(jiti@1.21.6))
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.26.0(eslint@9.17.0(jiti@1.21.6))(typescript@5.5.2))(eslint-import-resolver-node@0.3.9)(eslint@9.17.0(jiti@1.21.6))
       hasown: 2.0.2
       is-core-module: 2.15.1
       is-glob: 4.0.3
@@ -6831,7 +6842,7 @@ snapshots:
       hast-util-from-html: 2.0.3
       unified: 11.0.5
 
-  rehype-pretty-code@0.14.0(patch_hash=e6325a75e2869bb9b38afebc400641cbff0365464063970fe7a29b1c501d7b26)(shiki@3.1.0):
+  rehype-pretty-code@0.14.0(patch_hash=eh5yiqdcuao37li5hpwbccqqe4)(shiki@3.1.0):
     dependencies:
       '@types/hast': 3.0.4
       hast-util-to-string: 3.0.1
