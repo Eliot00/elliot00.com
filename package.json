@@ -84,5 +84,6 @@
     "patchedDependencies": {
       "rehype-pretty-code": "patches/rehype-pretty-code.patch"
     }
-  }
+  },
+  "packageManager": "pnpm@10.4.1"
 }
