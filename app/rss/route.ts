@@ -1,5 +1,7 @@
 import { allPosts } from '@docube/generated'
 
+export const dynamic = 'force-static'
+
 const baseUrl = 'https://elliot00.com'
 
 export async function GET() {
