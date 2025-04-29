@@ -39,6 +39,7 @@ const AppConfigLive = makeAppConfig({
     publishedAt: s.String,
     updatedAt: s.optional(s.String),
     summary: s.String,
+    cover: s.optional(s.String),
   }),
 })
 

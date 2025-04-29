@@ -1,9 +1,10 @@
 #+title: CPS变换浅析
 #+tags: CPS LISP
-#+series: 随笔
+#+series: MAKE LISP GREAT AGAIN
 #+created_at: 2025-02-22T09:39:04.689422+08:00
 #+published_at: 2025-02-23T14:25:50.485070+08:00
 #+summary: 本文介绍了CPS（Continuation-passing style）的基本概念，通过具体的代码示例解释了什么是continuation以及如何进行CPS变换。文章使用阶乘和斐波那契数列的实现来展示CPS变换的过程，并探讨了CPS变换在控制程序执行流程方面的作用。
+#+cover: https://r2.elliot00.com/lisp/make-lisp-great-again.png
 
 * 什么是CPS
 

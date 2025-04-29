@@ -1,0 +1,226 @@
+#+title: 实现简易Lisp解释器
+#+tags: LISP Interpreter
+#+series: MAKE LISP GREAT AGAIN
+#+created_at: 2025-04-19T15:01:51.205761+08:00
+#+published_at: 2025-04-29T15:16:23.347433+08:00
+#+summary: 用Racket实现简易Lisp解释器：从eval到递归阶乘计算。
+#+cover: https://r2.elliot00.com/lisp/make-lisp-great-again.png
+
+之前写了篇[[/posts/a-gentle-introduction-to-cps][有关CPS的文]]，原本是打算继续写关于CPS变换和​/Delimited Continuation/​的内容的，只是在写作过程中不继涌现出新的问题，索性将要写的内容打散，做一个新的系列。
+
+为了方便引入后续要介绍的概念，本文先使用Racket写一个简易的mini Lisp解释器，目标是做到支持递归的阶乘计算为止。
+
+* 从eval开始
+
+首先来定义核心的eval函数：
+
+#+begin_src racket
+#lang racket
+
+(define (evaluate expr)
+  (match expr
+    [(? number?) expr]
+    [(? boolean?) expr]))
+
+(evaluate '42)
+(evaluate '#f)
+#+end_src
+
+这当然还是非常小儿科的代码，只能原封不动地吐出数值类型和布尔类型的字面量。下面加上对变量的支持：
+
+#+begin_src racket
+(define (make-environment)
+  (make-hash))
+
+(define (lookup-env env symbol)
+  (hash-ref
+    env
+    symbol
+    (λ () (error 'evaluate "failed to find symbol: ~a" symbol))))
+#+end_src
+
+这是一个简单的实现，只是封装了哈希表来模拟一个全局的「环境」，用来存储「符号」与其对应的值，接下来修改​=evaluate=​函数：
+
+#+begin_src racket
+(define (evaluate expr env)
+  (match expr
+    [(? number?) expr]
+    [(? boolean?) expr]
+    [(? symbol?) (lookup-env env expr)]))
+#+end_src
+
+现在可以定义一个全局环境并测试：
+
+#+begin_src racket
+(define env (make-environment))
+
+(evaluate 'year env)
+#+end_src
+
+但是这段代码会报错，因为现在的​=env=​是空的，现在需要提供一个自定义变量的机制，让我们为这个mini Lisp添加第一个内置函数吧。
+
+#+begin_src racket
+(define (evaluate expr env)
+  (match expr
+    [(? number?) expr]
+    [(? boolean?) expr]
+    [(? symbol?) (lookup-env env expr)]
+    ;; 支持使用(define name value)来定义变量
+    [`(define ,name ,val-expr)
+      (let ([value (evaluate val-expr env)])
+        (hash-set! env name value)
+        value)]))
+#+end_src
+
+实现非常简单，当遇到​=(define name val-expr)=​形式的代码时，首先递归调用​=evaluate=​对​=val-expr=​求值，再加结果写入​=env=​中。
+
+测试：
+
+#+begin_src racket
+(evaluate '(define year 2025) env)
+(evaluate 'year env) ;; 2025
+#+end_src
+
+现在不会报错了。
+
+* if
+
+因为我们要定义的mini Lisp是严格求值的，所以需要在解释器中内置if机制：
+
+#+begin_src racket
+[`(if ,cond-expr ,then-expr ,else-expr)
+  (if (evaluate cond-expr env)
+    (evaluate then-expr env)
+    (evaluate else-expr env))]
+#+end_src
+
+同样是递归地先对条件表达式求值，再根据结果决定对then还是else表达式求值。
+
+测试：
+
+#+begin_src racket
+(evaluate '(define foo #t) env)
+(evaluate '(if foo 1 0) env) ;; 输出1
+#+end_src
+
+* 函数
+
+下一步来支持函数定义和调用：
+
+如果遇到​=(fn (foo param) body)=​，可以生成一个lambda，并用函数名foo作键存入env中。
+
+#+begin_src racket
+[`(fn (,name ,params ...) ,body)
+  (let ([proc (λ args
+                (for ([param params]
+                      [arg args])
+                  (extend-environment env param arg))
+                (evaluate body env))])
+    (hash-set! env name proc)
+    proc)]
+#+end_src
+
+最后当遇到函数调用时，需要将分别函数名以及所有参数求值，利用​=apply=​应用过程。
+
+#+begin_src racket
+[`(,func ,args ...)
+  (let ([proc (evaluate func env)]
+        [arg-vals (map (λ (arg) (evaluate arg env)) args)])
+    (if (procedure? proc)
+      (apply proc arg-vals)
+      (error 'evaluate "not a procedure: ~a" proc)))]
+#+end_src
+
+需要注意的是，这一段代码必需放在整个模式匹配的末尾（因为前面定义函数、if等都是这个函数调用形式的特殊情况）。
+
+现在可以测试定义并调用函数了：
+
+#+begin_src racket
+(evaluate '(fn (foo a b c) b) env)
+(evaluate '(foo 4 8 3) env) ;; 8
+(evaluate 'a env) ;; 4
+#+end_src
+
+定义和调用看上去没什么问题，但是测试代码中的最后一行​=(evaluate 'a env)=​居然得到结果为4，这是因为当前所有符号都是记录在一个全局的env中的，这并不是正常语言期望得到的结果。
+
+* 作用域
+
+为了解决以上问题，需要对环境处理以及函数定义做些改造。
+
+#+begin_src racket
+(define (make-base-environment)
+  (list primitives))
+
+(define (extend-env env frame)
+  (cons frame env))
+
+(define make-frame
+  make-hash)
+
+(define primitives
+  (make-frame `((+ . ,+)
+                (- . ,-)
+                (* . ,*)
+                (/ . ,/)
+                (> . ,>)
+                (< . ,<)
+                (= . ,=))))
+
+(define (extend-current-frame env symbol value)
+  (extend-frame (car env) symbol value))
+
+(define (extend-frame frame symbol value)
+  (hash-set! frame symbol value))
+
+(define (lookup-env env symbol)
+  (let loop ([frames env])
+    (cond
+      [(null? frames)
+       (error 'evaluate "failed to find symbol: ~a" symbol)]
+      [(hash-has-key? (car frames) symbol)
+       (hash-ref (car frames) symbol)]
+      [else (loop (cdr frames))])))
+#+end_src
+
+现在将​=environment=​改造成​=frame=​组成的栈，那么函数的实参就应该在一个单独的frame中。同时在这个实现中，加入了一个​=primitives=​，直接借用了Racket的四则运算和比较运算函数，方便后续定义阶乘函数。
+
+#+begin_src racket
+(struct function
+  (params body env) #:transparent)
+
+(define (evaluate expr env)
+  (match expr
+    ;; ... 省略
+    [`(fn (,name ,params ...) ,body)
+      (let ([func (function params body env)])
+        (extend-current-frame env name func)
+        func)]
+    [`(,func ,args ...)
+      (let ([proc (evaluate func env)]
+            [arg-vals (map (λ (arg) (evaluate arg env)) args)])
+        (cond
+          [(procedure? proc)
+           (apply proc arg-vals)]
+          [(function? proc)
+           (let ([new-frame (make-frame)])
+             (for ([param (function-params proc)]
+                   [arg arg-vals])
+               (extend-frame new-frame param arg))
+             (let ([new-env (extend-env (function-env proc) new-frame)])
+               (evaluate (function-body proc) new-env)))]
+          [else (error 'evaluate "not a procedure: ~a" proc)]))]))
+#+end_src
+
+自定义函数被实现为一个结构体，并且保存了函数定义时的env。同时函数应用部分也就需要区分开内置函数和自定义函数，对函数体求值前，创建新的frame，并依次将所有实际参数绑定到形参上。
+
+测试：
+
+#+begin_src racket
+(evaluate '(fn (fact n)
+               (if (= n 1)
+                 n
+                 (* n (fact (- n 1))))) env)
+(evaluate '(fact 8) env) ;; 40320
+#+end_src
+
+完成！

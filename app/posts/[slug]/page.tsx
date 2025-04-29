@@ -148,6 +148,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
+      images: post.cover ? [post.cover] : undefined,
     },
   }
 }
