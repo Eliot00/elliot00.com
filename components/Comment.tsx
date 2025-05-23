@@ -7,7 +7,7 @@ export default function Comment() {
     <div>
       <div id="tcomment"></div>
       <Script
-        src="https://cdn.jsdelivr.net/npm/twikoo@1.6.39/dist/twikoo.min.js"
+        src="https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js"
         onReady={() => {
           window.twikoo.init({
             envId: 'https://twikoojs-zeta.vercel.app',
