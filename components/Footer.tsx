@@ -17,7 +17,7 @@ export default function Footer() {
           <RssIcon />
         </a>
       </div>
-      <div className="">Copyright © 2020-2024 Elliot</div>
+      <div className="">Copyright © 2020-2025 Elliot</div>
     </footer>
   )
 }
