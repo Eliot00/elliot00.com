@@ -1,5 +1,5 @@
 #+title: 解释器与CPS变换
-#+tags: CPS LISP
+#+tags: CPS LISP Interpreter
 #+series: MAKE LISP GREAT AGAIN
 #+created_at: 2025-05-16T18:23:51.481610+08:00
 #+published_at: 2025-05-24T21:58:03.990173+08:00
