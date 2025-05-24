@@ -1,0 +1,256 @@
+#+title: 解释器与CPS变换
+#+tags: CPS LISP
+#+series: MAKE LISP GREAT AGAIN
+#+created_at: 2025-05-16T18:23:51.481610+08:00
+#+published_at: 2025-05-24T21:58:03.990173+08:00
+#+summary: 本文从乘积计算的简单问题出发，深入探讨了Racket中call/cc的实现原理和应用，揭示了续体编程的强大能力与控制流本质。
+#+cover: https://r2.elliot00.com/lisp/make-lisp-great-again.png
+
+如何写一个函数计算列表中所有数字的乘积并打印计算过程中的每一个数？在声明式语言中通常可以借助高阶函数​~foldl~​来实现，例如Racket：
+
+#+BEGIN_SRC racket
+#lang racket
+
+(define (product lst)
+  (foldl (lambda (item acc)
+           (printf "Got ~a\n" item)
+           (* item acc))
+         1
+         lst))
+
+(product '(1 2 3 4 5))
+#+END_SRC
+
+这是一个典型的声明式写法，代码只是向一个高阶函数传递了每一步要做什么、初始值是什么以及要处理的列表，而如何索引、循环的细节都被隐藏了起来。
+
+但是如果列表中包含0（任何数乘0都等于0，结果显然为0），我们希望遇到0时直接停止计算，这种写法就无法满足。首先在Racket中没有语句的概念，也就没法直接用​~return~​语句直接中止整个函数；另外由于计算过程在一个​/lambda/​中，一般的命令式语言也无法直接在其中中断外部函数，一些语言如​Kotlin[fn:1]​为这个场景提供了特殊方法。
+
+那么在Racket中要怎么做？回忆一下求阶乘函数：
+
+#+BEGIN_SRC racket
+(define (fact n)
+  (if (<= n 1)
+    1
+    (* n (fact (- n 1)))))
+#+END_SRC
+
+由于计算列表乘积也相对简单，所以如果不借助高阶函数，也可以直接用递归解决：
+
+#+BEGIN_SRC racket
+(define (product-rec lst)
+  (let iter ([lst lst]
+             [res 1])
+    (match lst
+      ['() res]
+      [(cons 0 _)
+       (println "Got zero!")
+       0]
+      [(cons x xs)
+       (printf "Got ~a\n" x)
+       (iter xs (* x res))])))
+#+END_SRC
+
+那为什么递归程序可以做到提前停止？
+
+回顾一下[[/posts/write-a-mini-lisp-interpreter][简易解释器的实现]]，如果​/evaluate/​变为​*Continuation-passing*​风格，如​=evaluate 0=​这个操作的后续（Continuation）是什么？可以认为是什么也不做或打印到控制台，我们可以把这个称为​*最终后续*​。再来看看函数调用表达式，​=(evaluate '(foo 1 2) env)=​，整个求值步骤是先对​=foo=​求值，后续是对参数求值，最后取出环境中的函数体，对函数体求值，之后就是最终后续（打印结果）了。
+
+可以发现，从解释器的核心​=evaluate=​函数的Continuation角度来看，前面的递归程序可以提前终止的原因就是，它暗示了解释器应当在遇到0时，直接使用最终后续。
+
+* first-class continuation
+
+在1960年代，有人提出「functions as first-class citizens」概念，表示在编程语言中函数和一般数据类型享有同等地位，例如被当做参数传递或被另一个函数当做返回值，后来这种特性常被称作「first-class function」。
+
+而在Racket中，不仅有「first-class function」，还有「first-class continuation」。这意味着在Racket代码中可以获取continuation，并将其当做数据来处理。前面提到解释器在解释表达式时，有一个「最终后续」，如打印求值结果到，如果可以在代码中直接「调用」这个continuation，不就能实现不论当前在多深的嵌套回调中，都可以直接让整个解释过程终止吗？
+
+Racket提供了这样一个函数，叫作​=call/cc=​，全名是​/call-with-current-continuation/​，这个函数接受一个一元函数f做参数，f函数的参数就是「current continuation」。比如这个计算​=(+ 3 (* 2 6) 5)=​中，​=(* 2 6)=​的continuation是什么？可以看作是​=(lambda (x) (+ 3 x 5))=​：
+
+#+BEGIN_SRC racket
+(define k #f)
+(+ 3 (call/cc (lambda (cont)
+                (set! k cont)
+                (* 2 6)))
+   5) ;; => 20
+#+END_SRC
+
+以上代码的结果和直接计算​=(+ 3 (* 2 6) 5)=​没有区别，但是其中使用了​=call/cc=​并将k设置成了cont。在这个计算后k变成了什么呢？
+
+#+BEGIN_SRC racket
+(k 2) ;; => 10
+(k 1) ;; => 9
+#+END_SRC
+
+没错，k正是​=(* 2 6)=​的continuation，看上去它和​=(lambda (x) (+ 3 x 5))=​是等价的。
+
+回到开头所说的​~product~​函数，现在用​=call/cc=​来改造它：
+
+#+BEGIN_SRC racket
+(define (product lst)
+  (call/cc
+    (lambda (return)
+      (foldl
+        (lambda (item acc)
+          (cond
+            [(zero? item)
+             (println "Got zero!")
+             (return 0)]
+            [else
+(printf "Got ~a\n" item)
+              (* item acc)]))
+        1
+        lst))))
+
+(product '(1 2 0 3 4 5))
+#+END_SRC
+
+注意这个​~return~​，它并不是一般语言中的关键字哦，它只是一个普通的形式参数，在这里它代表整个函数体的continuation。如在​=(display (product 8))=​中，这个​~return~​就相当于是​=(lambda (x) (display x))=​了。通过遇到0时直接调用continuation，就做到了在foldl函数的lambda参数内部提前终止product的执行的效果。
+
+* 实现call/cc
+
+这个神奇的​=call/cc=​函数是如何实现的呢？首先应该将我们的解释器的​~evaluate~​过程改造成CPS。
+
+第一步，先提取出一个​=evaluate-cps=​函数，它比原​=evaluate=​函数多出一个​=cont=​参数：
+
+#+BEGIN_SRC racket
+(define (evaluate-cps expr env cont)
+  (match expr
+    ;; TODO
+    ))
+
+(define (evaluate expr env)
+  (evaluate-cps expr env displayln)) ;; 用displayln做最终延续
+#+END_SRC
+
+现在来逐步完善模式匹配的各个分支，首先是原子表达式部分，只需要简单地包裹上延续函数：
+
+#+BEGIN_SRC racket
+[(? number?) (cont expr)]
+[(? boolean?) (cont expr)]
+[(? symbol?) (cont (lookup-env env expr))]
+#+END_SRC
+
+接下来是if表达式，首先应该对​=cond-expr=​部分求值，这个过程的延续是根据求值的结果，决定递归地对​=then-expr=​还是​=else-expr=​求值，并且使用整个if表达式的延续做最终的延续。用代码描述如下：
+
+#+BEGIN_SRC racket
+[`(if ,cond-expr ,then-expr ,else-expr)
+    (evaluate-cps cond-expr env
+                (λ (cond-value)
+                    (if cond-value
+                        (evaluate-cps then-expr env cont)
+                        (evaluate-cps else-expr env cont))))]
+#+END_SRC
+
+定义函数和变量也并不复杂：
+
+#+BEGIN_SRC racket
+[`(define ,name ,val-expr)
+    (evaluate-cps val-expr env
+     (λ (value)
+      (extend-current-frame env name value)
+      (cont value)))]
+[`(fn (,name ,params ...) ,body ...)
+    (let ([func (function params body env)])
+    (extend-current-frame env name func)
+    (cont func))]
+#+END_SRC
+
+函数调用部分：
+
+#+BEGIN_SRC racket
+[`(,func-expr ,arg-exprs ...)
+  (evaluate-cps func-expr env
+                (λ (proc)
+                  (let loop ([arg-exprs arg-exprs]
+                             [arg-vals '()])
+                    (if (null? arg-exprs)
+                      (cond
+                        [(primitives? func-expr)
+                         (cont (apply proc (reverse arg-vals)))]
+                        [(function? proc)
+                         (let ([new-frame (make-frame)])
+                           (for ([param (function-params proc)]
+                                 [arg (reverse arg-vals)])
+                             (extend-frame new-frame param arg))
+                           (let ([new-env (extend-env (function-env proc) new-frame)])
+                             (evaluate-cps (function-body proc) new-env cont)))]
+                        [else (error 'evaluate "not a procedure: ~a" proc)])
+                      (evaluate-cps (car arg-exprs) env
+                                    (λ (arg-val)
+                                    (loop (cdr arg-exprs) (cons arg-val arg-vals))))))))]
+#+END_SRC
+
+以上代码首先对函数名求值，并传递一个循环过程作为continuation，依次对参数求值，将对下一个函数的求值过程作为continuation传递，直到参数用完，最后的continuation是对函数体求值。这里还体现出CPS代码的一个特点，即由于通过参数将后续操作显式传递，开发者可以自由控制求值顺序，比如先求值参数列表，甚至倒着从最后一个参数开始也可以。
+
+最后实现​=call/cc=​函数，先定义一个结构存放延续：
+
+#+BEGIN_SRC racket
+(struct continuation
+  (cont) #:transparent)
+#+END_SRC
+
+遇到​=call/cc=​调用时将当前延续封装保存：
+
+#+BEGIN_SRC racket
+[`(call/cc ,proc-expr)
+  (evaluate-cps proc-expr env
+                (λ (proc)
+                  (if (function? proc) ;; 判断一下参数类型
+                    (letrec ([k (continuation cont)] ;; 存储当前cont
+                             [new-frame (extend-frame (make-frame) (car (function-params proc)) k)]
+                             [new-env (extend-env (function-env proc) new-frame)])
+                      (evaluate-cps (function-body proc) ;; 对参数的函数体求值
+                                    new-env
+                                    cont))
+                      (error 'call/cc "expected a function"))))]
+#+END_SRC
+
+还需要注意​=continuation=​是一个结构体，为了使它能被当作普通函数调用，还需要做最后一点修改：
+
+#+BEGIN_SRC racket
+[`(,func-expr ,arg-exprs ...)
+  (evaluate-cps func-expr env
+                (λ (proc)
+                  (let loop ([arg-exprs arg-exprs]
+                             [arg-vals '()])
+                    (if (null? arg-exprs)
+                      (cond
+                        ;; 省略
+                        [(continuation? proc)
+                         (if (= (length arg-vals) 1)
+                           ((continuation-cont proc) (car arg-vals))
+                           (error 'call/cc "continuation expects 1 argument"))]
+                        [else (error 'evaluate "not a procedure: ~a" proc)])
+                      (evaluate-cps (car arg-exprs) env
+                                    (λ (arg-val)
+                                    (loop (cdr arg-exprs) (cons arg-val arg-vals))))))))]
+#+END_SRC
+
+为了不帖大段代码，以上只展示了核心部分，完整的代码我放在了[[https://gist.github.com/Eliot00/f1fc5f0a340a53a62c6cdf0b1569776f][GitHub]]上，并实现了对​~lambda~​、​~set!~​等的支持。
+
+* 问题
+
+​=call/cc=​的强大不止于此，你甚至可以用它实现​=try-catch=​、​=generator=​和​=async/await=​等等[fn:2]。那么它有没有什么缺点呢？
+
+回到最开始演示​=call/cc=​的代码，乘法计算的continuation被保存到变量k中，那么对于表达式​=(k (k (k 2)))=​你期待得到什么值呢？似乎应该是26,然而实际上却是10。因为调用​=(k 2)=​会指使解释器直接应用continuation而丢弃嵌套的外层​=(k (k ...))=​，这是​=call/cc=​的第一个问题，虽然它看上去和普通函数没区别，但实际它没法像普通函数那样组合。
+
+另一个问题是使用它的代码阅读起来有点困难，有点反直觉，比如下面这段代码你能一眼看出结果应该是什么吗？
+
+#+BEGIN_SRC racket
+(let ([x (call/cc (lambda (k) k))])
+  (x (lambda (ignore) "hi")))
+#+END_SRC
+
+另一个极端的例子是著名的阴阳迷题：
+
+#+BEGIN_SRC racket
+(let* ((yin
+         ((lambda (cc) (display #\@) cc) (call-with-current-continuation (lambda (c) c))))
+       (yang
+         ((lambda (cc) (display #\*) cc) (call-with-current-continuation (lambda (c) c)))))
+    (yin yang))
+#+END_SRC
+
+同时还要注意到，每次遇到​=call/cc=​，我们的解释器都把当前过程的​*整个后续*​给保存下来了[fn:3]，虽然前面提到能借助它实现生成器、协程等，但实际上效率堪忧。
+
+[fn:1] Kotlin的Return to labels: https://kotlinlang.org/docs/returns.html#return-to-labels
+[fn:2] 可以在R. Kent Dybvig的书The Scheme Programming Language中找到
+[fn:3] 针对这一点，后来有人提出了Delimited Continuation
