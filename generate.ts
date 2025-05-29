@@ -55,28 +55,11 @@ const rehypePrettyOptions = {
 const orgProcessor = unified()
   .use(parse)
   .use(extractKeywords)
-  .use(uniorg2rehype, {
-    imageFilenameExtensions: [
-      'png',
-      'jpeg',
-      'jpg',
-      'gif',
-      'tiff',
-      'tif',
-      'xbm',
-      'xpm',
-      'pbm',
-      'pgm',
-      'ppm',
-      'pnm',
-      'svg',
-      'webp',
-    ],
-  })
-  // @ts-expect-error library has error type
+  .use(uniorg2rehype)
   .use(raw)
   .use(rehypeProbeImageSize)
   .use(rehypeShiftHeading, { shift: 1 })
+  // @ts-expect-error unknown cache error
   .use(rehypePrettyCode, rehypePrettyOptions)
   .use(slug)
   .use(rehypeAutolinkHeadings, { behavior: 'wrap' })

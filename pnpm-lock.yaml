@@ -8,11 +8,6 @@ overrides:
   '@types/react': 19.1.2
   '@types/react-dom': 19.1.2
 
-patchedDependencies:
-  rehype-pretty-code:
-    hash: e6325a75e2869bb9b38afebc400641cbff0365464063970fe7a29b1c501d7b26
-    path: patches/rehype-pretty-code.patch
-
 importers:
 
   .:
@@ -148,8 +143,8 @@ importers:
         specifier: ^7.1.0
         version: 7.1.0
       rehype-pretty-code:
-        specifier: ^0.14.0
-        version: 0.14.0(patch_hash=e6325a75e2869bb9b38afebc400641cbff0365464063970fe7a29b1c501d7b26)(shiki@3.1.0)
+        specifier: ^0.14.1
+        version: 0.14.1(shiki@3.1.0)
       rehype-raw:
         specifier: ^7.0.0
         version: 7.0.0
@@ -181,14 +176,14 @@ importers:
         specifier: ^11.0.5
         version: 11.0.5
       uniorg-extract-keywords:
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: ^1.1.0
+        version: 1.1.0
       uniorg-parse:
-        specifier: ^3.0.1
-        version: 3.0.1
+        specifier: ^3.2.0
+        version: 3.2.0
       uniorg-rehype:
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^2.2.0
+        version: 2.2.0
       uniqolor:
         specifier: ^1.1.1
         version: 1.1.1
@@ -1928,8 +1923,8 @@ packages:
   hastscript@8.0.0:
     resolution: {integrity: sha512-dMOtzCEd3ABUeSIISmrETiKuyydk1w0pa+gE/uormcTpSYuaNJPbX1NU3JLyscSLjwAQM8bWMhhIlnCqnRvDTw==}
 
-  hastscript@9.0.0:
-    resolution: {integrity: sha512-jzaLBGavEDKHrc5EfFImKN7nZKKBdSLIdGvCwDZ9TfzbF2ffXiov8CKE445L2Z1Ek2t/m4SKQ2j6Ipv7NyUolw==}
+  hastscript@9.0.1:
+    resolution: {integrity: sha512-g7df9rMFX/SPi34tyGCyUBREQoKkapwdY/T04Qn9TDWfHhAYt4/I0gMVirzK5wEzeUqIjEB+LXC/ypb7Aqno5w==}
 
   html-dom-parser@5.0.13:
     resolution: {integrity: sha512-B7JonBuAfG32I7fDouUQEogBrz3jK9gAuN1r1AaXpED6dIhtg/JwiSRhjGL7aOJwRz3HU4efowCjQBaoXiREqg==}
@@ -2798,11 +2793,11 @@ packages:
   rehype-parse@9.0.0:
     resolution: {integrity: sha512-WG7nfvmWWkCR++KEkZevZb/uw41E8TsH4DsY9UxsTbIXCVGbAs4S+r8FrQ+OtH5EEQAs+5UxKC42VinkmpA1Yw==}
 
-  rehype-pretty-code@0.14.0:
-    resolution: {integrity: sha512-hBeKF/Wkkf3zyUS8lal9RCUuhypDWLQc+h9UrP9Pav25FUm/AQAVh4m5gdvJxh4Oz+U+xKvdsV01p1LdvsZTiQ==}
+  rehype-pretty-code@0.14.1:
+    resolution: {integrity: sha512-IpG4OL0iYlbx78muVldsK86hdfNoht0z63AP7sekQNW2QOTmjxB7RbTO+rhIYNGRljgHxgVZoPwUl6bIC9SbjA==}
     engines: {node: '>=18'}
     peerDependencies:
-      shiki: ^1.3.0
+      shiki: ^1.0.0 || ^2.0.0 || ^3.0.0
 
   rehype-raw@7.0.0:
     resolution: {integrity: sha512-/aE8hCfKlQeA8LmyeyQvQF3eBiLRGNlfBJEvWH7ivp9sBqs7TNqBL5X3v157rM4IFETqDnIOO+z5M/biZbo9Ww==}
@@ -3206,14 +3201,20 @@ packages:
   unified@11.0.5:
     resolution: {integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==}
 
-  uniorg-extract-keywords@1.0.1:
-    resolution: {integrity: sha512-wzar1g27cfnFRh/84mEiOCUcgpgrvD03puQPrFQSM2hVIHtAMyILouDyq7Xi3SNv/bjC2SRTE2jgtgtkupyPww==}
+  uniorg-extract-keywords@1.1.0:
+    resolution: {integrity: sha512-bzhCl6Xl17vpbKhbpwG9L8p9Yh4shyG5LLDAzC6vvLyFNC1/FUFrX/bNaBoCevtsmwdeYZZocv4kRtsqmhq0Yg==}
 
-  uniorg-parse@3.0.1:
-    resolution: {integrity: sha512-Rw7ilfNnEYvh9xnLFs7lE++5tFhht6pCcwK59UvbbtpvDDJ6QsN+5iGia5amEEVgypHhsEFaws6oVPqYfXZYZA==}
+  uniorg-parse@3.2.0:
+    resolution: {integrity: sha512-eMvDz7X3dl5+wG/UsYQ9+HxDedYobW/+ftGY9uVM+lZlqENsu8zLgveUm0gEnmAWgY5YCSOsSGwAi+d6x6KTeA==}
 
   uniorg-rehype@1.2.0:
     resolution: {integrity: sha512-VDCdfsnity1rraQBgPSlEq3zbBnHJO1oG+c7JxPBjPP5xX8UDBhEFY7oY+PyF7gz+uAHzExNKvij9WSCpSZT1w==}
+
+  uniorg-rehype@2.2.0:
+    resolution: {integrity: sha512-cdJphFD8UnKDuHn/P3aE+xXgI/O43MmDkExyecRPD9ZEw9GMB2fLOJgG3n8eoQItUYTzYkfGSY4MaKXOZwKokg==}
+
+  uniorg@1.3.0:
+    resolution: {integrity: sha512-4FC5ExQJDJAb19Y+Nn7TnRo/Efsio9NwI29A6dZArSY24udp2WH2Gm4DwIi9nqlWsXE8E68i50YlZ+CkDSblTA==}
 
   uniqolor@1.1.1:
     resolution: {integrity: sha512-HUwezlXCwm5bzsEXW7AP7ybezH13uWENRgYT+3dOdhJPvpYucSqvIGckMiLn+Uy2j0NVf3fPp43uZ4aun3t4Ww==}
@@ -3370,8 +3371,8 @@ snapshots:
       effect: 3.7.2
       rehype-stringify: 10.0.1
       unified: 11.0.5
-      uniorg-extract-keywords: 1.0.1
-      uniorg-parse: 3.0.1
+      uniorg-extract-keywords: 1.1.0
+      uniorg-parse: 3.2.0
       uniorg-rehype: 1.2.0
     transitivePeerDependencies:
       - typescript
@@ -5237,12 +5238,12 @@ snapshots:
       property-information: 6.5.0
       space-separated-tokens: 2.0.2
 
-  hastscript@9.0.0:
+  hastscript@9.0.1:
     dependencies:
       '@types/hast': 3.0.4
       comma-separated-tokens: 2.0.3
       hast-util-parse-selector: 4.0.0
-      property-information: 6.5.0
+      property-information: 7.0.0
       space-separated-tokens: 2.0.2
 
   html-dom-parser@5.0.13:
@@ -6318,7 +6319,7 @@ snapshots:
       '@types/hast': 3.0.4
       hast-util-from-html: 2.0.3
       hast-util-is-element: 3.0.0
-      hastscript: 9.0.0
+      hastscript: 9.0.1
       unist-util-visit: 5.0.0
 
   rehype-mathjax@7.1.0:
@@ -6326,7 +6327,7 @@ snapshots:
       '@types/hast': 3.0.4
       '@types/mathjax': 0.0.40
       hast-util-to-text: 4.0.2
-      hastscript: 9.0.0
+      hastscript: 9.0.1
       mathjax-full: 3.2.2
       unified: 11.0.5
       unist-util-visit-parents: 6.0.1
@@ -6338,7 +6339,7 @@ snapshots:
       hast-util-from-html: 2.0.3
       unified: 11.0.5
 
-  rehype-pretty-code@0.14.0(patch_hash=e6325a75e2869bb9b38afebc400641cbff0365464063970fe7a29b1c501d7b26)(shiki@3.1.0):
+  rehype-pretty-code@0.14.1(shiki@3.1.0):
     dependencies:
       '@types/hast': 3.0.4
       hast-util-to-string: 3.0.1
@@ -6958,12 +6959,17 @@ snapshots:
       trough: 2.2.0
       vfile: 6.0.1
 
-  uniorg-extract-keywords@1.0.1:
+  uniorg-extract-keywords@1.1.0:
     dependencies:
+      unified: 11.0.5
+      uniorg: 1.3.0
       unist-util-visit: 5.0.0
+      vfile: 6.0.1
 
-  uniorg-parse@3.0.1:
+  uniorg-parse@3.2.0:
     dependencies:
+      unified: 11.0.5
+      uniorg: 1.3.0
       unist-builder: 4.0.0
       vfile: 6.0.1
       vfile-location: 5.0.2
@@ -6972,6 +6978,18 @@ snapshots:
     dependencies:
       hastscript: 8.0.0
       unist-builder: 4.0.0
+
+  uniorg-rehype@2.2.0:
+    dependencies:
+      '@types/hast': 3.0.4
+      hastscript: 9.0.1
+      unified: 11.0.5
+      uniorg: 1.3.0
+      unist-builder: 4.0.0
+
+  uniorg@1.3.0:
+    dependencies:
+      '@types/unist': 3.0.2
 
   uniqolor@1.1.1: {}
 
