@@ -1,11 +1,28 @@
 import { allPosts } from '@docube/generated'
+import rehypeParse from 'rehype-parse'
+import rehypeSanitize from 'rehype-sanitize'
+import rehypeStringify from 'rehype-stringify'
+import { unified } from 'unified'
 
 export const dynamic = 'force-static'
 
 const baseUrl = 'https://elliot00.com'
 
+const processor = unified()
+  .use(rehypeParse, { fragment: true })
+  .use(rehypeSanitize)
+  .use(rehypeStringify)
+
 export async function GET() {
-  const itemsXml = allPosts
+  const sanitizedPosts = await Promise.all(
+    allPosts.map(async (post) => {
+      const file = await processor.process(post.body)
+      const body = String(file)
+      return { ...post, body }
+    })
+  )
+
+  const itemsXml = sanitizedPosts
     .sort((a, b) => {
       if (new Date(a.publishedAt) > new Date(b.publishedAt)) {
         return -1
