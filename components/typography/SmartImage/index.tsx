@@ -1,5 +1,6 @@
 import Image from 'next/image'
-import styles from './SmartImage.module.css'
+
+const IMAGE_STYLES = 'mx-auto my-2 shadow-lg dark:shadow-black/30'
 
 export default function SmartImage({
   src,
@@ -15,7 +16,7 @@ export default function SmartImage({
   if (width && height) {
     return (
       <Image
-        className={styles.img}
+        className={IMAGE_STYLES}
         src={src}
         alt={alt}
         width={width}
@@ -24,5 +25,5 @@ export default function SmartImage({
     )
   }
 
-  return <img className={styles.img} src={src} alt={alt} />
+  return <img className={IMAGE_STYLES} src={src} alt={alt} />
 }

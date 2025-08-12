@@ -1,3 +1,5 @@
+@reference "../app/globals.css";
+
 .typography a:not(:is(h1, h2, h3, h4, h5, h6) a) {
   @apply underline underline-offset-2 decoration-2 decoration-sky-300 hover:decoration-sky-500 transition duration-150 ease-in-out;
 }
@@ -74,15 +76,15 @@
   position: relative;
 }
 
-.typography figure pre[data-theme*=' '],
-.typography figure pre[data-theme*=' '] code span {
+.typography figure pre[data-theme],
+.typography figure pre[data-theme] code span {
   color: var(--shiki-light);
   background-color: var(--shiki-light-bg);
 }
 
 @media (prefers-color-scheme: dark) {
-  .typography figure pre[data-theme*=' '],
-  .typography figure pre[data-theme*=' '] code span {
+  .typography figure pre[data-theme],
+  .typography figure pre[data-theme] code span {
     color: var(--shiki-dark);
     background-color: var(--shiki-dark-bg);
   }

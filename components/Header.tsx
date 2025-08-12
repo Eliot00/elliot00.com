@@ -1,43 +1,43 @@
 'use client'
 
 import Link from 'next/link'
-import { AdBlock } from '@/components/Ads'
 import { usePathname } from 'next/navigation'
 
-export function DefaultHeader() {
+const LINKS = [
+  {
+    href: '/posts',
+    text: '文章',
+  },
+  {
+    href: '/archives',
+    text: '歸檔',
+  },
+  {
+    href: '/about',
+    text: '關於',
+  },
+]
+
+const ACTIVE_NAV_CLASS = 'underline decoration-wavy decoration-2'
+
+export function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="lg:pl-16 lg:pb-16 flex flex-col items-start justify-between lg:mt-20 lg:col-start-2 lg:col-end-3 lg:row-start-1 lg:row-end-2">
-      <Link
-        href="/"
-        className="lg:px-4 lg:writing-vertical font-serif hover:text-zinc-700 hover:bg-zinc-100 hover:pt-4 pb-8 hover:pb-4 duration-700 ease-in-out"
-      >
-        <hgroup>
-          <h1 className="text-2xl font-semibold">Elliot</h1>
-          <p className="text-4xl font-bold">编码与禅</p>
-        </hgroup>
+    <header className="mx-auto py-4 max-w-3xl flex items-center justify-between flex-col sm:flex-row sm:py-6">
+      <Link href="/" className="font-bold text-3xl">
+        編碼與禪
       </Link>
-      <AdBlock />
-      <nav className="flex flex-row lg:flex-col text-zinc-700">
-        <Link
-          href="/posts"
-          className={`${pathname === '/posts' ? 'bg-zinc-200' : 'bg-zinc-50 hover:bg-zinc-100'} rounded-none lg:rounded-t-md py-1 px-2`}
-        >
-          文章
-        </Link>
-        <Link
-          href="/archives"
-          className={`${pathname === '/archives' ? 'bg-zinc-200' : 'bg-zinc-50 hover:bg-zinc-100'} py-1 px-2`}
-        >
-          归档
-        </Link>
-        <Link
-          href="/about"
-          className={`${pathname === '/about' ? 'bg-zinc-200' : 'bg-zinc-50 hover:bg-zinc-100'} rounded-none lg:rounded-b-md py-1 px-2`}
-        >
-          关于
-        </Link>
+      <nav className="flex flex-col gap-2 sm:flex-row sm:gap-4 font-bold text-lg">
+        {LINKS.map((link) => (
+          <Link
+            className={`${pathname === link.href ? ACTIVE_NAV_CLASS : ''} hover:text-primary`}
+            key={link.href}
+            href={link.href}
+          >
+            {link.text}
+          </Link>
+        ))}
       </nav>
     </header>
   )

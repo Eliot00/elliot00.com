@@ -5,8 +5,9 @@ const ICON_CLASS =
 
 export default function Footer() {
   return (
-    <footer className="flex flex-col items-center text-zinc-700 px-4 text-sm lg:items-start lg:pl-16 lg:col-start-2 lg:col-end-3 lg:row-start-2 lg:row-end-3">
-      <div className="space-x-2 mb-2">
+    <footer className="mx-auto max-w-3xl flex items-center justify-between py-6 sm:py-4 font-sans">
+      <div className="">Copyright © 2020-2025 Elliot</div>
+      <div className="flex items-center gap-2">
         <a className={ICON_CLASS} href="https://github.com/Eliot00">
           <GithubIcon />
         </a>
@@ -17,7 +18,6 @@ export default function Footer() {
           <RssIcon />
         </a>
       </div>
-      <div className="">Copyright © 2020-2025 Elliot</div>
     </footer>
   )
 }
