@@ -36,9 +36,7 @@ export default async function PostDetail(props: Props) {
     <>
       <article className={styles.typography}>
         <header>
-          <h1 className="font-serif font-bold my-4 lg:text-center text-3xl">
-            {title}
-          </h1>
+          <h1 className="eont-bold my-4 lg:text-center text-3xl">{title}</h1>
           <div className="flex flex-col justify-center items-start gap-2 lg:gap-4 lg:items-center lg:flex-row text-gray-400 mx-auto my-6">
             <span className="text-center">
               创建于：

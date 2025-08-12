@@ -3,9 +3,9 @@ import type { FCWithChildren } from '@/lib/types'
 const Divider: FCWithChildren = (props) => {
   return (
     <div className="relative flex py-5 items-center">
-      <div className="flex-grow border-t border-gray-400" />
-      <span className="flex-shrink mx-4 text-gray-400">{props.children}</span>
-      <div className="flex-grow border-t border-gray-400" />
+      <div className="grow border-t border-gray-400" />
+      <span className="shrink mx-4 text-gray-400">{props.children}</span>
+      <div className="grow border-t border-gray-400" />
     </div>
   )
 }

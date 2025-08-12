@@ -29,7 +29,7 @@ const Series: React.FC = () => {
                     <li key={a._meta.slug}>
                       <Link
                         href={`/posts/${a._meta.slug}`}
-                        className="relative after:bg-gray-950 after:absolute after:h-[1px] after:w-0 after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
+                        className="relative after:bg-gray-950 after:absolute after:h-px after:w-0 after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
                       >
                         {a.title}
                       </Link>
