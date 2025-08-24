@@ -1,0 +1,72 @@
+#+title: Emacs字體配置
+#+tags: 工具 Emacs
+#+series: 百宝箱
+#+created_at: 2025-08-24T13:42:13.755479+08:00
+#+published_at: 2025-08-24T22:01:48.613414+08:00
+#+summary: 本文介紹了在 Emacs 中配置不同字體的多種方案，以滿足程序員和中文用戶的特定需求。
+
+* 方案一：全局等寬字體
+
+程序員大部分是使用等寬字體的，因爲平時一些容易混淆的如 /lI0O/ 等字符在等寬字體中可以輕易的被分辨出來，而且代碼裏也經常會使用縮進，等寬字體會使多行代碼看起來更美觀。要配置一個全局的等寬字體是最簡單的：
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil :family "Maple Mono NF" :height 180)
+#+END_SRC
+
+這個函數的第一個參數被稱爲​*FACE*​，可以理解爲在Emacs中可以被設置字體、顏色等屬性的單元。按​=M-x describe-face=​可以查看有不同的FACE的屬性。
+
+* 方案二：中文特殊字體
+
+通常一個字體很難滿足所有的需求，Emacs提供了方法對特定字符集設置字體，比如針對漢字設置：
+
+#+BEGIN_SRC emacs-lisp
+(set-fontset-font t 'han (font-spec :family "LXGW WenKai TC"))
+#+END_SRC
+
+第二個參數也可以是Unicode範圍：
+
+#+BEGIN_SRC emacs-lisp
+(set-fontset-font t '(#x2ff0 . #x9ffc) (font-spec :family "LXGW WenKai TC"))
+#+END_SRC
+
+* 方案三：文檔使用非等寬字體
+
+其實使用方案一可以設置任意全局字體，但是如果想在代碼編輯中使用等寬字體，而在如​=org-mode=​等文檔中使用非等寬的更適合閱讀的字體，可以這樣做：
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil :family "默認字體" :height 180)
+(set-face-attribute 'variable-pitch nil :family "非等寬字體，如Helvetica")
+(set-face-attribute 'fixed-pitch nil :family "等寬字體，如Maple Mono NF")
+#+END_SRC
+
+設置多套方案，之後可以通過​=hook=​功能在特定mode下啓用​=variable-pitch-mode=​：
+
+#+BEGIN_SRC emacs-lisp
+;; 在 `org-mode' 內使用非等寬字體
+(add-hook 'org-mode-hook (lambda () (variable-pitch-mode t)))
+#+END_SRC
+
+* 方案四：單獨face配置
+
+在方案一說過，​=set-face-attribute=​這個函數可以針對不同的face設置樣式（不僅僅是字體），例如在​=org-mode=​中，​=table=​模塊具有自動對齊功能，但是這個對齊是通過文本的空格來對齊的，如果設置的字體不是每個字符都等寬或者有合理的比例（如中英文2:1）的話，表格顯示就會很難看了。那能否只給表格設置一個中英文2:1的字體呢？可以這樣實現：
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'org-table nil :family "LXGW WenKai Mono TC")
+#+END_SRC
+
+一些主題如​*modus*​提供混合字體支持，只需按方案三配置​=fixed-pitch=​，主題會自動將其應用到​=org-mode=​的表格和代碼塊等需要等寬字體的地方，其它部分可以保持使用非等寬字體。
+
+* 方案五：face-remap-add-relative
+
+現在一些字體會支持很多特性，如連字符、自帶​*nerdfont*​支持、中英文等寬等，也許在大多數場景下都夠用了，只在一些特殊情況下——如在中文筆記裏使用一個對中文顯示更美觀的等寬字體，就可以使用​=face-remap-add-relative=​：
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil :height 180 :family "Maple Mono NF")
+(add-hook 'org-mode-hook (lambda () (face-remap-add-relative 'default :family "LXGW WenKai Mono TC")))
+#+END_SRC
+
+* 總結
+
+以下幾個方案只是根據我認爲有可能的需求（主要是中文用戶的需求）簡單列了一下，實際使用中可以根據需要組合。
+
+最後還有一種大道至簡的方法，適用於只需要整體上文字和諧的用戶：​找一個支持​*nerdfont*​、支持中英文2:1的字體，只用一種字體。[[https://font.subf.dev/zh-cn/][Maple Mono]]有一個變體就能做到。
