@@ -1,8 +1,8 @@
-import styles from '@/styles/Typography.module.css'
 import { Metadata } from 'next'
 import Image from 'next/image'
 
 import mpWeixin from './mp-weixin.webp'
+import { COMMON_PROSE_CLASS_NAME } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: '关于 - Elliot',
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const About: React.FC = () => {
   return (
-    <article className={styles.typography}>
+    <article className={COMMON_PROSE_CLASS_NAME}>
       <h2>关于博主</h2>
       <p>技术宅，爱好折腾各种新奇事物，编程使我快乐。</p>
       <p>
@@ -18,7 +18,7 @@ const About: React.FC = () => {
       </p>
       <p>围棋爱好者兼铁佛寺。</p>
       <h3>常用语言</h3>
-      <div className="flex space-x-2 mt-2">
+      <p className="flex space-x-2">
         <span className="py-1 px-2 bg-amber-300 rounded-lg font-mono">
           Rust
         </span>
@@ -31,7 +31,7 @@ const About: React.FC = () => {
         <span className="py-1 px-2 bg-violet-300 rounded-lg font-mono">
           CSharp
         </span>
-      </div>
+      </p>
       <h2>关于博客</h2>
       <p>
         我的博客技术栈经过了很多次改动，经常遇到一些新技术都会在博客上试验一下，可以通过

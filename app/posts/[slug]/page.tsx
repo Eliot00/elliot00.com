@@ -1,6 +1,5 @@
 import { allPosts, Post } from '@docube/generated'
 import { notFound } from 'next/navigation'
-import styles from '@/styles/Typography.module.css'
 import Divider from '@/components/Divider'
 import Link from 'next/link'
 import { Lightning } from '@/components/icons'
@@ -11,6 +10,7 @@ import CopyCodeButton from '@/components/typography/CopyCodeButton'
 import Comment from '@/components/Comment'
 import SmartImage from '@/components/typography/SmartImage'
 import 'rehype-callouts/theme/obsidian'
+import { COMMON_PROSE_CLASS_NAME } from '@/lib/constants'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -34,9 +34,11 @@ export default async function PostDetail(props: Props) {
 
   return (
     <>
-      <article className={styles.typography}>
+      <article
+        className={`${COMMON_PROSE_CLASS_NAME} lg:prose-h1:text-center prose-pre:relative`}
+      >
         <header>
-          <h1 className="eont-bold my-4 lg:text-center text-3xl">{title}</h1>
+          <h1>{title}</h1>
           <div className="flex flex-col justify-center items-start gap-2 lg:gap-4 lg:items-center lg:flex-row text-gray-400 mx-auto my-6">
             <span className="text-center">
               创建于：

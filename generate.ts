@@ -13,12 +13,12 @@ import {
 import remarkGfm from 'remark-gfm'
 import { Effect, Layer } from 'effect'
 import rehypeShiftHeading from 'rehype-shift-heading'
-import rehypePrettyCode from 'rehype-pretty-code'
 import slug from 'rehype-slug-custom-id'
 import raw from 'rehype-raw'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeMathjax from 'rehype-mathjax'
 import rehypeCallouts from 'rehype-callouts'
+import rehypeShiki, { type RehypeShikiOptions } from '@shikijs/rehype'
 
 import rehypeProbeImageSize from './lib/rehypeImage'
 import { copyButtonSlotTransformer } from './lib/copyButtonSlotTransformer'
@@ -39,21 +39,21 @@ const AppConfigLive = makeAppConfig({
   }),
 })
 
-const rehypePrettyOptions = {
-  theme: {
+const rehypeShikiOptions = {
+  themes: {
     light: 'material-theme-lighter',
     dark: 'nord',
   },
-  bypassInlineCode: true,
   transformers: [copyButtonSlotTransformer()],
-}
+  defaultColor: 'light-dark()',
+} satisfies RehypeShikiOptions
 
 const UnifiedLive = makeUnifiedLive({
   rehypePlugins: [
     raw,
     rehypeProbeImageSize,
     [rehypeShiftHeading, { shift: 1 }],
-    [rehypePrettyCode, rehypePrettyOptions],
+    [rehypeShiki, rehypeShikiOptions],
     slug,
     [rehypeAutolinkHeadings, { behavior: 'wrap' }],
     rehypeMathjax,
@@ -65,7 +65,7 @@ const MarkdownConverterLive = makeMarkdownConverter({
   remarkPlugins: [remarkGfm],
   rehypePlugins: [
     rehypeProbeImageSize,
-    [rehypePrettyCode, rehypePrettyOptions],
+    [rehypeShiki, rehypeShikiOptions],
     slug,
     [rehypeAutolinkHeadings, { behavior: 'wrap' }],
   ],
