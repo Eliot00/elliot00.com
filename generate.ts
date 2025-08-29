@@ -1,5 +1,4 @@
 import { ContentConverter, Unified } from 'docube'
-import { makeMarkdownConverter } from '@docube/markdown'
 import { makeUnifiedLive } from '@docube/org'
 import {
   makeTransformer,
@@ -10,7 +9,6 @@ import {
   ContentValidatorLive,
   ModuleResolverLive,
 } from '@docube/common'
-import remarkGfm from 'remark-gfm'
 import { Effect, Layer } from 'effect'
 import rehypeShiftHeading from 'rehype-shift-heading'
 import slug from 'rehype-slug-custom-id'
@@ -26,7 +24,7 @@ import { copyButtonSlotTransformer } from './lib/copyButtonSlotTransformer'
 const AppConfigLive = makeAppConfig({
   name: 'Post',
   directory: './posts',
-  include: '**/*.{md,org}',
+  include: '**/*.org',
   fields: (s) => ({
     title: s.String,
     tags: s.Array(s.String),
@@ -46,6 +44,9 @@ const rehypeShikiOptions = {
   },
   transformers: [copyButtonSlotTransformer()],
   defaultColor: 'light-dark()',
+  langAlias: {
+    C: 'c',
+  },
 } satisfies RehypeShikiOptions
 
 const UnifiedLive = makeUnifiedLive({
@@ -61,49 +62,32 @@ const UnifiedLive = makeUnifiedLive({
   ],
 })
 
-const MarkdownConverterLive = makeMarkdownConverter({
-  remarkPlugins: [remarkGfm],
-  rehypePlugins: [
-    rehypeProbeImageSize,
-    [rehypeShiki, rehypeShikiOptions],
-    slug,
-    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-  ],
-})
-
 const MyContentConverterLive = Layer.effect(
   ContentConverter,
   Effect.gen(function* () {
-    const mdxConverter = yield* ContentConverter
     const unified = yield* Unified
     return {
       convert: (file) =>
         Effect.gen(function* () {
-          if (file._meta.fileName.endsWith('md')) {
-            return yield* mdxConverter.convert(file)
-          } else {
-            const parsed = yield* file.text.pipe(
-              Effect.andThen(unified.process)
-            )
-            const {
-              published_at: publishedAt,
-              created_at: createdAt,
-              tags,
-              ...rest
-            } = parsed.data
-            return {
-              ...rest,
-              publishedAt,
-              createdAt,
-              tags: (tags as string).trim().split(' '),
-              _meta: makeOutputMeta(file),
-              body: parsed.toString(),
-            }
+          const parsed = yield* file.text.pipe(Effect.andThen(unified.process))
+          const {
+            published_at: publishedAt,
+            created_at: createdAt,
+            tags,
+            ...rest
+          } = parsed.data
+          return {
+            ...rest,
+            publishedAt,
+            createdAt,
+            tags: (tags as string).trim().split(' '),
+            _meta: makeOutputMeta(file),
+            body: parsed.toString(),
           }
         }),
     }
   })
-).pipe(Layer.provide(MarkdownConverterLive), Layer.provide(UnifiedLive))
+).pipe(Layer.provide(UnifiedLive))
 
 const transformer = makeTransformer({
   loader: LoaderLive.pipe(Layer.provide(AppConfigLive)),

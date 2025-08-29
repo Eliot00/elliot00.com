@@ -1,0 +1,299 @@
+#+title: 使用Rust实现Wayland输入法协议
+#+tags: IME Wayland
+#+series: 车轮滚滚
+#+created_at: 2024-02-05T11:56:24.525500+08:00
+#+published_at: 2024-03-02T23:04:10.022963+08:00
+#+summary: 本文介绍了如何使用Rust语言实现Wayland输入法协议，包括输入法基础、Wayland协议、Rust实现等内容。该示例可帮助开发者理解Wayland输入法机制并推动相关生态发展。
+
+对于GNU/Linux系统而言，如何使用输入法一直是一个困扰新手用户(应该主要是东亚用户)的问题。键盘这一输入设备最初是为使用拉丁字母的人们设计的，例如英文，每个单词都是由26个字母组成的，就算把大小写分开也只需要52个实体按键就可以打字（好吧我没算标点符号）；但是中文有上万个汉字，要全部映射到键盘按键是不可能的。幸运的是，计算机系统是硬件与软件的综合，如果直接用硬件支持很困难，我们还可以通过软件来实现想要的功能，这种软件就是输入法。
+
+* 输入法具体做什么？
+
+#+begin_quote
+输入法（或输入法编辑器，常缩写为 IME）是一种操作系统组件或程序，它使用户能够通过使用输入设备上原生的字符序列（或鼠标操作）来生成其输入设备上没有的文字。对于拥有比键盘上的按键更多的字位的语言来说，使用一种输入法通常是必要的。
+#+end_quote
+
+以中文输入为例，如果我手上有一个美式键盘（带有26个字母键），现在我想在文本编辑器应用中输入一个「道」字，需要做哪些工作？
+
+** 字符映射
+首先得想个办法做个映射，回忆一下，曾经我们学习过一种汉字的拉丁字母表示法------拼音。诚然，拼音本来是用来标示字的读音的，但正好每个汉字都有一个或多个对应的拼音序列[fn:1]，例如「道」字，可以用拼音序列「dao」来表示。
+
+** 硬件到软件
+现在我开始在键盘上按下「dao」这三个字母键了，先不管输入法会如何处理这个序列，首先考虑一个问题，输入法如何知道我按下了这几个键？首先是键盘上的电路起作用，它扫描到对应位置的按键被我按下，接着它将这个对应按键的扫描码通过通信信道（如USB）传递到主板上，经过一些硬件处理，最终要通知到计算机的核心部件：CPU；接下来该软件登场了，一个特别的软件------操作系统，它是硬件与用户程序之间的「中间人」，操作系统中有一个专门的模块，将按键消息封装成应用软件可以使用的数据结构，但到这里还没有结束，操作系统还要决定将这个消息发送给谁，最终应用程序得到按键消息，做出自己的处理。
+
+最后一步所谓的应用软件通常也是多层的，例如，桌面上常有多个不同的窗口应用，应该有一个上层应用来管理，每个窗口谁显示在上面，显示在什么位置。它应该要先拿到按键事件，比如Windows的桌面系统，当用户按了​=Alt+Tab=​，它要处理不同窗口的切换；用户在活动的记事本应用上按​=a=​键，它应该把这个事件传递给这个活动的窗口应用，记事本就在它的文本框中显示中​=a=​。
+
+** 反馈
+注意到中文里有很多同音字，也就是说一个拼音序列「dao」对应的可不止是一个汉字「道」。使用过拼音输入法的人们应该都知道，输入法有一个候选项的概念，要把所有可能的字或词列出来，显示在一个小窗口里，通常还会标上序号，用户按下对应的数字键可以确认输入对应的候选。这个候选窗口通常显示在当前编辑位置的正下方，输入法程序怎么知道当前编辑光标在哪里？
+
+由于经常要按下好几个键才能输入一个字，在按键的过程中如果输入框空空如也总是不太好的，最好能在输入框显示当前的拼音序列，但要和普通输入区分开来（如加一个下划线），当用户确认候选后，再替换掉这一部分文字。有时候如果用户发现整个拼音有错，希望按esc键取消这次输入，那么还应该清空这段文本。这种反馈当前输入的文本在输入法里通常叫「preedit text」。输入法怎么让客户程序知道这一段文本的特别之处？怎么通知编辑器什么时候替换掉这段文本，什么时候取消了输入？
+
+* 困境
+由此可以看出，输入法程序既需要与编辑文字的图形应用通信，也需要和一个管理图形应用的桌面系统应用通信，当我在文本编辑器窗口上按下「dao」这三个键，它不能让文本编辑器直接拿到这个按键序列，它要和桌面系统沟通，先截获按键事件，做一些处理，最后，它告诉文本编辑器，不要显示「dao」，而是显示「道」这个汉字。这意味着，要想输入汉字，只靠输入法软件是不行的，桌面系统要支持给到输入法按键事件，形形色色的应用也要学会听输入法的话。
+
+Windows和macOS这两个流行的商业系统支持输入法要容易些，它们有官方指定的桌面环境，甚至有官方指定的第三方应用开发语言，当然，也有官方指定的输入法框架。而GNU/Linux因为开源去中心化的特点，五花八门的发行版，不一样的桌面环境，各种不同技术方案的第三方应用，造成了输入法支持碎片化严重的问题。
+
+* Wayland
+Wayland是类UNIX系统上的新一代图形显示协议，它是传统的X11的继任者，目前主流的两个桌面环境KDE和GNOME都支持了Wayland。Wayland也定义了用于输入法相关的协议，随着Wayland生态的发展，Wayland输入法协议有望成为GNU/Linux输入法的统一标准。
+
+Wayland设计为C/S架构，各种GUI应用程序如浏览器是客户端，服务端与各种客户端通信，派发来自IO设备的各种事件；也负责把各个应用输出的图像组合起来，显示在屏幕上，这个过程称为「Compositing」，这个服务端程序也被称为「Compositor」（混成器）。
+
+下面简单介绍几个后面会提到的Wayland核心概念：
+
+- object: 一个抽象概念，每个Wayland资源都是一个object，拥有唯一的ID
+- display: 一个display代表一个Wayland客户端
+- registry: 客户端通过这个object可以得到Compositor提供的全局object列表，然后按需绑定
+- surface: 客户端绘图表面
+- request: 客户端可以向Compositor发送请求，如请求重绘屏幕区域
+- event: Compositor向客户端广播事件，如键盘按键事件
+
+** 输入法协议
+在Wayland设计中，输入法不直接与客户端程序通信，而是由Compositor充当中间人，客户端应用与Compositor之间的协议叫[[https://wayland.app/protocols/text-input-unstable-v3][text-input]]，输入法与Compositor之间的协议叫[[https://wayland.app/protocols/input-method-unstable-v1][input-method]]，这两个协议都还处于unstable状态，意味着未来可能会出现不兼容的修改。
+
+输入法与Compositor之间的协议有四个部分：
+
+| 名称                        | 功能简介                                 |
+|-----------------------------+------------------------------------------|
+| zwp_input_method_context_v1 | 输入法上下文，可控制光标位置、文字上屏等 |
+| zwp_input_method_v1         | 激活或取消激活输入法                     |
+| zwp_input_panel_v1          | 获取zwp_input_panel_surface对象          |
+| zwp_input_panel_surface_v1  | 输入法面板界面控制                       |
+
+* Rust实现
+接下来是代码时间！先来实现一个Hello World级别的输入法，这也是一个邪恶的输入法，它将打乱用户的所有输入！
+
+首先要引入[[https://github.com/Smithay/wayland-rs][两个依赖]]：
+
+#+begin_src toml
+[dependencies]
+wayland-client = { version = "0.31.1" }
+wayland-protocols = { version = "0.31.0", features = ["unstable", "client"] }
+#+end_src
+
+注意：​*输入法在Wayland语境下，也是一个客户端程序*​，所以在依赖里用到了​=wayland-client=​这个crate。
+
+#+begin_src rust
+use wayland_client::{
+    event_created_child,
+    protocol::{
+        wl_keyboard::{self, KeyState},
+        wl_registry,
+    },
+    Connection, Dispatch, QueueHandle, WEnum,
+};
+use wayland_protocols::wp::input_method::zv1::client::{
+    zwp_input_method_context_v1,
+    zwp_input_method_v1::{self, EVT_ACTIVATE_OPCODE},
+};
+#+end_src
+
+接着来定义一个​=struct=​保存应用状态和需要用到的Wayland对象：
+
+#+begin_src rust
+#[derive(Default)]
+struct AppState {
+    running: bool,
+    input_method: Option<zwp_input_method_v1::ZwpInputMethodV1>,
+    context: Option<zwp_input_method_context_v1::ZwpInputMethodContextV1>,
+}
+#+end_src
+
+下一步定义主函数部分：
+
+#+begin_src rust
+fn main() {
+    // 创建Wayland连接
+    let conn = Connection::connect_to_env().unwrap();
+
+    // 创建event queue，以使输入法接收来自Compositor的事件
+    let mut event_queue = conn.new_event_queue();
+    let qhandle = event_queue.handle();
+
+    // 客户端必不可少的object
+    let display = conn.display();
+
+    // 请求创建wl_registry对象，用于绑定全局object
+    display.get_registry(&qhandle, ());
+
+    let mut state = AppState {
+        running: true,
+        ..Default::default()
+    };
+
+    // 开启循环，不断接收事件
+    while state.running {
+        event_queue.blocking_dispatch(&mut state).unwrap();
+    }
+}
+#+end_src
+
+在​=main=​函数里似乎没有处理从Compositor来的事件，那么具体的事件处理代码在哪里呢？既然是Rust实现，怎么能少了Rust的一大重要特性，​=trait=​呢？
+
+#+begin_src rust
+impl Dispatch<wl_registry::WlRegistry, ()> for AppState {
+    // 这个事件会告知客户端Compositor支持的接口
+    fn event(
+        state: &mut Self,
+        registry: &wl_registry::WlRegistry,
+        event: <wl_registry::WlRegistry as wayland_client::Proxy>::Event,
+        _data: &(),
+        _conn: &Connection,
+        qh: &QueueHandle<Self>,
+    ) {
+        if let wl_registry::Event::Global {
+            name, interface, ..
+        } = event
+        {
+            println!("{} {}", name, interface);
+            // 在这里可以绑定zwp_input_method_v1
+            match &interface[..] {
+                "zwp_input_method_v1" => {
+                    let input_method = registry
+                        .bind::<zwp_input_method_v1::ZwpInputMethodV1, _, _>(name, 1, qh, ());
+                    state.input_method = Some(input_method);
+                }
+                _ => {}
+            }
+        }
+    }
+}
+#+end_src
+
+现在我们绑定了全局接口zwp_input_method_v1，接下来就需要处理输入法激活和取消事件，并且也得通过它拿到context对象。
+
+#+begin_src rust
+impl Dispatch<zwp_input_method_v1::ZwpInputMethodV1, ()> for AppState {
+    fn event(
+        state: &mut Self,
+        _proxy: &zwp_input_method_v1::ZwpInputMethodV1,
+        event: zwp_input_method_v1::Event,
+        _data: &(),
+        _conn: &Connection,
+        qhandle: &QueueHandle<Self>,
+    ) {
+        println!("current event is {:#?}", event);
+        match event {
+            zwp_input_method_v1::Event::Activate { id } => {
+                println!("method activate");
+
+                // 截获键盘，之后就可以由输入法处理键盘事件
+                id.grab_keyboard(qhandle, ());
+
+                // 保存context后续使用
+                state.context = Some(id);
+            }
+            zwp_input_method_v1::Event::Deactivate { context } => {
+                // 销毁context
+                state.context = None;
+                context.destroy();
+                println!("method inactive");
+            }
+            _ => {}
+        }
+    }
+
+    event_created_child!(AppState, zwp_input_method_v1::ZwpInputMethodV1, [
+        EVT_ACTIVATE_OPCODE => (zwp_input_method_context_v1::ZwpInputMethodContextV1, ()),
+    ]);
+}
+
+impl Dispatch<zwp_input_method_context_v1::ZwpInputMethodContextV1, ()> for AppState {
+    fn event(
+        _state: &mut Self,
+        _context: &zwp_input_method_context_v1::ZwpInputMethodContextV1,
+        event: zwp_input_method_context_v1::Event,
+        _data: &(),
+        _conn: &Connection,
+        _qhandle: &QueueHandle<Self>,
+    ) {
+        // 这里暂时空着
+        println!("current content event is {:#?}", event);
+    }
+}
+#+end_src
+
+拿到了context对象，截获了键盘事件，最后一步就是前面所说的邪恶的事了：
+
+#+begin_src rust
+impl Dispatch<wl_keyboard::WlKeyboard, ()> for AppState {
+    fn event(
+        state: &mut Self,
+        _proxy: &wl_keyboard::WlKeyboard,
+        event: wl_keyboard::Event,
+        _data: &(),
+        _conn: &Connection,
+        _qhandle: &QueueHandle<Self>,
+    ) {
+        match event {
+            wl_keyboard::Event::Key {
+                key,
+                state: WEnum::Value(KeyState::Pressed),
+                ..
+            } => {
+                let new_key = key + 1;
+
+                let key_string = match new_key {
+                    16 => "q",
+                    17 => "w",
+                    18 => "e",
+                    19 => "r",
+                    20 => "t",
+                    21 => "y",
+                    22 => "u",
+                    23 => "i",
+                    24 => "o",
+                    25 => "p",
+                    26 => "[",
+                    27 => "]",
+                    28 => "\n",
+                    30 => "a",
+                    31 => "s",
+                    32 => "d",
+                    33 => "f",
+                    34 => "g",
+                    35 => "h",
+                    36 => "j",
+                    37 => "k",
+                    38 => "l",
+                    39 => ";",
+                    40 => "'",
+                    41 => "`",
+                    42 => "\\",
+                    44 => "z",
+                    45 => "x",
+                    46 => "c",
+                    47 => "v",
+                    48 => "b",
+                    49 => "n",
+                    50 => "m",
+                    51 => ",",
+                    52 => ".",
+                    53 => "/",
+                    _ => "",
+                };
+
+                if let Some(context) = &state.context {
+                    context.commit_string(1, key_string.to_string());
+                }
+            }
+            _ => {}
+        }
+    }
+}
+#+end_src
+
+** 调试
+代码部分结束了，要怎么运行这个「调皮」的输入法呢？直接使用​=cargo run=​？有兴趣的读者可以试试看看会有什么错误。前面提到过，输入法需要三方同心协力才能发挥作用，只有输入法实现了协议，那还是孤掌难鸣，现在急需的是一个同样实现了协议的Compositor！
+
+[[https://gitlab.freedesktop.org/wayland/weston][weston]]就是一个好选择，它是Wayland官方给出的参考实现，非常轻量化，可以直接当做KDE的一个窗口程序打开；最重要的是，它实现了input-method-v1。
+
+首先安装weston，然后是配置weston让它使用我们刚刚写的微型输入法，编辑*~/.config/weston.ini*文件，写入：
+
+#+begin_src ini
+[input-method]
+path=编译后的bin文件路径
+#+end_src
+
+接着在你当前的桌面环境下启动weston，在weston窗口内打开终端模拟器，输入命令​=weston-editor=​开启一个简单的编辑器应用，试着用新鲜出炉的输入法打一个"hello world"吧。
+
+[fn:1] [[https://www.zhihu.com/question/35811498]] 严谨地说，其实存在少量未知读音的汉字
