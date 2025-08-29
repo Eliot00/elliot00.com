@@ -43,7 +43,7 @@ SDK.getInstance().registerListener(listener)
 
 可以使用 =suspendCancellableCoroutine= 來做。例如上面的操作，可以轉化爲：
 
-#+begin_src Kotlin
+#+begin_src kotlin
 suspend fun getSomeInfo(): Info = suspendCancellableCoroutine { continuation ->
     val listener = object : ISomeInfoListener {
         override fun onInfoUpdate(info: Info) {
