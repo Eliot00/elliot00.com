@@ -1,0 +1,145 @@
+#+title: Django+React全栈开发：关联用户
+#+tags: REST Django
+#+series: Django+React全栈开发
+#+created_at: 2020-05-15T11:05:23.57+00:00
+#+published_at: 2021-04-18T07:39:42.509881+00:00
+#+summary: 这篇文章介绍了如何在Django REST Framework中设置用户权限。首先，它解释了如何将用户与文章关联，并创建了一个自定义的权限类 IsAdminOrReadOnly ，该类允许管理员创建、删除和修改文章，而其他用户只能读取文章。然后，它展示了如何将该权限类添加到视图类中，并解释了如何使用 perform_create 方法和 read_only_fields 属性来确保只有管理员才能创建文章，并且作者字段是只读的。最后，它演示了如何使用HTTPie工具测试API的正确性。
+
+[[https://elliot00.com/posts/react-django-custom-auth][上一篇文章]]其实已经讲了一点登录验证相关的内容，不过主要还是为了回答一位群友关于定制DJango用户模型的提问而临时写的，认证（authentication）与授权（authorization）实质上是两个步骤，但是一般都放在一起讲，认证是识别身份，你用管理员账户登录，密码正确，身份被确认为管理员，这是认证，因为是文章作者，所以有编辑文章的权限，这是授权。
+
+* 文章关联用户
+用户与文章应该是​*一对多*​的关系，首先要修改我们的Article模型：
+
+#+begin_src python
+class Article(models.Model):
+    author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='articles'
+    )
+# ......
+#+end_src
+
+接着去执行迁移操作：
+
+#+begin_src shellsession
+$ python manage.py makemigrations
+$ python manage.py migrate
+#+end_src
+
+注意到之前的文章都是没有作者的，所以执行迁移的时候会要求要么退出迁移，在模型上添加默认值，或者现在给出默认值。建议多熟悉迁移操作并且适当掌握一些​=SQL=​用法，这种涉及到数据变更的，有时候还得手动解决冲突。这里给我们之前创建的管理员账户ID做默认值就行，当然开发环境简单粗暴点也可以直接删库。
+
+先修改一下序列化器，加入​=author=​字段：
+
+#+begin_src python
+class ArticleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Article
+        fields = ['id', 'title', 'body', 'author', 'created', 'updated']
+#+end_src
+
+然后用命令行工具httpie测试一下API：
+
+#+begin_src shellsession
+$ http POST 127.0.0.1:8000/api/articles/ title="user" body="relationship" author=1
+#+end_src
+
+可以正常创建新文章，但是，我们只要在POST请求里带上用户ID，就可以为任意用户创建文章，这是不可取的，现在来解决这个问题。
+
+* 权限类
+上一节已经讲过了自定义权限类，现在来写一个只允许管理员创建删除修改，其他用户只读的权限类。
+
+新建​=article/permissions.py=​：
+
+#+begin_src python
+from rest_framework import permissions
+
+
+class IsAdminOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user.is_superuser
+#+end_src
+
+继承父类的​=has_permission=​方法，这个方法的返回值是布尔值，​=True=​即表示授权通过，对任意用户的请求在​=SAFE_METHODS=​内的，直接通过，否则就看用户是否是管理员。
+
+#+begin_src python
+# SAFE_METHODS源码
+SAFE_METHODS = ('GET', 'HEAD', 'OPTIONS')
+#+end_src
+
+现在要修改一下视图类：
+
+#+begin_src python
+# 引入自定义的权限类
+from article.permissions import IsAdminOrReadOnly
+
+
+class ArticleViewSet(viewsets.ModelViewSet):
+    # 加上这一行
+    permission_classes = [IsAdminOrReadOnly]
+#+end_src
+
+现在再使用httpie测试，会得到错误响应：
+
+#+begin_src json
+{
+    "detail": "Authentication credentials were not provided."
+}
+#+end_src
+
+现在带上验证信息再请求一次：
+
+#+begin_src shellsession
+$ http -a elliot:test1234 POST 127.0.0.1:8000/api/articles/ title="user" body="relationship" author=1
+
+......
+{
+    "author": 1,
+    "body": "relationship",
+    "created": "2021-04-18T07:24:40.144287Z",
+    "id": 5,
+    "title": "user",
+    "updated": "2021-04-18T07:24:40.144560Z"
+}
+#+end_src
+
+这次成功了，但是还有个问题，就是​=author=​这个字段仍然需要传递，并且只要是管理员，这个author值可以填任何已存在的用户ID。现在再来修复这个问题。
+
+* 请求对象
+#+begin_src python
+class ArticleViewSet(viewsets.ModelViewSet):
+
+    # 添加这个方法
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+#+end_src
+
+这里覆写了父类的​=perform_create=​方法，在序列化器保存时，从请求对象中获取​=user=​值并赋值给author参数，但是用户仍然可以传递author字段，可以在序列化器中把它设置为只读：
+
+#+begin_src python
+class ArticleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        # 添加属性
+        read_only_fields = ['author', ]
+#+end_src
+
+再次测试：
+
+#+begin_src shellsession
+$ http -a elliot:test1234 POST 127.0.0.1:8000/api/articles/ title="author is readonly" body="author is readonly" author=2
+.....
+{
+    "author": 1,
+    "body": "author is readonly",
+    "created": "2021-04-18T07:39:31.175273Z",
+    "id": 8,
+    "title": "author is readonly",
+    "updated": "2021-04-18T07:39:31.175525Z"
+}
+#+end_src
+
+这样即使传递了非法的author字段也会被忽略掉。

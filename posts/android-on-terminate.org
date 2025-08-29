@@ -1,0 +1,20 @@
+#+title: Android开发拾遗：对onTerminate的误解
+#+tags: Android Kotlin
+#+series: Android开发拾遗
+#+created_at: 2024-06-26T10:24:25.302994+08:00
+#+published_at: 2024-06-26T11:12:01.431334+08:00
+#+summary: 在Android应用中，通过继承Timber的Tree类实现日志记录功能，在Application的onCreate方法中启动日志记录，尽管onTerminate在真机上不会被调用，可以使用Activity的onSaveInstanceState方法保存和恢复临时数据。
+
+昨天收到一个需求需要在Android应用一个完整的生命周期——启动到退出——内，将Log信息收集到文件中。通过继承Timber的Tree类可以实现将日志保存到文件的功能，​=Application=​类有​=onCreate=​方法，可以在这里开始调用​=Timber.plant=​，以及创建以时间命名的日志文件等。那么要怎么检测应用退出？
+
+#+begin_quote
+单纯的清理操作如​​=Timber.uproot=​​其实没必要做，但有时会有在应用退出前保存一些状态的需求。
+#+end_quote
+
+在​=Application=​类内输入​=override fun on=​，自动补全会跳出​=onTerminate=​，看名字，这就是需要用到的生命周期方法了。但是当将写好的代码编译打包到实机上运行时，却发现这个方法没有被调用。
+
+查了下文档，发现这个方法仅适用于模拟器环境，在真机上根本就不会被调。
+
+那如果真的有在应用退出前保存临时数据，并在再次启动时恢复的需求要怎么做？
+
+一个方法是使用​=Activity=​上的​=onSaveInstanceState=​。注意到​=onCreate=​方法实际上有个​=Bundle?=​类型的参数​=savedInstanceState=​。可以在​=onSaveInstanceState=​中保存临时状态，在​=onCreate=​时恢复。另外还有​=onRestoreInstanceState=​可用于恢复，它仅当​=Activity=​被重建时，在​=onStart=​和​=onPostCreate=​之间被调用。
