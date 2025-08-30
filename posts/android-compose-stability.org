@@ -1,0 +1,199 @@
+#+title: Android开发拾遗：如何减少重组
+#+tags: Android Kotlin
+#+series: Android开发拾遗
+#+created_at: 2024-06-13T10:48:41.280841+08:00
+#+published_at: 2024-06-24T16:15:25.087716+08:00
+#+summary: 在Android代码中，常见到一些数据类标有@Stable或@Immutable注解，这些注解与Jetpack Compose的性能优化相关，本文探讨了它们的作用和可能的解决方案。
+
+* 前言
+在Github上浏览Android代码时，常看到有一些数据类上有​=@Stable=​或​=@Immutable=​注解，遂查询了些相关资料，发现与​=Jetpack Compose=​的性能有关。虽然我一贯坚持在没有充分依据的情况下不应当去做所谓的「性能优化」，但记录一下可能的解决方案还是值得的。
+
+[[https://developer.android.com/develop/ui/compose][Jetpack Compose]]是目前Android推荐的声明式的UI框架。在过去的XML视图中如果要写一个点击按钮改变文字的界面，大概是这样：
+
+#+begin_src kotlin
+class MainActivity : AppCompatActivity() {
+    private var count = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        val textViewCount: TextView = findViewById(R.id.textViewCount)
+        val buttonIncrement: Button = findViewById(R.id.buttonIncrement)
+
+        buttonIncrement.setOnClickListener {
+            count++
+            textViewCount.text = count.toString()
+        }
+    }
+}
+#+end_src
+
+需要命令式地从XML布局中找出对应的元素，设置事件监听器，在必要时修改视图的属性。另外还需要一个XML布局文件：
+
+#+begin_src xml
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/textViewCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:textSize="24sp" />
+
+    <Button
+        android:id="@+id/buttonIncrement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Increment" />
+
+</LinearLayout>
+#+end_src
+
+相比之下Jetpack Compose代码要更简洁，可读性更高：
+
+#+begin_src kotlin
+@Composable
+fun Counter() {
+    var count by remember { mutableStateOf(0) }
+
+    Column() {
+        Text(text = "$count")
+        Button(onClick = { count++ }) {
+            Text(text = "Increment")
+        }
+    }
+}
+#+end_src
+
+Jetpack Compose的UI是由​/可组合函数（composable functionns）/​组成的，这类函数必须用​=@Composable=​注解，它不返回值，也不用修改什么全局变量。
+
+* 重组
+Composable函数可以视为纯函数，相同的输入总是得到相同的输出（UI），所以如果要改变UI，并不需要获取某个组件对象再全修改它的属性，只要改变输入的数据即可。例如上面代码中​=Counter=​内的​=Text=​，这是库提供的可组合函数，当输入的text参数变化，渲染的文字就会发生变化，这样一个过程被称为​*recomposition*​，或许可以翻译为「重组」。得益于纯函数的特性，Jetpack Compose天生拥有较好的性能表现，它可以对可组合函数乱序调用、并行调用，也可以尽可能地跳过不必要的recomposition。
+
+Android Studio提供了一个叫做[[https://developer.android.com/studio/debug/layout-inspector][Layout Inspector]]的工具可以用来查看哪些组件发生了重组以及重组次数。现在就用这个工具看看Jetpack Compose够不够智能，可以跳过不必要的重组呢？
+
+#+begin_src kotlin
+@Composable
+fun Demo() {
+    var num by remember { mutableIntStateOf(0) }
+
+    Column {
+        Text(text = "Hello, World!")
+        RandomButton(num = num, onClick = { num = Random.nextInt(0, 100)})
+    }
+}
+
+@Composable
+fun RandomButton(num: Int, onClick: () -> Unit) {
+    Button(onClick = onClick) {
+        Text(text = num.toString())
+    }
+}
+#+end_src
+
+每次点击按钮，按钮上的文字就会随机变化，理论上只有​=RandomButton=​用到了​=num=​，在​=Column=​中的另一个​=Text=​是否可以避免被重组？
+
+#+ATTR_HTML: :alt skipped
+[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kotlin/layout_inspector.png]]
+
+可以看到点击按钮后只有​=RandomButton=​发生了重组，Text则被跳过了。
+
+* 稳定性
+接下来看一个稍复杂点的例子：
+
+#+begin_src kotlin
+data class Artist(var firstName: String, var lastName: String)
+
+@Composable
+fun Demo() {
+    var num by remember { mutableIntStateOf(0) }
+
+    Column {
+        Greeting(artist = Artist(firstName = "John", lastName = "Lennon"))
+        RandomButton(num = num, onClick = { num = Random.nextInt(0, 100)})
+    }
+}
+
+@Composable
+fun Greeting(artist: Artist) {
+    Text(text = "Hello, ${artist.firstName} ${artist.lastName}")
+}
+#+end_src
+
+#+ATTR_HTML: :alt not skipped
+[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kotlin/layout_inspector2.png]]
+
+即使​=Greeting=​的参数从来没有被修改过，它也无法被跳过重组。为什么这里Jetpack Compose不再「智能」了呢？假设我是Compose库开发者，一方面我需要保证较好的性能，但另一方面，更重要的是渲染不能出错，不能让应该更新的视图没有被更新；所以我需要有某种方法去检验一个可组合函数是否可以在重组中被跳过，并在无法确定是否应该跳过时，​*不要跳过*​。
+
+Jetpack Compose通过一个叫「稳定性」的指标来判断一个可组合函数是否可以被跳过，如果一个Composable的所有参数都是稳定的，那么这个Composable就是可跳过的。那么什么值被视为稳定的？首先是可变但每次变化会通知Compose的，例如​=MutableState=​。
+
+#+begin_src kotlin
+@Composable
+fun Demo() {
+    var num by remember { mutableIntStateOf(0) }
+    var name by remember { mutableStateOf("Paul") }
+
+    Column {
+        // 虽然name是可变的，但是MutableState的变化可被Compose监测，没有改变就可以跳过重组
+        Greeting(name)
+        RandomButton(num = num, onClick = { num = Random.nextInt(0, 100)})
+    }
+}
+
+@Composable
+fun Greeting(name: String) {
+    Text(text = "Hello, $name")
+}
+#+end_src
+
+另一种方式是直接使用不可变值（对象的值和其属性都不可变），如Kotlin的基本类型​=Int=​、​=String=​还有所有字段都是不可变的​=data class=​。
+
+#+begin_src kotlin
+data class Artist(val firstName: String, val lastName: String)
+
+@Composable
+fun Demo() {
+    var num by remember { mutableIntStateOf(0) }
+
+    Column {
+        // skippable
+        Greeting(artist = Artist(firstName = "John", lastName = "Lennon"))
+        RandomButton(num = num, onClick = { num = Random.nextInt(0, 100)})
+    }
+}
+#+end_src
+
+* Stable和Immutable注解
+如果数据类中有一个List会怎么样？
+
+#+begin_src kotlin
+data class Band(val name: String, val albums: List<String>)
+
+@Composable
+fun Demo() {
+    var num by remember { mutableIntStateOf(0) }
+
+    Column {
+        BandProfile(band = Band(name = "The Beatles", albums = listOf("Rubber Soul", "Revolver", "Abbey Road")))
+        RandomButton(num = num, onClick = { num = Random.nextInt(0, 100)})
+    }
+}
+#+end_src
+
+这次虽然数据类Band内的字段都是不可变的，但​=BandProfile=​仍然无法跳过重组，为什么？因为List是个接口，它不能真正保证不可变，包括​=Map=​、​=Set=​，都被Jetpack Compose识别为不稳定的。
+
+在数据类上加上注解​=@Stable=​就可以让Jetpack Compose将其视为稳定的，比这更强一级的注解是​=@Immutable=​，这告诉Compose被注解的类是不可变的。
+
+但要注意这两个注解只是一个「口头承诺」，实际是否稳定不可变是由开发者自己保证的。
+
+** 不可变集合
+针对集合数据，Jetpack Compose也支持Kotlin的[[https://github.com/Kotlin/kotlinx.collections.immutable][不可变集合]]，如果一个集合确实是不可变的，并且因为它是不稳定的导致Jetpack Compose产生性能问题，可以尝试用不可变集合替代。

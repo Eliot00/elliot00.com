@@ -18,9 +18,9 @@ const PostsList: React.FC<Props> = ({ posts, title = '最新发布' }) => {
           <li key={post._meta.slug} className="py-4">
             <Link
               href={`/posts/${post._meta.slug}`}
-              className="font-medium text-2xl transition duration-150 ease-in-out"
+              className="font-medium text-xl text-primary hover:underline hover:decoration-dashed transition duration-150 ease-in-out"
             >
-              <h2 className="my-2 hover:bg-zinc-100">{post.title}</h2>
+              <h3 className="my-2">{post.title}</h3>
             </Link>
             <span className="flex gap-2 items-center text-sm font-mono">
               {post.tags.map((tag) => (

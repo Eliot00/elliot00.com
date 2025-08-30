@@ -1,0 +1,267 @@
+#+title: Serverless学习笔记0x00
+#+tags: Python Serverless FastAPI
+#+series: 随笔
+#+created_at: 2020-10-11T08:36:36.92+00:00
+#+published_at: 2020-12-19T05:41:09.514124+00:00
+#+summary: 本文介绍了 AWS Lambda、触发器、SAM、共享依赖、Fastapi 等内容。AWS Lambda 是一种无服务器计算服务，无需预置或管理服务器即可运行代码。触发器负责根据不同方式调用函数，如 API Gateway、CloudWatch Events 等。SAM（AWS Serverless Application Model）是一种脚手架工具，可以帮助快速构建所需的 Serverless 应用。共享依赖功能允许多个函数共享相同的第三方库或通用代码，无需在每个函数中重复上传依赖。Fastapi 是一个 Python Web 框架，可以用来构建 RESTful API。文章描述了如何将一个本地 Fastapi 项目快速迁移到 Serverless 架构中。最后，文章列出了一些需要进一步了解的问题，如基于 Lambda 的身份验证、Websocket API、持续集成等。
+
+* AWS Lambda
+最近在工作中接触到​=Serverless=​架构，学习了一些AWS相关的服务，为了避免遗忘，在这里先记录一下目前的收获。
+
+*AWS*​的官方文档第一句话就为​=AWS Lambda=​做了一个简单介绍：
+
+#+begin_quote
+AWS Lambda is a compute service that lets you run code without provisioning or managing servers.
+#+end_quote
+
+无服务并不是不需要服务器，而是可以让开发者更加专注于业务代码，而非程序运行的实际环境。无服务器计算有多种不同形式，​=AWS Lambda=​则属于其中的​*FaaS*​（函数即是服务）。一个Lambda Function就是一个服务单元，可以将传统的后端拆分到很小的粒度，将针对某个资源的CRUD操作拆分成Function，想要执行对应的操作就去触发对应的函数。Lambda提供对​=Python=​、​=JavaScript=​、​=C#=​等语言的支持，既然底层要调用我们所写的的代码，自然要以一种callback的形式来编写：
+
+#+begin_src python
+def lambda_handler(event, context):
+    # TODO implement
+    return {
+        'statusCode': 200,
+        'body': json.dumps("Hello AWS Lambda")
+    }
+#+end_src
+
+关于Serverless的优缺点网络上讨论很多，关键还是根据实际情况决定是否使用，就不赘述了。
+
+* 触发器
+
+#+ATTR_HTML: :alt 测试
+[[https://i.loli.net/2020/10/11/hcViz6ZH8PdoQ1E.png]]
+
+当然，既然创建了服务，必然会有需要使用的时候，不可能仅仅用来测试，比如定时的天气查询服务，图片上传生成外链服务，持续集成，持续发布，还有常见的后端API，AWS为Lambda提供了一系列触发器，根据不同方式来invoke：
+
+#+ATTR_HTML: :alt 触发器
+[[https://i.loli.net/2020/10/11/yCZjcit2wm3PY9p.png]]
+
+例如使用API Gateway，可以快速构建一个API，AWS会提供一个endpoint，只需几个简单的步骤，无须关心服务器系统版本，配置nginx，配置Docker。
+
+* SAM
+AWS提供了一整套​=Serverless=​的生态，​=Lambda=​只是其中一部分，譬如要创建一个购物系统API，其中免不了要配置​=API Gateway=​，​=Layer=​，程序员往往喜欢有集中的，CLI形式的配置方式，而不是在网页上点击，尤其是编辑代码，每个人都有自己习惯的编辑器，而不是在网页上直接编辑。
+
+*AWS Serverless Application Model*​是官方提供的脚手架工具，可以帮助我们快速构建需要的Serverless应用。使用​=sam init=​可以快速初始化一个应用，sam也提供了一些模板应用，可以直接拿来套用。sam默认使用名为​=template.yaml=​的文件作为配置文件，使用​=sam build=​命令构建打包项目，​=sam deploy=​部署，另外还提供了本地运行开发测试的功能，不过这需要先安装Docker。
+
+当然也有一些封装层次更高的框架如[[https://aws.github.io/chalice/index][AWS Chalice]]，看了一下官网的介绍，感觉能简化不少操作，不过在目前的项目中由于一些原因无法使用。
+
+* 共享依赖
+如果一个Function依赖第三方库，在​=AWS Lambda=​中，需要直接将依赖库文件和自己的代码一并压缩成zip文件上传，这样当多个Function依赖相同的第三方库或者一些通用代码，这种在每个Function中上传依赖的方式将变得很麻烦，对此AWS提供了一个​=Layer=​功能，可以将将公共依赖放到一个​=Layer=​中，多个Function之间可以共享一个​=Layer=​，一个Function也可以构建在多个​=Layer=​之上，以此减少重复工作。
+
+不过​=Layer=​仍然是将需要的依赖代码直接上传，在这里我遇到了一个恶心的问题。起初，我在​=template.yaml=​中配置Layer，并写了一个shell脚本将依赖文件下载到​=ContenUri=​配置项指定的文件夹。
+
+template.yaml文件（省略部分）：
+
+#+begin_src yaml
+  SharedLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: elliot-demo-shared
+      Description: common dependencies
+      ContentUri: shared/
+      RetentionPolicy: Delete
+#+end_src
+
+shell脚本：
+
+#+begin_src shell
+#!/bin/bash
+set -eo pipefail
+echo "Install dependencies"
+rm -rf ./shared
+pip3 install --target ./shared/python -r requirements.txt
+echo "Start build"
+time sam build
+#+end_src
+
+当依赖项有更新时，执行shell脚本，安装依赖并执行​=build=​，将这些依赖库打包上传，但是不幸的是，​=Python=​中有很多​=C/C++=​依赖，这些第三方库会在本地根据系统环境进行编译，而​=AWS Lambda=​是运行在基于​=Linux=​的容器中的，我们本地开发环境则是​=Mac os=​，因此本地下载的依赖部署之后就会报错。Function无法正常运行。
+
+当然我家里有一台Linux机器，但是不能保证每次开发都在Linux环境进行，最初我的解决办法比较麻烦，在Mac上启动一个​=Docker=​容器，并挂载数据卷，容器内pip安装依赖到挂载的文件夹中，以此获得在Linux环境下编译的二进制包。
+
+最后发现​=sam=​其实提供了​=--use-container=​参数，可以在容器内build，修改配置文件如下：
+
+#+begin_src yaml
+  SharedLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: elliot-demo-shared
+      Description: common dependencies
+      ContentUri: shared
+      CompatibleRuntimes:
+        - python3.8
+      RetentionPolicy: Delete
+    Metadata:
+      BuildMethod: makefile
+#+end_src
+
+定义​=Metadata=​，要求通过​=makefile=​构建​=Layer=​，接下来可以删除原先的​=shared=​文件夹下的内容，将​=requirements.txt=​移动进来，并且新建​=makefile=​文件：
+
+#+begin_src makefile
+build-SharedLayer:
+    mkdir -p "$(ARTIFACTS_DIR)/python/"
+    python3 -m pip install -r requirements.txt -t "$(ARTIFACTS_DIR)/python/" -i https://pypi.tuna.tsinghua.edu.cn/simple
+#+end_src
+
+*注意makefile内命令行要以Tab开头，编辑器中我们一般都将Tab转换成空格了，这里要改回来*
+
+这样就可以在特定的容器内进行build操作了，为了避免sam每次build都要拉取Docker镜像，可以使用​=--skip-pull-image=​参数跳过。不过这样还是有些不方便，每次都要在容器内build，即使依赖项没有发生改变也会​*重新构建Layer*​，希望未来​=AWS=​能改善这方面体验。
+
+* Fastapi
+参考官方模板，我写了一些Demo，在这之后，我开始对​*如何将一个本地项目快速迁移到Serverless*​感兴趣。
+
+如果我有一个以Python常用Web框架如​=Django=​，​=fastapi=​编写的RESTful API项目，具有类似按资源划分的项目结构，如何将其快速迁移到Serverless的架构中呢？
+
+在搜集资料的时候，我发现了一篇文章[[https://dev.to/paurakhsharma/microservice-in-python-using-fastapi-24cc][Microservice in Python using FastAPI]]，文中使用fastapi构建了一个​=Microservice=​架构的应用。
+
+#+ATTR_HTML: :alt Microservice
+[[https://i.loli.net/2020/10/11/sVXCNh6up2KcjWr.jpg]]
+
+上图来自[[https://www.zhihu.com/question/65502802/answer/802678798][什么是微服务架构？ - 老刘的回答 - 知乎]]
+
+如果按照常规思路，我们一般会将REST API项目按照Resources划分，如User、Post、Comment，目录内可能包含资源的model、migration、route、view、controller等，最后在外层目录，或许有个类似​=main.js=​、​=StartUp.cs=​的文件统一注册所有资源，那么按照microservices的思路，可以设置如下结构：
+
+#+begin_example
+.
+├── cast_service
+│   ├── app
+│   │   ├── api
+│   │   │   ├── casts.py
+│   │   │   ├── db_manager.py
+│   │   │   ├── db.py
+│   │   │   ├── __init__.py
+│   │   │   └── models.py
+│   │   ├── __init__.py
+│   │   └── main.py
+│   ├── __init__.py
+│   └── requirements.txt
+├── __init__.py
+└── movie_service
+    ├── app
+    │   ├── api
+    │   │   ├── db_manager.py
+    │   │   ├── db.py
+    │   │   ├── __init__.py
+    │   │   ├── models.py
+    │   │   ├── movies.py
+    │   │   └── service.py
+    │   ├── __init__.py
+    │   └── main.py
+    ├── __init__.py
+    └── requirements.txt
+#+end_example
+
+每个sesrvice目录下的requirements.txt文件是SAM的硬性要求，每个包含Lambda函数的文件夹下都要有一个，SAM工具会自动执行pip install下载并上传，当然这里我们使用Layer，单独应用内没有特殊的依赖，所以直接留空就行了。按照那篇文章中Microservices应用部署的方式，我完全可以将​=nginx=​替换为​=API Gateway=​，将​=Docker=​容器换成​=AWS Lambda=​，我将每个单独的资源视为一个Lambda服务，可以这样编写sam配置（有部分省略）：
+
+#+begin_src yaml
+Resources:
+  RouteApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Demo
+      EndpointConfiguration: REGIONAL
+
+  MoviesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        Base:
+          Properties:
+            RestApiId:
+              Ref: RouteApi
+            Path: /api/v1/movies
+            Method: ANY
+          Type: Api
+        Others:
+          Properties:
+            RestApiId:
+              Ref: RouteApi
+            Path: /api/v1/movies/{proxy+}
+            Method: ANY
+          Type: Api
+      FunctionName: elliot-fastapi-movies
+      CodeUri: microservices/movie_service/
+      Handler: app.main.handler
+
+  CastsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Events:
+        Base:
+          Properties:
+            RestApiId:
+              Ref: RouteApi
+            Path: /api/v1/casts
+            Method: ANY
+          Type: Api
+        Others:
+          Properties:
+            RestApiId:
+              Ref: RouteApi
+            Path: /api/v1/casts/{proxy+}
+            Method: ANY
+          Type: Api
+      FunctionName: elliot-fastapi-casts
+      CodeUri: microservices/cast_service/
+      Handler: app.main.handler
+#+end_src
+
+通过​={proxy+}=​可以将API端点剩余部分交给我们的fastapi应用处理。接下来就是fastapi如何处理适配Lambda的问题了，我在Github上发现了[[https://github.com/jordaneremieff/mangum][Mangum]]这个库，可以利用它将任何Python的​=ASGI=​应用（如[[https://www.djangoproject.com/][Django3.0]]以上版本、[[https://www.starlette.io/][Starlette]]、[[https://fastapi.tiangolo.com/][fastapi]]等）转换成Lambda handler：
+
+#+begin_src python
+from fastapi import FastAPI
+from mangum import Mangum
+
+from app.api.movies import movies
+from app.api.db import metadata, database, engine
+
+
+metadata.create_all(engine)
+
+prefix = "/api/v1/movies"
+
+app = FastAPI(openapi_prefix="/Demo", openapi_url=f"{prefix}/openapi.json", docs_url=f"{prefix}/docs")
+
+
+@app.on_event("startup")
+async def startup():
+    await database.connect()
+
+
+@app.on_event("shutdown")
+async def shutdown():
+    await database.disconnect()
+
+app.include_router(movies, prefix=prefix, tags=['movies'])
+
+handler = Mangum(app)
+#+end_src
+
+最终的目录结构如下：
+
+#+ATTR_HTML: :alt 目录结构
+[[https://i.loli.net/2020/10/11/fyoQmlwLgUxvFIM.png]]
+
+这种结构的代码仍然还可以使用之前所述文章中的​=Microservices=​的方式部署应用，或者可以屏蔽每个资源下的​=main.py=​，改用一个​=FastAPI=​类的实例挂载所有路由，以普通的fastapi应用的形式部署。所有代码已经上传到[[https://github.com/Eliot00/elliotFunction][Github]]。
+
+官网对Serverless、FaaS的阐述，这个应用似乎已经背离了AWS推荐的方式，官网的文章认为最好是将程序拆分到同一个资源的增删改查四种操作作为四个不同的服务，或许这种形式可以称为RaaS（REST的前提，U​*R*​I，Resources），开个玩笑。
+
+每个Lambda函数预留了1000的并发量，单个函数处理CURD确实会带来一定性能上的损失，不过如果一个项目前期对是否使用Serverless有些犹豫不决，在未来某个时间节点可能会切换，或者是要短时间迁移一个旧项目，这里似乎能作为一种参考方式。
+
+当然前提是你按照类似的形式组织了代码，而不是将所有代码放到一个文件里，这不是玩笑，确实有人是这么做的～
+
+写到这里我突然想到，或许我可以实现一个​=Generator/Adapter=​，或者说一个脚手架，用于生成一个fastapi的范例结构，并最终帮助我自动拆解项目，将路由提取出来部署到AWS Serverless生态中。这将是个巨大的挑战，我想将它放到接下来一年的个人娱乐项目TODO list中。
+
+在编程世界里，我认为存在着两类语言或框架的设计，一类充分相信程序员，认为程序员可以掌控一切，如​=C/C++=​语言，另一类则可能认为程序员都是满脑子浆糊的蠢货，必须加以严格的限制，如​=Rust=​。尽管有时候更愿意相信自己可以掌控全局，但是不得不承认，在多人协作中，都会倾向于施加一定的规范、限制，否则每个人都按照自己的习惯，随意，最终的结果往往不太好。所以在Web框架中我更喜欢​=ASP.NET core=​或​=Django=​这类框架，而非​=fastapi=​、​=flask=​这类灵活小巧的框架。
+
+* 一些问题
+
+- 根据官方示例做了基于Lambda的Auth，接下来要具体了解一下IAM的内容了
+- Websocket API
+- 其它触发器的使用
+- 绕过API Gateway，Lambda之间互相调用
+- 持续集成
+
+……
+
+目前准备去了解的问题，写下一篇笔记前可以先研究这些了。

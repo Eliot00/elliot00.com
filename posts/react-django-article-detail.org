@@ -1,0 +1,139 @@
+#+title: Django+React全栈开发：文章详情
+#+tags: REST Django
+#+series: Django+React全栈开发
+#+created_at: 2020-06-10T05:44:51.454+00:00
+#+published_at: 2021-10-31T13:30:48.64777+00:00
+#+summary: 这篇文章讨论了构建一个博客应用时遇到的身份验证问题和组件交互的解决方案。它首先介绍了修改一个组件以从后端获取文章正文导致的身份验证问题，并提供了解决方法。接下来，文章介绍了 React Hooks 的概念，以及如何使用 Hooks 实现类似于类组件生命周期的功能。它还讨论了使用 Hooks 时的一些注意事项，例如 Hooks 只能出现在函数式组件或自定义 Hook 中，并且必须在最顶层。最后，文章给出了一个练习，让读者尝试在页面上呈现文章标题、创建日期等其他信息。
+
+* 验证问题
+修改​=ArticleDetail=​组件，从后端拿到文章正文。现在如果直接启动应用，会发现获取文章列表时后端返回了403响应，因为在[[https://elliot00.com/posts/react-django-jwt][上一节]]中设置了身份验证，每次请求必须携带正确的JWT，但是事实上对于文章列表和详情的​=GET=​请求完全可以忽略验证，毕竟这是一个博客应用，现在先处理这个问题。
+
+这里有一个简陋的解决办法，改写上一章编写的​=jwt_auth/authentication.py=​：
+
+#+begin_src python
+class JWTAuthentication(BaseAuthentication):
+
+    def authenticate(self, request):
+        header = request.META.get('HTTP_AUTHORIZATION')
+        if header is None:
+            return None
+        ......
+#+end_src
+
+如果请求头不包含token则直接返回None，接下来由定义在视图类中的​=permissions=​类处理请求，我们之前设置的是​=IsAdminOrReadonly=​，未登录用户将拥有只读权限。这个办法有些粗糙，读者可以尝试改进。
+
+* Hooks
+前端获取文章详情和文章列表组件中请求文章列表的方式差不多。但是文章列表组件是一个类组件，API请求是在类组件的​=componentDidMount=​这个生命周期里完成的。​=ArticleDetail=​是一个函数组件，前面提到过，函数组件是无状态的，没有生命周期， 那么是否要把函数组件改成类组件呢？
+
+React16为函数式组件提供了一个名为Hook的新特性，官方介绍是这样的：
+
+#+begin_quote
+/Hooks/ are a new addition in React 16.8. They let you use state and other React features without writing a class.
+#+end_quote
+
+Hook以函数的形式让函数组件获得类组件的state和生命周期功能。这次要用到两个Hook，分别是​=useState=​和​=useEffect=​，下面先看看​=useState=​：
+
+#+begin_src jsx
+import { useParams } from 'react-router-dom';
+import { useState } from 'react';
+
+const ArticleDetail = () => {
+  const { articleId } = useParams();
+  const [body, setBody] = useState('');
+
+  ......
+}
+#+end_src
+
+增加了两行代码，​=useState=​的参数用来设置state的默认值，返回值是一个列表，第一个元素是创建的state，第二个元素是一个函数，可以用来修改state。目前这个state还没有被用上，现在来写一个简单的交互功能，添加一个按钮，点击一下将页面正文内容变成hello world：
+
+#+begin_src jsx
+const ArticleDetail = () => {
+  const { articleId } = useParams();
+  const [body, setBody] = useState('');
+
+  return (
+    <main>
+      <div>{body}</div>
+      <button onClick={() => setBody('Hello world')}>hello</button>
+    </main>
+  )
+}
+#+end_src
+
+这里用到了React的合成事件​=onClick=​，当按钮被点击时，就会触发回调函数，回调函数使用了Hook返回的​=setBody=​函数，将body的值更改为「Hello world」。可以回顾一下类组件，上面的代码其实等价于下面这个类组件：
+
+#+begin_src jsx
+class ArticleDetail extends react.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      body: '',
+    }
+  }
+
+  render() {
+    return (
+      <main>
+        <div>
+          {this.state.body}
+        </div>
+        <button onClick={() => this.setState({ body: 'Hello world'})}>hello</button>
+      </main>
+    )
+
+  }
+}
+#+end_src
+
+相比之下，是不是感觉函数式的写法更简洁呢？
+
+那么，怎么做到和​=ArticleList=​组件​=componentDidMount=​生命周期相同的功能呢？这就需要用到另一个Hook：​=useEffect=​。
+
+#+begin_src jsx
+import { useState, useEffect } from 'react';
+
+const ArticleDetail = () => {
+  const { articleId } = useParams();
+  const [body, setBody] = useState('');
+
+  useEffect(() => {
+    fetch(`/api/articles/${articleId}`)
+      .then(response => response.json())
+      .then(result => setBody(result.body))
+      .catch(console.error);
+  }, [articleId]);
+
+  return (
+    <main>
+      <div className="m-2 text-center">{body}</div>
+    </main>
+  )
+}
+#+end_src
+
+稍微给正文加点样式方便区分，注意useEffect函数的两个参数，第一个参数是一个回调函数，通过GET请求获取后端的文章详情，这里用到了从路由参数获得的​=articleId=​来拼接字符串得到所需文章的后端地址，序列化响应后通过setBody设置body的值；第二个参数是一个列表，useEffect会监视列表中的值，当值发生变化时将会重新执行回调函数更新组件，如果这个列表设置为空将会只执行一次就结束。
+
+* 注意事项
+使用Hook有一些注意事项：
+
+- Hooks只能出现在函数式组件或自定义Hook中
+- Hooks必须在最顶层（不能在条件语句、循环体或者嵌套函数内部）
+
+如果有时候你想在某个条件下才执行​=useEffect=​的内容，那么不要把整个Hook放到条件语句内，而是在​=useEffect=​的回调函数内部做条件判断。
+
+开发者可以自定义Hook来复用代码，例如多个组件都需要一个获取用户信息的逻辑，那么就可以封装一个自定义Hook：
+
+#+begin_src jsx
+function useUser(friendID) {
+  const [user, setUser] = useState(null);
+  useEffect(......)
+
+  return user;
+}
+#+end_src
+
+一般约定这类自定义Hook函数以​=use=​开发，回顾之前的代码，可以发现，其实我们早就已经用到了一个Hook函数：​=useParams=​。
+
+* 练习
+读者可以尝试在页面上呈现文章标题创建日期等其他信息。

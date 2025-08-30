@@ -3,8 +3,15 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from '@/components/Footer'
 import AdSense from '@/components/AdSense'
+import { LXGW_WenKai_TC } from 'next/font/google'
 import './globals.css'
-import { DefaultHeader } from '@/components/Header'
+import { Header } from '@/components/Header'
+
+const lxgw = LXGW_WenKai_TC({
+  variable: '--font-lxgw-serif',
+  weight: ['400', '700'],
+  subsets: ['latin'],
+})
 
 export const metadata: Metadata = {
   title: 'Elliot - 致虛極 守靜篤',
@@ -24,16 +31,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" className={`${lxgw.variable} antialiased`}>
       <head>
         <AdSense pid="4587152222007322" />
       </head>
-      <body className="p-8 max-w-7xl mx-auto min-h-screen lg:px-20 lg:h-screen lg:max-h-screen lg:grid lg:gap-x-6 lg:grid-cols-[3fr_1fr] lg:grid-rows-[1fr_9rem]">
-        <DefaultHeader />
-        <main
-          className="lg:my-20 lg:px-4 lg:col-start-1 lg:col-end-2 lg:row-start-1 lg:row-end-3 overflow-y-auto no-scrollbar text-gray-700"
-          role="main"
-        >
+      <body className="font-serif">
+        <Header />
+        <main className="mx-auto max-w-3xl" role="main">
           {children}
         </main>
         <Footer />

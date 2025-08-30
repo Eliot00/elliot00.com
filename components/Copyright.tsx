@@ -8,7 +8,7 @@ interface Props {
 const Copyright: React.FC<Props> = ({ slug, title }) => {
   const selfUrl = `https://elliot00.com/posts/${slug}`
   return (
-    <div className="bg-yellow-50 p-4 rounded flex items-start text-yellow-600 my-4 shadow-md mx-auto">
+    <div className="bg-yellow-50 p-4 rounded-sm flex items-start text-yellow-600 my-4 shadow-md mx-auto">
       <div className="text-lg">
         <svg
           xmlns="http://www.w3.org/2000/svg"

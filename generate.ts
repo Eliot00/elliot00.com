@@ -1,5 +1,4 @@
 import { ContentConverter, Unified } from 'docube'
-import { makeMarkdownConverter } from '@docube/markdown'
 import { makeUnifiedLive } from '@docube/org'
 import {
   makeTransformer,
@@ -10,15 +9,14 @@ import {
   ContentValidatorLive,
   ModuleResolverLive,
 } from '@docube/common'
-import remarkGfm from 'remark-gfm'
 import { Effect, Layer } from 'effect'
 import rehypeShiftHeading from 'rehype-shift-heading'
-import rehypePrettyCode from 'rehype-pretty-code'
 import slug from 'rehype-slug-custom-id'
 import raw from 'rehype-raw'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeMathjax from 'rehype-mathjax'
 import rehypeCallouts from 'rehype-callouts'
+import rehypeShiki, { type RehypeShikiOptions } from '@shikijs/rehype'
 
 import rehypeProbeImageSize from './lib/rehypeImage'
 import { copyButtonSlotTransformer } from './lib/copyButtonSlotTransformer'
@@ -26,7 +24,7 @@ import { copyButtonSlotTransformer } from './lib/copyButtonSlotTransformer'
 const AppConfigLive = makeAppConfig({
   name: 'Post',
   directory: './posts',
-  include: '**/*.{md,org}',
+  include: '**/*.org',
   fields: (s) => ({
     title: s.String,
     tags: s.Array(s.String),
@@ -39,21 +37,21 @@ const AppConfigLive = makeAppConfig({
   }),
 })
 
-const rehypePrettyOptions = {
-  theme: {
+const rehypeShikiOptions = {
+  themes: {
     light: 'material-theme-lighter',
     dark: 'nord',
   },
-  bypassInlineCode: true,
   transformers: [copyButtonSlotTransformer()],
-}
+  defaultColor: 'light-dark()',
+} satisfies RehypeShikiOptions
 
 const UnifiedLive = makeUnifiedLive({
   rehypePlugins: [
     raw,
     rehypeProbeImageSize,
     [rehypeShiftHeading, { shift: 1 }],
-    [rehypePrettyCode, rehypePrettyOptions],
+    [rehypeShiki, rehypeShikiOptions],
     slug,
     [rehypeAutolinkHeadings, { behavior: 'wrap' }],
     rehypeMathjax,
@@ -61,49 +59,32 @@ const UnifiedLive = makeUnifiedLive({
   ],
 })
 
-const MarkdownConverterLive = makeMarkdownConverter({
-  remarkPlugins: [remarkGfm],
-  rehypePlugins: [
-    rehypeProbeImageSize,
-    [rehypePrettyCode, rehypePrettyOptions],
-    slug,
-    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-  ],
-})
-
 const MyContentConverterLive = Layer.effect(
   ContentConverter,
   Effect.gen(function* () {
-    const mdxConverter = yield* ContentConverter
     const unified = yield* Unified
     return {
       convert: (file) =>
         Effect.gen(function* () {
-          if (file._meta.fileName.endsWith('md')) {
-            return yield* mdxConverter.convert(file)
-          } else {
-            const parsed = yield* file.text.pipe(
-              Effect.andThen(unified.process)
-            )
-            const {
-              published_at: publishedAt,
-              created_at: createdAt,
-              tags,
-              ...rest
-            } = parsed.data
-            return {
-              ...rest,
-              publishedAt,
-              createdAt,
-              tags: (tags as string).trim().split(' '),
-              _meta: makeOutputMeta(file),
-              body: parsed.toString(),
-            }
+          const parsed = yield* file.text.pipe(Effect.andThen(unified.process))
+          const {
+            published_at: publishedAt,
+            created_at: createdAt,
+            tags,
+            ...rest
+          } = parsed.data
+          return {
+            ...rest,
+            publishedAt,
+            createdAt,
+            tags: (tags as string).trim().split(' '),
+            _meta: makeOutputMeta(file),
+            body: parsed.toString(),
           }
         }),
     }
   })
-).pipe(Layer.provide(MarkdownConverterLive), Layer.provide(UnifiedLive))
+).pipe(Layer.provide(UnifiedLive))
 
 const transformer = makeTransformer({
   loader: LoaderLive.pipe(Layer.provide(AppConfigLive)),
