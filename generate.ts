@@ -56,7 +56,20 @@ const UnifiedLive = makeUnifiedLive({
     [rehypeShiftHeading, { shift: 1 }],
     [rehypeShiki, rehypeShikiOptions],
     slug,
-    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+    [
+      rehypeAutolinkHeadings,
+      {
+        behavior: 'append',
+        content: { type: 'text', value: '#' },
+        headingProperties: { className: 'group' },
+        properties: {
+          class:
+            'color-primary ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100',
+          ariaHidden: true,
+          tabIndex: -1,
+        },
+      },
+    ],
     rehypeMathjax,
     rehypeCallouts,
   ],
