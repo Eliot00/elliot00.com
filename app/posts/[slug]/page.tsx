@@ -16,6 +16,9 @@ type Props = {
   params: Promise<{ slug: string }>
 }
 
+const MJX_CLASS_NAME =
+  '[&_mjx-container]:flex! [&_mjx-container]:justify-center [&_mjx-container]:overflow-auto prose-p:[&_mjx-container]:inline! prose-p:[&_mjx-container]:align-middle prose-p:[&_mjx-container]:leading-none prose-p:[&_mjx-container_svg]:inline!'
+
 export default async function PostDetail(props: Props) {
   const params = await props.params
   // Find the post for the current page.
@@ -35,7 +38,7 @@ export default async function PostDetail(props: Props) {
   return (
     <>
       <article
-        className={`${COMMON_PROSE_CLASS_NAME} lg:prose-h1:text-center prose-pre:relative`}
+        className={`${COMMON_PROSE_CLASS_NAME} ${MJX_CLASS_NAME} lg:prose-h1:text-center prose-pre:relative`}
       >
         <header>
           <h1>{title}</h1>
