@@ -3,9 +3,9 @@
 
 :root {
   color-scheme: light dark;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --primary: oklch(0.58 0.2 180);
+  --background: oklch(0.994 0 285);
+  --foreground: oklch(0.2742 0.0023 325.64);
+  --primary: oklch(0.5137 0.129959 245.2369);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -25,9 +25,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --primary: oklch(0.62 0.22 180);
+    --background: oklch(0.2744 0.031 268.43);
+    --foreground: oklch(0.9455 0.0087 264.52);
+    --primary: oklch(0.7023 0.200362 45.0447);
     --secondary: oklch(0.269 0 0);
     --secondary-foreground: oklch(0.985 0 0);
     --muted: oklch(0.269 0 0);
@@ -38,8 +38,4 @@
 body {
   background: var(--background);
   color: var(--foreground);
-}
-
-.link {
-  @apply text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out;
 }
