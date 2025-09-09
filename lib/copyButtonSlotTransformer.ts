@@ -1,24 +1,31 @@
 import type { ShikiTransformer } from 'shiki'
 
+export const COPY_BUTTON_ID = 'shiki-copy'
+
 export function copyButtonSlotTransformer(): ShikiTransformer {
   return {
     name: '@elliot00/transformers/copy-button',
-    code(node) {
-      node.children.push({
+    pre(node) {
+      return {
         type: 'element',
-        tagName: 'button',
+        tagName: 'figure',
         properties: {
-          type: 'button',
-          data: this.source,
-          class: 'rehype-pretty-copy',
+          className: 'relative',
         },
         children: [
+          node,
           {
-            type: 'text',
-            value: 'copy',
+            type: 'element',
+            tagName: 'button',
+            properties: {
+              type: 'button',
+              data: this.source,
+              buttonId: COPY_BUTTON_ID,
+            },
+            children: [],
           },
         ],
-      })
+      }
     },
   }
 }

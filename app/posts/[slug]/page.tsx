@@ -11,6 +11,7 @@ import Comment from '@/components/Comment'
 import SmartImage from '@/components/typography/SmartImage'
 import 'rehype-callouts/theme/obsidian'
 import { COMMON_PROSE_CLASS_NAME } from '@/lib/constants'
+import { COPY_BUTTON_ID } from '@/lib/copyButtonSlotTransformer'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -90,9 +91,8 @@ function PostContent({ post }: { post: Post }) {
           if (
             'attribs' in dom &&
             dom.name === 'button' &&
-            dom.attribs['class'] === 'rehype-pretty-copy'
+            dom.attribs['buttonId'] === COPY_BUTTON_ID
           ) {
-            delete dom.attribs.onclick
             return <CopyCodeButton code={dom.attribs.data} />
           }
 
