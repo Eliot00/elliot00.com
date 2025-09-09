@@ -10,8 +10,13 @@ import CopyCodeButton from '@/components/typography/CopyCodeButton'
 import Comment from '@/components/Comment'
 import SmartImage from '@/components/typography/SmartImage'
 import 'rehype-callouts/theme/obsidian'
-import { COMMON_PROSE_CLASS_NAME } from '@/lib/constants'
+import {
+  COMMON_LINK_CLASS_NAME,
+  COMMON_PROSE_CLASS_NAME,
+} from '@/lib/constants'
 import { COPY_BUTTON_ID } from '@/lib/copyButtonSlotTransformer'
+import { ExternalLinkIcon } from 'lucide-react'
+import { ExternalLink } from '@/components/ExternalLink'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -43,18 +48,18 @@ export default async function PostDetail(props: Props) {
       >
         <header>
           <h1>{title}</h1>
-          <div className="flex flex-col justify-center items-start gap-2 lg:gap-4 lg:items-center lg:flex-row text-gray-400 mx-auto my-6">
+          <div className="not-prose flex flex-col justify-center items-start gap-2 lg:gap-4 lg:items-center lg:flex-row text-secondary-foreground mx-auto my-6">
             <span className="text-center">
-              创建于：
-              <time className="link">
+              起筆於：
+              <time>
                 {new Intl.DateTimeFormat('zh-Hans-CN').format(
                   new Date(createdAt)
                 )}
               </time>
             </span>
             <span className="text-center">
-              发布于：
-              <time className="link">
+              發佈於：
+              <time>
                 {new Intl.DateTimeFormat('zh-Hans-CN').format(
                   new Date(publishedAt)
                 )}
@@ -62,7 +67,7 @@ export default async function PostDetail(props: Props) {
             </span>
             <span className="text-center">
               文集：
-              <Link href="/series" className="link">
+              <Link href="/series" className={COMMON_LINK_CLASS_NAME}>
                 {series}
               </Link>
             </span>
@@ -72,7 +77,10 @@ export default async function PostDetail(props: Props) {
       </article>
       <Divider>EOF</Divider>
       <div className="text-center font-medium">
-        <Link className="link" href="/sponsor">
+        <Link
+          className="text-foreground/80 hover:text-foreground"
+          href="/sponsor"
+        >
           文章有帮助？为我充个
           <Lightning />吧
         </Link>
@@ -112,15 +120,24 @@ function PostContent({ post }: { post: Post }) {
             )
           }
 
-          if ('attribs' in dom && dom.name == 'a') {
-            const { href = '', ...restAttribs } = dom.attribs
+          if ('attribs' in dom && dom.name == 'a' && !dom.attribs.ariaHidden) {
+            if (dom.children[0] instanceof Text) {
+              const text = dom.children[0].data
+              const href = dom.attribs.href || ''
 
-            if (href.startsWith('/') && dom.children[0] instanceof Text) {
-              return (
-                <Link href={href} {...restAttribs}>
-                  {dom.children[0].data}
-                </Link>
-              )
+              if (href.startsWith('/')) {
+                return (
+                  <Link
+                    {...dom.attribs}
+                    href={href}
+                    className={`not-prose ${COMMON_LINK_CLASS_NAME}`}
+                  >
+                    {text}
+                  </Link>
+                )
+              } else if (href.startsWith('https')) {
+                return <ExternalLink {...dom.attribs}>{text}</ExternalLink>
+              }
             }
           }
         },

@@ -64,7 +64,7 @@ const UnifiedLive = makeUnifiedLive({
         headingProperties: { className: 'group' },
         properties: {
           class:
-            'color-primary ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100',
+            'ms-2 no-underline opacity-75 md:opacity-0 md:group-hover:opacity-100 md:focus:opacity-100 hover:text-primary',
           ariaHidden: true,
           tabIndex: -1,
         },

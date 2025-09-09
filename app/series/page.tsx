@@ -3,6 +3,7 @@ import { Metadata } from 'next'
 import React, { Fragment } from 'react'
 import { allPosts } from '@docube/generated'
 import Link from 'next/link'
+import { COMMON_LINK_CLASS_NAME } from '@/lib/constants'
 
 export const metadata: Metadata = {
   title: '文集 - Elliot',
@@ -29,7 +30,7 @@ const Series: React.FC = () => {
                     <li key={a._meta.slug}>
                       <Link
                         href={`/posts/${a._meta.slug}`}
-                        className="relative after:bg-gray-950 after:absolute after:h-px after:w-0 after:bottom-0 after:left-0 hover:after:w-full after:transition-all after:duration-300"
+                        className={COMMON_LINK_CLASS_NAME}
                       >
                         {a.title}
                       </Link>
