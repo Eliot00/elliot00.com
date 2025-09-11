@@ -23,19 +23,10 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/lib/*": [
-        "lib/*"
-      ],
-      "@/components/*": [
-        "components/*"
-      ],
-      "@/styles/*": [
-        "styles/*"
-      ],
-      "@/data/*": [
-        "data/*"
-      ],
-      "@docube/generated": ["./.docube/generated"]
+      "@docube/generated": ["./.docube/generated"],
+      "@/*": [
+        "./*"
+      ]
     },
     "plugins": [
       {

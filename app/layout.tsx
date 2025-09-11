@@ -11,6 +11,7 @@ const lxgw = LXGW_WenKai_TC({
   variable: '--font-lxgw-serif',
   weight: ['400', '700'],
   subsets: ['latin'],
+  display: 'optional',
 })
 
 export const metadata: Metadata = {

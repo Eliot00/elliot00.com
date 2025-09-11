@@ -12,14 +12,21 @@ export default function Home() {
     .slice(0, 5)
   return (
     <>
-      <PostsList title="文字" posts={posts} />
-      <div className="text-center my-2">
-        <ReadMore href="/posts" />
-      </div>
-      <section className="mt-4">
-        <h2 className="font-sans font-medium text-2xl underline decoration-2">
-          代码
-        </h2>
+      <hr className="mx-auto max-w-3xl border-border" />
+      <section className="my-4">
+        <h1 className="my-4 inline-block text-4xl font-bold font-serif sm:my-8 sm:text-5xl">
+          編碼與禪
+        </h1>
+      </section>
+      <hr className="mx-auto max-w-3xl border-border" />
+      <section className="my-4">
+        <PostsList title="文字" posts={posts} />
+        <div className="text-center my-2">
+          <ReadMore href="/posts" />
+        </div>
+      </section>
+      <section className="my-4">
+        <h2 className="font-medium text-2xl underline decoration-2">代码</h2>
         <ProjectsWall
           projects={[
             {
@@ -43,6 +50,7 @@ export default function Home() {
           <ReadMore href="https://github.com/Eliot00?tab=repositories" />
         </div>
       </section>
+      <hr className="mx-auto max-w-3xl border-border" />
     </>
   )
 }
