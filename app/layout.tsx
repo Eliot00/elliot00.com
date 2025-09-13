@@ -35,11 +35,13 @@ export default function RootLayout({
       <head>
         <AdSense pid="4587152222007322" />
       </head>
-      <body className="font-serif">
+      <body>
         <Header />
+        <hr className="mx-auto max-w-3xl my-4 border-border" />
         <main className="mx-auto max-w-3xl" role="main">
           {children}
         </main>
+        <hr className="mx-auto max-w-3xl my-4 border-border" />
         <Footer />
         <Analytics />
         <SpeedInsights />
