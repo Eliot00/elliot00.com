@@ -7,13 +7,19 @@ export default function SmartImage({
   alt,
   width,
   height,
+  unoptimized = false,
 }: {
   src: string
   alt: string
   width?: number
   height?: number
+  unoptimized?: boolean
 }) {
-  if (width && height) {
+  if (!width || !height) {
+    return <Image className={IMAGE_STYLES} src={src} alt={alt} unoptimized />
+  }
+
+  if (unoptimized) {
     return (
       <Image
         className={IMAGE_STYLES}
@@ -21,9 +27,18 @@ export default function SmartImage({
         alt={alt}
         width={width}
         height={height}
+        unoptimized
       />
     )
   }
 
-  return <img className={IMAGE_STYLES} src={src} alt={alt} />
+  return (
+    <Image
+      className={IMAGE_STYLES}
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+    />
+  )
 }

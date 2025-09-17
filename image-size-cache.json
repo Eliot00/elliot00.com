@@ -29,7 +29,8 @@
   },
   "https://r2.elliot00.com/kotlin/json-data-store.webp": {
     "width": 600,
-    "height": 1333
+    "height": 1333,
+    "unoptimized": true
   },
   "https://r2.elliot00.com/kotlin/layout_inspector2.png": {
     "width": 1582,

@@ -8,13 +8,14 @@ import fs from 'node:fs/promises'
 
 const CACHE_FILE = path.join(process.cwd(), 'image-size-cache.json')
 
-interface ImageSize {
+interface ImageMeta {
   width: number
   height: number
+  unoptimized?: boolean
 }
 
 interface Cache {
-  [src: string]: ImageSize
+  [src: string]: ImageMeta
 }
 
 const anyVisit = visit as any
@@ -51,9 +52,10 @@ async function setImageSize(src: string, node: any) {
 
   node.properties.width = result.width
   node.properties.height = result.height
+  node.properties.unoptimized = result.unoptimized
 }
 
-async function probeCache(src: string): Promise<ImageSize> {
+async function probeCache(src: string): Promise<ImageMeta> {
   const cache = await readCache()
 
   if (cache[src]) {

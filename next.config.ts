@@ -7,10 +7,6 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'elliot-blog.oss-cn-shanghai.aliyuncs.com',
-      },
-      {
-        protocol: 'https',
         hostname: 'r2.elliot00.com',
       },
     ],
