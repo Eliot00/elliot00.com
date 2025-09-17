@@ -52,7 +52,7 @@ async function setImageSize(src: string, node: any) {
 
   node.properties.width = result.width
   node.properties.height = result.height
-  node.properties.unoptimized = result.unoptimized
+  node.properties.unoptimized = result.unoptimized ? 'true' : ''
 }
 
 async function probeCache(src: string): Promise<ImageMeta> {

@@ -107,7 +107,7 @@ function PostContent({ post }: { post: Post }) {
                 height={
                   dom.attribs.height ? Number(dom.attribs.height) : undefined
                 }
-                unoptimized={dom.attribs.unoptimized}
+                unoptimized={dom.attribs.unoptimized === 'true'}
               />
             )
           }
