@@ -32,17 +32,17 @@ TiddlyWiki诞生于2004年，它最与众不同的一点是，它仅仅是一个
 相比TiddlyWiki，Logseq原生具有双向链接的特性，例如我最近有一个滑动窗口相关的笔记，我可以在这篇笔记内写上​=[[滑动窗口算法]]=​，当前笔记页面就会链接到”滑动窗口算法“这个页面上，并且在”滑动窗口算法”这个页面会自动获得到当前笔记的链接。
 
 #+ATTR_HTML: :alt example
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/2021-08-14%2015-29-45%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png]]
+[[https://r2.elliot00.com/legacy/2021-08-14%2015-29-45%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png]]
 
 所有的关联都是双向的，这样的好处是，我不用手动去建立树形关联，只要所有与​/滑动窗口算法/​相关的页面都有指向它的链接，就相当于构建了一棵滑动窗口算法相关的知识树。Logseq会帮你构建一个知识图谱，显示出各个笔记页面之间的关联。
 
 #+ATTR_HTML: :alt 关系图谱
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/2021-08-14%2016-12-07%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png]]
+[[https://r2.elliot00.com/legacy/2021-08-14%2016-12-07%E5%B1%8F%E5%B9%95%E6%88%AA%E5%9B%BE.png]]
 
 与TiddlyWiki纯文本的特性类似，Logseq所有的笔记都是​=Markdown=​文件，笔记不会上传到云端，所有的操作都是针对本地的文件（包括它的Web版），不过由于所有笔记都是文件的特性，不论是迁移、备份都非常方便，官方也提供使用Github同步的方式，但是为了避免污染Github提交记录，我选择使用坚果云在不同设备之间同步笔记。
 
 #+ATTR_HTML: :alt pipeline
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/pipeline.png]]
+[[https://r2.elliot00.com/legacy/pipeline.png]]
 
 在Logseq上积攒的内容，我会从中挑选一些分享到个人wiki上，如果在一个领域积攒的内容达到一定程度，那么就可以考虑写一篇博客来总结了。一个完整的从知识的获取到内化再到输出的路线形成了。
 
@@ -53,7 +53,7 @@ TiddlyWiki诞生于2004年，它最与众不同的一点是，它仅仅是一个
 OKR是Objective & Key Results的缩写，意思是目标与关键结果。
 
 #+ATTR_HTML: :alt OKR
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/okr.png]]
+[[https://r2.elliot00.com/legacy/okr.png]]
 
 OKR的关键点，是将目标拆解为数个关键性的事项，并且在执行过程中不断地review。
 
@@ -68,7 +68,7 @@ PARA则是Projects、Areas、Resources、Archives四个单词的缩写，它们�
 以上是一些理论，在具体的实践中，我参考了[[https://index.pmthinking.com/para--notion-][P.A.R.A. 的 Notion 实践]]和[[https://www.bmpi.dev/self/okr-gtd-note-logseq/][OKR + GTD + Note => Logseq]]这两篇文章，将这两个方法结合起来，OKR的Objects与PARA的Areas是类似的，而KR则类似Projects。参考关于OKR的文章，我暂时以年为尺度，划定年度目标，建立一个​=2021OKR=​页面，在长期关注的领域，例如社区影响力，添加上一个Key Result或者说Project：平均每月产出一篇博客（12篇博客，截至日期为2021年末）。使用一个有规律的名字，如​=2021-OKR-O4-KR-1=​为其打上标记（这样方便程序化处理）：
 
 #+ATTR_HTML: :alt OKR example
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/OKR-example.png]]
+[[https://r2.elliot00.com/legacy/OKR-example.png]]
 
 每个KR后面都有一个标签，标签指向另一个页面，这个页面用来汇总review。先看一下如何拆解项目，Logseq中通过​=/=​键可以使用指令，输入​=/TODO=​回车就可以创建一个TODO，可以更改状态为DOING或DONE，每个TODO块会记录从DOING到DONE的时间。但是并不需要每次都在review页面新建TODO，Logseq每天会自动新建一个以当前日期命名的页面，只要每日的TODO关联上相应的review页，利用双向链接的特性，在review页可以浏览到所有关联的TODO。
 
@@ -93,7 +93,7 @@ PARA则是Projects、Areas、Resources、Archives四个单词的缩写，它们�
 现在总结一下我的工作流：
 
 #+ATTR_HTML: :alt practice
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/practice.png]]
+[[https://r2.elliot00.com/legacy/practice.png]]
 
 确定一些当前需要关注的领域的项目，当我在Github、v2ex、twitter等平台发现感兴趣的技术、觉得有价值文章、想法，可以随手记录下来，只有与当前项目相关的内容属于Resources，其余内容放入Archives归档，不时review项目，根据完成情况调整项目数量，如果项目太多，时间不够充裕，那么就降低项目优先级，甚至取消项目，暂时放入归档；反过来如果时间精力充足，那么归档中的内容也可以调整为激活的项目。回顾，整理，是这个工作流程的核心。
 
@@ -101,14 +101,14 @@ PARA则是Projects、Areas、Resources、Archives四个单词的缩写，它们�
 前面提到的[[https://www.bmpi.dev/self/okr-gtd-note-logseq/][文章]]里讲到了如何利用查询语句和自定义​=CSS=​实现GTD四象限面板，其实除了普通的待办外，Logseq还支持Schedule与Deadline：
 
 #+ATTR_HTML: :alt 示例
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/2021-08-15_14-53.png]]
+[[https://r2.elliot00.com/legacy/2021-08-15_14-53.png]]
 
 如上图示例，可以用这两种形式来表示需要每日重复执行的内容，而一些临时的或者与当前关注的项目无关的内容可以使用普通TODO，每天打开Logseq后，我会先计划今天需要完成的事项，优先完成与项目关联的事项，日程与deadline可以提醒我事项的紧急程度。
 
 * 总结
 
 #+ATTR_HTML: :alt notes-graph
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/2021-08-15_15-02.png]]
+[[https://r2.elliot00.com/legacy/2021-08-15_15-02.png]]
 
 上图是我使用Logseq两周后形成的知识图谱，好像宇宙中的星系一样，已经有几个“恒星”崭露头角。
 

@@ -232,7 +232,7 @@ function Foo() {
 接下来看看一个更接近真实项目代码的例子，现在有一个租房系统的后台应用，页面固定布局如图：
 
 #+ATTR_HTML: :alt layout
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/layout.drawio.png]]
+[[https://r2.elliot00.com/legacy/layout.drawio.png]]
 
 但是在业务流程中，有三种登录角色，分别是Admin、Landlord、Tenant，理所当然这三种角色登录后台后看到的UI细节并不相同。
 

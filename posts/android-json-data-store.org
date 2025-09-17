@@ -121,6 +121,6 @@ fun MainScreen() {
 #+end_src
 
 #+ATTR_HTML: :alt json-data-store
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kotlin/json-data-store.webp]]
+[[https://r2.elliot00.com/kotlin/json-data-store.webp]]
 
 完成！

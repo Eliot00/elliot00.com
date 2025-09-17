@@ -10,7 +10,7 @@
 * 界面预览
 
 #+ATTR_HTML: :alt preview
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/org/%E6%88%AA%E5%B1%8F2024-03-08%2014.14.39.png]]
+[[https://r2.elliot00.com/legacy/%E6%88%AA%E5%B1%8F2024-03-08%2014.14.39.png]]
 
 [[https://github.com/Eliot00/mp-org][代码仓库]]
 

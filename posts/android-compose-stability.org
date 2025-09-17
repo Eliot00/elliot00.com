@@ -103,7 +103,7 @@ fun RandomButton(num: Int, onClick: () -> Unit) {
 每次点击按钮，按钮上的文字就会随机变化，理论上只有​=RandomButton=​用到了​=num=​，在​=Column=​中的另一个​=Text=​是否可以避免被重组？
 
 #+ATTR_HTML: :alt skipped
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kotlin/layout_inspector.png]]
+[[https://r2.elliot00.com/kotlin/layout_inspector.png]]
 
 可以看到点击按钮后只有​=RandomButton=​发生了重组，Text则被跳过了。
 
@@ -130,7 +130,7 @@ fun Greeting(artist: Artist) {
 #+end_src
 
 #+ATTR_HTML: :alt not skipped
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kotlin/layout_inspector2.png]]
+[[https://r2.elliot00.com/kotlin/layout_inspector2.png]]
 
 即使​=Greeting=​的参数从来没有被修改过，它也无法被跳过重组。为什么这里Jetpack Compose不再「智能」了呢？假设我是Compose库开发者，一方面我需要保证较好的性能，但另一方面，更重要的是渲染不能出错，不能让应该更新的视图没有被更新；所以我需要有某种方法去检验一个可组合函数是否可以在重组中被跳过，并在无法确定是否应该跳过时，​*不要跳过*​。
 

@@ -13,12 +13,12 @@
 想象现在有一家小咖啡店，只有一个店员，一个咖啡机。有三个人先后来到店里买咖啡，店员依次为每个人点单（花费1分钟），开启机器制作（等待5分钟），打包咖啡（1分钟），按顺序完成所有工作一共花费了21分钟。
 
 #+ATTR_HTML: :alt sync
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kotlin/coffee1.png]]
+[[https://r2.elliot00.com/kotlin/coffee1.png]]
 
 但是，咖啡机运转时（IO操作），店员（CPU）实际上是闲着的，如果店员不是按顺序完成一个人的全部任务，比如当第一位客人的咖啡开始制作后就转头给第二位客人点单，是不是能节省时间呢？
 
 #+ATTR_HTML: :alt async
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kotlin/coffee2.png]]
+[[https://r2.elliot00.com/kotlin/coffee2.png]]
 
 这种情况下，将花费17分钟（忽略转身花费的时间），节省了四分钟。
 
@@ -413,12 +413,12 @@ Kotlin采用了结构化并发的概念，这个概念可能源自结构化编�
 #+end_quote
 
 #+ATTR_HTML: :alt goto
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kotlin/goto-statement.png]]
+[[https://r2.elliot00.com/kotlin/goto-statement.png]]
 
 不像顺序执行的语句，使用goto跳转执行的程序可以在任意时间跳转到任务意指令位置去执行，大量采用这种控制流的代码最终可读性会非常糟糕。
 
 #+ATTR_HTML: :alt control structures
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kotlin/control-flow2.png]]
+[[https://r2.elliot00.com/kotlin/control-flow2.png]]
 
 结构化的控制流通过块来控制层级，一块程序在执行中途经过条件、循环、函数调用等子层级的程序块，最终还是会从上层出口退出。结构化并发也是类似的思路，通过CoroutineScope来组织具有父子层级的协程，还是通过代码来说明：
 

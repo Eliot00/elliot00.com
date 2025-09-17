@@ -43,7 +43,7 @@ symbol_map U+4E00-U+9FFF,U+3400-U+4DBF,U+20000-U+2A6DF,U+2A700–U+2B73F,U+2B740
 我喜欢终端应该自带窗口拆分、多tabs切换功能，幸好kitty和wezterm都支持这两个功能。值得一提的是，kitty把一个Tab内水平/垂直的切分，称为​=Window=​（wezterm中是​=Pane=​），为了区分，将桌面系统的窗口称为​=OS window=​。
 
 #+ATTR_HTML: :alt windows
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kitty/windows.png]]
+[[https://r2.elliot00.com/kitty/windows.png]]
 
 通过与shell、ssh等工具的集成，kitty还可以做到多开tab/窗口的同时复用session。例如当前已经通过kitty的ssh扩展连接到远端机器，再通过快捷键新建tab，可以无需再次ssh验证，直接开启一个远程会话。
 
@@ -60,6 +60,6 @@ kitty使用C语言来编写高性能要求的部分，同时又支持使用Pytho
 在Vim中用过easymotion类插件的朋友应该会觉得这个功能很亲切，这个kitten支持快速检索出当前窗口中的URL文本，在文本上标出序号，通过按下对应的数字键快速打开对应的URL。
 
 #+ATTR_HTML: :alt hints
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/kitty/hints.png]]
+[[https://r2.elliot00.com/kitty/hints.png]]
 
 不止于此，这个插件也可以和Vim集成，通过快捷键快速打开文件并编辑。

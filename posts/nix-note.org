@@ -13,7 +13,7 @@
 回顾一下数学中函数的定义：“函数（英語：Function）在数学中为两不为空集的集合间的一种对应关系：输入值集合中的每项元素皆能对应唯一一项输出值集合中的元素。（维基百科）”，例如​=f(x) = x^2=​就是一个函数，对于任意一个输入x，都只能有​*唯一*​一个输出，如果一个东西输入为x，输出同时既可以是y，也可以是z，那么这就不是函数。可以发现，一个函数，只要输入不变，输出也一定不会变，也就是说数学上的函数是可以复现结果的，不论外界条件（如时间）如何变化，只有输入是改变结果的唯一渠道，输入不变就可以一直得到不变的结果。
 
 #+ATTR_HTML: :alt 函数
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/function.png]]
+[[https://r2.elliot00.com/legacy/function.png]]
 
 通过上图可以看到，如果x轴是输入而y轴是输出，那么画一条x轴的垂直线，如果它能与曲线拥有超过一个的交点，那么这个图像就不是函数的图像。
 
@@ -95,7 +95,7 @@ Nix工具集中，​=nix-env=​命令用于安装、升级或删除包，它�
 假如日常系统全局环境使用的Python版本是​=3.8=​，但是想在某个单独的环境里使用​=Python3.10=​，尝试尝试它的模式匹配功能，那么就可以使用命令​=nix-shell -p python310=​，nix-shell会准备需要的依赖，并且自动进入一个配置好的单独shell环境中。
 
 #+ATTR_HTML: :alt nix-shell
-[[https://elliot-blog.oss-cn-shanghai.aliyuncs.com/Screenshot_20211226_103523_nix_shell.png]]
+[[https://r2.elliot00.com/legacy/Screenshot_20211226_103523_nix_shell.png]]
 
 nix-shell内的包不会影响到外界。
 
