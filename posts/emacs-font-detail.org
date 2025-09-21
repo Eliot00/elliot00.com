@@ -1,0 +1,108 @@
+#+title: 探索Emacs字體設定
+#+tags: 工具 Emacs
+#+series: 百宝箱
+#+created_at: 2025-09-20T12:25:29.998871+08:00
+#+published_at: 2025-09-21T18:06:23.017021+08:00
+#+summary: 这篇文章分享了作者在 Emacs 中配置 Maple Mono NF CN 等宽字体时发现的误区与解决方案，详解了 set-face-attribute 的限制与 Fontset 的正确用法，旨在帮助读者实现更灵活、无卡顿的中英文字体配置。
+
+作爲一個顏值黨，折騰字體是少不了的，上周我寫了篇博客總結了一些字體配置的方案，但就在幾天前我嘗試使用Maple Mono NF CN字體時，卻發現我對Emacs的字體配置存在一些誤解。爲了能更好地配置字體，我重新閱讀了相關的文檔，並嘗試了更多的配置組合，本文將記錄我的一些發現。
+
+我使用的環境：
+- Emacs 30.2
+- macOS 15.4
+
+* set-face-attribute的限制
+
+前面提到，我打算在Emacs中使用Maple Mono NF CN這款中英文2:1等寬的字體，於是我簡單使用了以下配置：
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil :font "Maple Mono NF CN" :height 180)
+#+END_SRC
+
+當我打開Emacs，看上去似乎設置成功了，可以當我輸入中文時，卻感覺一陣明顯的卡頓，接着出現的中文字符並不是我所設置的字體的樣子，可是這個字體確實是包含中文字符的，在其他GUI應用中可以驗證這點，問題出在哪呢？
+
+#+BEGIN_QUOTE [!TIP]
+使用​~M-x describe-char~​可以查看單個字符的詳細信息。
+#+END_QUOTE
+
+查詢​set-face-attribute​的文檔沒能找到答案，最終在這篇[[https://www.gnu.org/software/emacs/manual/html_node/elisp/Face-Attributes.html][文檔]]中發現了端倪：
+
+#+BEGIN_QUOTE
+:font
+
+    The font used to display the face. Its value should be a font object or a fontset. If it is a font object, it specifies the font to be used by the face for displaying ASCII characters. See Low-Level Font Representation, for information about font objects, font specs, and font entities. See Fontsets, for information about fontsets.
+#+END_QUOTE
+
+也就是說，如果這個參數不是設置爲一個​*fontset*​，那麼Emacs只會用指定的字體來顯示​*ASCII*​字符。在[[/posts/emacs-font-setup][上篇文章]]中我提到了爲中英文分別設置字體的方法：
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil :family "Maple Mono NF" :height 180)
+(set-fontset-font t 'han (font-spec :family "LXGW WenKai TC"))
+#+END_SRC
+
+但是當時我以爲這樣設置是將除了​='han=​字符集以外的所有字符都用第一個字體顯示，剩下的漢字部分用第二個字體，但是根據前面提到的，這樣使用​=set-face-attribute=​只會設定ASCII字符而已，驗證這點也很簡單，打開Emacs，輸入一個中文的句號，就會發現惱人的卡頓問題再次出現，並且這個句號沒有使用我所設定的任何一種字體。這也説得過去，因爲中文的標點不在ASCII中，也不在​='han=​字符集中。
+
+如果把最初的配置修改成：
+
+#+BEGIN_SRC emacs-lisp
+(set-face-attribute 'default nil :font "Maple Mono NF CN" :height 180)
+(set-fontset-font t 'unicode (font-spec :family "Maple Mono NF CN"))
+#+END_SRC
+
+就能保證中文、英文、標點都使用這款指定的字體顯示了，但是明明這個字體是包含了中文字符的，爲什麼要用這麼麻煩的方式設置？
+
+* Fontsets
+
+#+BEGIN_QUOTE
+A fontset is a list of fonts, each assigned to a range of character codes. An individual font cannot display the whole range of characters that Emacs supports, but a fontset can. Fontsets have names, just as fonts do, and you can use a fontset name in place of a font name when you specify the font for a frame or a face.
+#+END_QUOTE
+
+從文檔來看，​*Fontset*​正是爲了解決單個字體不能滿足所有字符顯示的問題而生的，並且每個Fontset都有自已的名字，可以用在所有使用字體名的地方。用​~emacs -q~​打開Emacs，通過​=M-x list-fontsets=​可以查看Emacs默認創建的Fontset：
+
+#+BEGIN_SRC text
+Fontset: -*-*-*-*-*-*-*-*-*-*-*-*-fontset-default
+Fontset: -ns-*-*-*-*-*-10-*-*-*-*-*-fontset-standard
+Fontset: -*-Menlo-regular-normal-normal-*-*-*-*-*-m-0-fontset-startup
+#+END_SRC
+
+可以在​*scratch*​下輸入一些文字，用​=M-x describe-char=​查看字符信息，還可以按下​=M-x describe-fontset=​獲取當前窗口使用的Fontset詳情。可以發現，只輸入英文字母時，Emacs優先使用了「fontset-startup」中的Menlo字體，但是這個字體裏沒有包含中文字體，所以當輸入中文字符時，就會fallback到另一個字體，在我的系統上，默認是「PingFang」字體。
+
+回顧​=set-fontset-font=​這個函數，它是用來改變Fontset的主要方法，它的第一個參數就是Fontset名，如果是​~t~​的話，就等同於​~fontset-default~​。
+
+#+BEGIN_SRC emacs-lisp
+(set-fontset-font t 'unicode (font-spec :family "Maple Mono NF CN"))
+#+END_SRC
+
+如果只使用以上一行配置啓動Emacs，會發生什麼呢？答案是：輸入中文字符時的卡頓消失了，因爲直接指定了字體，不用fallback；但是英文字符卻仍然是以​*Menlo*​字體顯示的，因爲​~fontset-default~​是最後的後備，​~fontset-startup~​的優先級更高。
+
+現在可以來說明爲什麼想要用一個包含多種文字的字體卻要兩行代碼配置了：
+
+#+BEGIN_SRC emacs-lisp
+;; 繞過 `fontset-startup' 使用指定字體顯示ASCII字符
+(set-face-attribute 'default nil :font "Maple Mono NF CN" :height 180)
+;; 保證其它字符回退至指定字體
+(set-fontset-font t 'unicode (font-spec :family "Maple Mono NF CN"))
+#+END_SRC
+
+話說回來，既然Emacs優先使用了​~fontset-startup~​，那可不可以直接設置這個Fontset？經過測試，是可以的：
+
+#+BEGIN_SRC emacs-lisp
+(set-fontset-font "fontset-startup" 'unicode (font-spec :family "Maple Mono NF CN" :size 18.0))
+#+END_SRC
+
+* 自定義Fontset
+
+當然想要更靈活地使用不同字體，還是需要將​=set-face-attribute=​和​=set-fontset-font=​結合起來使用的。前文已經提到，​=set-face-attribute=​的​=:font=​參數不一定是字體名，可以用Fontset名來替代，下面以爲​*org-mode*​的一級標題單獨設置Fontset爲例說明：
+
+#+BEGIN_SRC emacs-lisp
+;; 創建Fontset
+(create-fontset-from-fontset-spec
+  (font-xlfd-name
+    (font-spec :family "Iosevka Nerd Font"
+               :registry "fontset-my"))) ; 這裏名稱必須是 `fontset-xxx' 格式
+(set-fontset-font "fontset-my" 'han (font-spec :family "LXGW WenKai Mono TC"))
+(set-face-attribute 'org-level-1 nil :fontset "fontset-my" :height 180)
+#+END_SRC
+
+但是要注意，其實按文檔所寫的，將​=:font=​參數設置爲Fontset名是沒用的，真正能起作用的是文檔中沒有寫的​=:fontset=​參數。至少在​*Emacs 30.2*​版本是這樣。
+
