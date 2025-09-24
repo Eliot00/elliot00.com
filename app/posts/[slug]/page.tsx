@@ -15,7 +15,6 @@ import {
   COMMON_PROSE_CLASS_NAME,
 } from '@/lib/constants'
 import { COPY_BUTTON_ID } from '@/lib/copyButtonSlotTransformer'
-import { ExternalLinkIcon } from 'lucide-react'
 import { ExternalLink } from '@/components/ExternalLink'
 
 type Props = {
@@ -44,7 +43,7 @@ export default async function PostDetail(props: Props) {
   return (
     <>
       <article
-        className={`${COMMON_PROSE_CLASS_NAME} ${MJX_CLASS_NAME} lg:prose-h1:text-center prose-pre:relative`}
+        className={`${COMMON_PROSE_CLASS_NAME} ${MJX_CLASS_NAME} lg:prose-h1:text-center prose-pre:relative prose-pre:border prose-pre:border-solid prose-pre:border-border`}
       >
         <header>
           <h1>{title}</h1>

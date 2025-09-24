@@ -39,8 +39,8 @@ const AppConfigLive = makeAppConfig({
 
 const rehypeShikiOptions = {
   themes: {
-    light: 'material-theme-lighter',
-    dark: 'nord',
+    light: 'min-light',
+    dark: 'night-owl',
   },
   transformers: [copyButtonSlotTransformer()],
   defaultColor: 'light-dark()',
