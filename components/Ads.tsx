@@ -12,7 +12,7 @@ export function AdBlock() {
   }, [])
 
   return (
-    <div className="w-full h-16 lg:w-60 lg:h-60">
+    <div className="w-full max-h-40">
       <ins
         className="adsbygoogle block"
         data-ad-client="ca-pub-4587152222007322"

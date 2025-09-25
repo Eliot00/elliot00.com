@@ -3,6 +3,7 @@ import { allPosts } from '@docube/generated'
 import { compareDesc } from 'date-fns'
 import ProjectsWall from '@/components/ProjectLink'
 import ReadMore from '@/components/ReadMore'
+import { AdBlock } from '@/components/Ads'
 
 export default function Home() {
   const posts = allPosts
@@ -25,6 +26,7 @@ export default function Home() {
           <ReadMore href="/posts" />
         </div>
       </section>
+      <AdBlock />
       <section className="my-4">
         <h2 className="font-medium text-2xl underline decoration-2">代码</h2>
         <ProjectsWall
