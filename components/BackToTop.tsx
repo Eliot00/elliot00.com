@@ -3,6 +3,13 @@
 import { ArrowUpIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
+const BASE_CN =
+  'flex items-center fixed bottom-8 end-4 z-50 rounded-md bg-background/35 bg-clip-padding backdrop-blur-lg'
+const MD_BASE_CN = 'md:sticky md:end-auto md:float-end md:me-1'
+const ANIMATE_CN = 'transition duration-500 ease-in-out'
+const VISIBLE_CN = 'translate-y-0 opacity-100'
+const INVISIBLE_CN = 'translate-y-14 opacity-0'
+
 export function BackToTopButton() {
   const [isVisible, setIsVisible] = useState(false)
 
@@ -25,7 +32,7 @@ export function BackToTopButton() {
   return (
     <button
       type="button"
-      className={`fixed bottom-4 right-4 transition duration-300 ease-in-out ${isVisible ? 'flex items-center' : 'hidden'}`}
+      className={`${BASE_CN} ${MD_BASE_CN} ${ANIMATE_CN} ${isVisible ? VISIBLE_CN : INVISIBLE_CN}`}
       onClick={() => {
         window.scrollTo({ top: 0, behavior: 'smooth' })
       }}
