@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN" className={`${lxgw.variable} antialiased`}>
+    <html lang="zh-CN" className={`${lxgw.variable} antialiased scroll-smooth`}>
       <head>
         <AdSense pid="4587152222007322" />
       </head>
