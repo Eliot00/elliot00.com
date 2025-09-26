@@ -17,6 +17,7 @@ import {
 import { COPY_BUTTON_ID } from '@/lib/copyButtonSlotTransformer'
 import { ExternalLink } from '@/components/ExternalLink'
 import { BackToTopButton } from '@/components/BackToTop'
+import { lightFormat } from 'date-fns'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -51,18 +52,14 @@ export default async function PostDetail(props: Props) {
           <div className="not-prose flex flex-col justify-center items-start gap-2 lg:gap-4 lg:items-center lg:flex-row text-secondary-foreground mx-auto my-6">
             <span className="text-center">
               起筆於：
-              <time>
-                {new Intl.DateTimeFormat('zh-Hans-CN').format(
-                  new Date(createdAt)
-                )}
+              <time dateTime={createdAt}>
+                {lightFormat(new Date(createdAt), 'yyyy-MM-dd')}
               </time>
             </span>
             <span className="text-center">
               發佈於：
-              <time>
-                {new Intl.DateTimeFormat('zh-Hans-CN').format(
-                  new Date(publishedAt)
-                )}
+              <time dateTime={publishedAt}>
+                {lightFormat(new Date(publishedAt), 'yyyy-MM-dd')}
               </time>
             </span>
             <span className="text-center">
