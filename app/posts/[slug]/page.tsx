@@ -16,6 +16,7 @@ import {
 } from '@/lib/constants'
 import { COPY_BUTTON_ID } from '@/lib/copyButtonSlotTransformer'
 import { ExternalLink } from '@/components/ExternalLink'
+import { BackToTopButton } from '@/components/BackToTop'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -73,6 +74,7 @@ export default async function PostDetail(props: Props) {
           </div>
         </header>
         <PostContent post={post} />
+        <BackToTopButton />
       </article>
       <Divider>EOF</Divider>
       <div className="text-center font-medium">
