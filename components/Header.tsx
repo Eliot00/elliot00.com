@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import logo from '@/app/icon.svg'
+import { COMMON_CONTAINER_CLASS_NAME } from '@/lib/constants'
 
 const LINKS = [
   {
@@ -26,7 +27,9 @@ export function Header() {
   const pathname = usePathname()
 
   return (
-    <header className="mx-auto py-4 max-w-3xl flex items-center justify-between flex-col sm:flex-row sm:py-6">
+    <header
+      className={`${COMMON_CONTAINER_CLASS_NAME} py-4 flex items-center justify-between flex-col sm:flex-row sm:py-6`}
+    >
       <Link href="/" className="w-8 h-8">
         <Image src={logo} alt="logo" />
       </Link>

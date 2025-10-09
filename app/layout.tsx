@@ -6,6 +6,7 @@ import AdSense from '@/components/AdSense'
 import { LXGW_WenKai_TC } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/Header'
+import { COMMON_CONTAINER_CLASS_NAME } from '@/lib/constants'
 
 const lxgw = LXGW_WenKai_TC({
   variable: '--font-lxgw-serif',
@@ -38,9 +39,7 @@ export default function RootLayout({
       </head>
       <body className="font-serif">
         <Header />
-        <main className="mx-auto max-w-3xl" role="main">
-          {children}
-        </main>
+        <main className={COMMON_CONTAINER_CLASS_NAME}>{children}</main>
         <Footer />
         <Analytics />
         <SpeedInsights />

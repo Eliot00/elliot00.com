@@ -3,3 +3,5 @@ export const COMMON_PROSE_CLASS_NAME =
 
 export const COMMON_LINK_CLASS_NAME =
   'underline decoration-foreground/20 hover:no-underline transition-all duration-500 ease-in-out bg-bottom-left bg-linear-to-r from-primary to-primary bg-size-[0%_1.5px] bg-no-repeat hover:bg-size-[100%_1.5px]'
+
+export const COMMON_CONTAINER_CLASS_NAME = 'mx-auto max-w-3xl px-4 md:px-0'
