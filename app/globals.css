@@ -11,7 +11,7 @@
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
   --border: oklch(0.92 0.0049 230);
-  --separator: oklch(0.88 0.0049 230);
+  --separator: oklch(0.88 0.0049 236);
 }
 
 @theme inline {
@@ -23,6 +23,7 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-separator: var(--separator);
   --font-serif: var(--font-lxgw-serif);
 }
 
@@ -36,7 +37,7 @@
     --muted: oklch(0.269 0 0);
     --muted-foreground: oklch(0.708 0 0);
     --border: oklch(0.35 0.0049 230);
-    --separator: oklch(0.33 0.0049 230);
+    --separator: oklch(0.33 0.0049 236);
   }
 }
 
