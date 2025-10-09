@@ -1,5 +1,9 @@
 import type { FCWithChildren } from '@/lib/types'
 
+export function Separator() {
+  return <hr className="mx-auto max-w-3xl border-separator" />
+}
+
 const Divider: FCWithChildren = (props) => {
   return (
     <div className="relative flex py-5 items-center">
