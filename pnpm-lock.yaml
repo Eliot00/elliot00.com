@@ -38,11 +38,11 @@ importers:
         version: 0.33.5
     devDependencies:
       '@docube/common':
-        specifier: ^0.9.3
-        version: 0.9.3(typescript@5.9.2)
+        specifier: ^0.9.6
+        version: 0.9.6(typescript@5.9.2)
       '@docube/org':
-        specifier: ^0.7.3
-        version: 0.7.3(typescript@5.9.2)
+        specifier: ^0.7.6
+        version: 0.7.6(typescript@5.9.2)
       '@shikijs/rehype':
         specifier: ^3.12.0
         version: 3.12.0
@@ -62,11 +62,11 @@ importers:
         specifier: 19.1.2
         version: 19.1.2(@types/react@19.1.2)
       docube:
-        specifier: ^0.6.1
-        version: 0.6.1(typescript@5.9.2)
+        specifier: ^0.6.4
+        version: 0.6.4(typescript@5.9.2)
       effect:
-        specifier: 3.7.2
-        version: 3.7.2
+        specifier: ^3.18.4
+        version: 3.18.4
       globals:
         specifier: ^15.15.0
         version: 15.15.0
@@ -146,24 +146,18 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@docube/common@0.9.1':
-    resolution: {integrity: sha512-jnyEZlgezl3wt9rrRWv22m+cJzpbrcrLHD0crvP5kjoUDz0AQsCjkDTsuwPwvtziVEG+McG2JS8SzUKkMufFvg==}
+  '@docube/common@0.9.5':
+    resolution: {integrity: sha512-bhnVudvVbds7Vj1M2lp+MrEKbCusOINSpjhDFWwYdRv1py+0frHsVPY9UGxyUV12zlAy7LLp/FHrlvckohq/ig==}
     peerDependencies:
       typescript: ^5.0.0
 
-  '@docube/common@0.9.3':
-    resolution: {integrity: sha512-aZYIAexDQsMLxzTSUFSG9rmu87HsCXdpoa5OzJuBMTmY7WhsaWYog+2mRwZ4CYgYDVbTv68Ve9PgO66v0azLNg==}
+  '@docube/common@0.9.6':
+    resolution: {integrity: sha512-JvtTc58uvw2/prNVQb95uMYJPIzgpbcWNUXZVXfoasbMEmyEphjhq3Bs2ZLAQNiY44gfm/ElS0gBIlf+9FWpJQ==}
     peerDependencies:
       typescript: ^5.0.0
 
-  '@docube/org@0.7.3':
-    resolution: {integrity: sha512-g7brNdwOYPEoCzX8W9MHaAOAz90kdTCW1vWITDDmdtyS/9hC8ZV/vRnpLC6N5guL6hmRbP27BpVktfFptDdpdQ==}
-
-  '@effect/schema@0.72.3':
-    resolution: {integrity: sha512-T1TV/8TMnEm5RSYQXOPmkqEWt8NfRd8E6FSJh9+eZ+jDc8bhAmh3K4J0BQZZcdqaftH21GdflAUbYScy8DZ71Q==}
-    deprecated: this package has been merged into the main effect package
-    peerDependencies:
-      effect: ^3.7.2
+  '@docube/org@0.7.6':
+    resolution: {integrity: sha512-WGhEHCMDQ1jJQrMzQ+SZ6DAbKZYRYXIKtFPyCMT0zm5YlVmiVzrEwHgKyDshsCyBS3132I5Ah4XO6Uf1VQnyKA==}
 
   '@emnapi/runtime@1.4.5':
     resolution: {integrity: sha512-++LApOtY0pEEz1zrd9vy1/zXVaVJJ/EbAF3u0fXIzPJEDtnITsBGbbK0EkM72amhl/R5b+5xx0Y/QhcVOpuulg==}
@@ -548,6 +542,14 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@isaacs/balanced-match@4.0.1':
+    resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
+    engines: {node: 20 || >=22}
+
+  '@isaacs/brace-expansion@5.0.0':
+    resolution: {integrity: sha512-ZT55BDLV0yv0RBm2czMiZ+SqCGO7AvmOM3G/w2xhVPH+te0aKgFjmBvGlL1dH+ql2tgGO3MVrbb3jCKyvpgnxA==}
+    engines: {node: 20 || >=22}
+
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
@@ -667,10 +669,6 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@pkgjs/parseargs@0.11.0':
-    resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
-    engines: {node: '>=14'}
-
   '@shikijs/core@3.12.0':
     resolution: {integrity: sha512-rPfCBd6gHIKBPpf2hKKWn2ISPSrmRKAFi+bYDjvZHpzs3zlksWvEwaF3Z4jnvW+xHxSRef7qDooIJkY0RpA9EA==}
 
@@ -694,6 +692,9 @@ packages:
 
   '@shikijs/vscode-textmate@10.0.2':
     resolution: {integrity: sha512-83yeghZ2xxin3Nj8z1NMd/NCuca+gsYXswywDy5bHvwlWL8tpTQmzGeUuHd9FC3E/SBEMvzJRwWEOz5gGes9Qg==}
+
+  '@standard-schema/spec@1.0.0':
+    resolution: {integrity: sha512-m2bOd0f2RT9k8QJx1JN85cZYyH1RqFBdlwtkSlf4tBDYLCiiZnv1fIIwacK6cqwXavOydf0NPToMQgpKq+dVlA==}
 
   '@swc/helpers@0.5.15':
     resolution: {integrity: sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==}
@@ -889,12 +890,6 @@ packages:
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
 
-  balanced-match@1.0.2:
-    resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
-
-  brace-expansion@2.0.1:
-    resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
-
   braces@3.0.3:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
@@ -962,8 +957,8 @@ packages:
     resolution: {integrity: sha512-e2i4wANQiSXgnrBlIatyHtP1odfUp0BbV5Y5nEGbxtIrStkEOAAzCUirvLBNXHLr7kwLvJl6V+4V3XV9x7Wd9w==}
     engines: {node: ^12.20.0 || >=14}
 
-  cross-spawn@7.0.5:
-    resolution: {integrity: sha512-ZVJrKKYunU38/76t0RMOulHOnUcbU9GbpWKAOZ0mhjr7CX6FVrH+4FrAapSOekrgFQ3f/8gwMEuIft0aKq6Hug==}
+  cross-spawn@7.0.6:
+    resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
   cssesc@3.0.0:
@@ -1017,13 +1012,18 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
-  docube@0.5.1:
-    resolution: {integrity: sha512-Jo39hvlRNlPmHtGBiXhPlcGSQrDLWBSWr2XqKiF7ciBjL/LU9uiqyFBxjmtcPq8iOMZ7dDJgR7rYy3NchrHyHw==}
+  docube@0.6.2:
+    resolution: {integrity: sha512-0gaPoeXCZDz3/ETx/RL9ea4Rx78IZFTn1T0wQ9DreflBTYNgL4pArHt97NNVdQ0gUt8M9qu0/JwASdLV2RGqyA==}
     peerDependencies:
       typescript: ^5.0.0
 
-  docube@0.6.1:
-    resolution: {integrity: sha512-LEx80N07lLHf1JgpcPnLrbPFYQB1JrKjTsiM7EhiqJUsA0Rd/YXI41iqg2S2R/Cm4lrL1w5rSuyltlRMGXs8Yw==}
+  docube@0.6.3:
+    resolution: {integrity: sha512-3ex4bGjj2PGzlbUjwgzuigxepjjEsgvZdXkh4b64aXvF/h5zNiY112L5/wegKDQGg8sOEsnFmptxvk2kuSXCPw==}
+    peerDependencies:
+      typescript: ^5.0.0
+
+  docube@0.6.4:
+    resolution: {integrity: sha512-9vSuU2z7MrALdw/YBOQz6hDSIslqWb9kfCuM3MTqW0s2Y5Hp3/UsP2X6Yk8B1fKaZBITnDklj7W1JQJpQbxATA==}
     peerDependencies:
       typescript: ^5.0.0
 
@@ -1043,8 +1043,8 @@ packages:
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
 
-  effect@3.7.2:
-    resolution: {integrity: sha512-pV7l1+LSZFvVObj4zuy4nYiBaC7qZOfrKV6s/Ef4p3KueiQwZFgamazklwyZ+x7Nyj2etRDFvHE/xkThTfQD1w==}
+  effect@3.18.4:
+    resolution: {integrity: sha512-b1LXQJLe9D11wfnOKAk3PKxuqYshQ0Heez+y5pnkd3jLj1yx9QhM72zZ9uUrOQyNvrs2GZZd/3maL0ZV18YuDA==}
 
   emoji-regex@10.4.0:
     resolution: {integrity: sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==}
@@ -1086,16 +1086,16 @@ packages:
   extend@3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
 
-  fast-check@3.22.0:
-    resolution: {integrity: sha512-8HKz3qXqnHYp/VCNn2qfjHdAdcI8zcSqOyX64GOMukp7SL2bfzfeDKjSd+UyECtejccaZv3LcvZTm9YDD22iCQ==}
+  fast-check@3.23.2:
+    resolution: {integrity: sha512-h5+1OzzfCC3Ef7VbtKdcv7zsstUQwUDlYpUTvjeUsJAssPgLn7QzbboPtL5ro04Mq0rPOsMzl7q5hIbRs2wD1A==}
     engines: {node: '>=8.0.0'}
 
   fill-range@7.1.1:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
 
-  foreground-child@3.2.1:
-    resolution: {integrity: sha512-PXUUyLqrR2XCWICfv6ukppP96sdFwWbNEnfEMt7jNsISjMsvaLNinAHNDYyvkyU+SZG2BTSbT5NjG+vZslfGTA==}
+  foreground-child@3.3.1:
+    resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
     engines: {node: '>=14'}
 
   fsevents@2.3.3:
@@ -1113,8 +1113,8 @@ packages:
   github-slugger@2.0.0:
     resolution: {integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==}
 
-  glob@11.0.0:
-    resolution: {integrity: sha512-9UiX/Bl6J2yaBbxKoEBRm4Cipxgok8kQYcOPEhScPwebu2I0HoQOuYdIO6S3hLuWoZgpDpwQZMzTFxgpkyT76g==}
+  glob@11.0.3:
+    resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
     engines: {node: 20 || >=22}
     hasBin: true
 
@@ -1232,8 +1232,8 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  jackspeak@4.0.1:
-    resolution: {integrity: sha512-cub8rahkh0Q/bw1+GxP7aeSe29hHHn2V4m29nnDlvCdlgU+3UGxkZp7Z53jLUdpX3jdTO0nJZUDl3xvbWc2Xog==}
+  jackspeak@4.1.1:
+    resolution: {integrity: sha512-zptv57P3GpL+O0I7VdMJNBZCu+BPHVQUk55Ft8/QCJjTVxrnJHuVuX/0Bl2A6/+2oyR/ZMEuFKwmzqqZ/U5nPQ==}
     engines: {node: 20 || >=22}
 
   jiti@2.5.1:
@@ -1333,8 +1333,8 @@ packages:
     resolution: {integrity: sha512-9ie8ItPR6tjY5uYJh8K/Zrv/RMZ5VOlOWvtZdEHYSTFKZfIBPQa9tOAEeAWhd+AnIneLJ22w5fjOYtoutpWq5w==}
     engines: {node: '>=18'}
 
-  lru-cache@11.0.0:
-    resolution: {integrity: sha512-Qv32eSV1RSCfhY3fpPE2GNZ8jgM9X7rdAfemLWqTUxwiyIC4jJ6Sy0fZ8H+oLWevO6i4/bizg7c8d8i6bxrzbA==}
+  lru-cache@11.2.2:
+    resolution: {integrity: sha512-F9ODfyqML2coTIsQpSkRHnLSZMtkU8Q+mSfcaIyKwy58u+8k5nvAYeiNhsyMARvzNcXJ9QfWVrcPsC9e9rAxtg==}
     engines: {node: 20 || >=22}
 
   lucide-react@0.453.0:
@@ -1377,8 +1377,8 @@ packages:
     resolution: {integrity: sha512-VP79XUPxV2CigYP3jWwAUFSku2aKqBH7uTAapFWCBqutsbmDo96KY5o8uh6U+/YSIn5OxJnXp73beVkpqMIGhA==}
     engines: {node: '>=18'}
 
-  minimatch@10.0.1:
-    resolution: {integrity: sha512-ethXTt3SGGR+95gudmqJ1eNhRO7eGEGIgYA9vnPatK4/etz2MEVDno5GMCibdMTuBMyElzIlgxMna3K94XDIDQ==}
+  minimatch@10.0.3:
+    resolution: {integrity: sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw==}
     engines: {node: 20 || >=22}
 
   minipass@7.1.2:
@@ -1458,8 +1458,8 @@ packages:
       oxlint-tsgolint:
         optional: true
 
-  package-json-from-dist@1.0.0:
-    resolution: {integrity: sha512-dATvCeZN/8wQsGywez1mzHtTlP22H8OEfPrVMLNr4/eGa+ijtLn/6M5f0dY8UKNrC2O9UCU6SSoG3qRKnt7STw==}
+  package-json-from-dist@1.0.1:
+    resolution: {integrity: sha512-UEZIS3/by4OC8vL3P2dTXRETpebLI2NiI5vIrjaD/5UtrkFX/tNbwjTSRAGC/+7CAo2pIcBaRgWmcBBHcsaCIw==}
 
   parse5@7.1.2:
     resolution: {integrity: sha512-Czj1WaSVpaoj0wbhMzLmWD69anp2WH7FXMB9n1Sy8/ZFF9jolSQVMu1Ij5WIyGmcBmhk7EOndpO4mIpihVqAXw==}
@@ -1815,31 +1815,29 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@docube/common@0.9.1(typescript@5.9.2)':
+  '@docube/common@0.9.5(typescript@5.9.2)':
     dependencies:
-      '@effect/schema': 0.72.3(effect@3.7.2)
       camelcase: 8.0.0
-      docube: 0.5.1(typescript@5.9.2)
-      effect: 3.7.2
-      glob: 11.0.0
+      docube: 0.6.2(typescript@5.9.2)
+      effect: 3.18.4
+      glob: 11.0.3
       pluralize-esm: 9.0.5
       typescript: 5.9.2
 
-  '@docube/common@0.9.3(typescript@5.9.2)':
+  '@docube/common@0.9.6(typescript@5.9.2)':
     dependencies:
-      '@effect/schema': 0.72.3(effect@3.7.2)
       camelcase: 8.0.0
-      docube: 0.6.1(typescript@5.9.2)
-      effect: 3.7.2
-      glob: 11.0.0
+      docube: 0.6.3(typescript@5.9.2)
+      effect: 3.18.4
+      glob: 11.0.3
       pluralize-esm: 9.0.5
       typescript: 5.9.2
 
-  '@docube/org@0.7.3(typescript@5.9.2)':
+  '@docube/org@0.7.6(typescript@5.9.2)':
     dependencies:
-      '@docube/common': 0.9.1(typescript@5.9.2)
-      docube: 0.6.1(typescript@5.9.2)
-      effect: 3.7.2
+      '@docube/common': 0.9.5(typescript@5.9.2)
+      docube: 0.6.3(typescript@5.9.2)
+      effect: 3.18.4
       rehype-stringify: 10.0.1
       unified: 11.0.5
       uniorg-extract-keywords: 1.1.0
@@ -1847,11 +1845,6 @@ snapshots:
       uniorg-rehype: 2.2.0
     transitivePeerDependencies:
       - typescript
-
-  '@effect/schema@0.72.3(effect@3.7.2)':
-    dependencies:
-      effect: 3.7.2
-      fast-check: 3.22.0
 
   '@emnapi/runtime@1.4.5':
     dependencies:
@@ -2099,6 +2092,12 @@ snapshots:
   '@img/sharp-win32-x64@0.34.3':
     optional: true
 
+  '@isaacs/balanced-match@4.0.1': {}
+
+  '@isaacs/brace-expansion@5.0.0':
+    dependencies:
+      '@isaacs/balanced-match': 4.0.1
+
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -2184,9 +2183,6 @@ snapshots:
   '@oxlint/win32-x64@1.13.0':
     optional: true
 
-  '@pkgjs/parseargs@0.11.0':
-    optional: true
-
   '@shikijs/core@3.12.0':
     dependencies:
       '@shikijs/types': 3.12.0
@@ -2228,6 +2224,8 @@ snapshots:
       '@types/hast': 3.0.4
 
   '@shikijs/vscode-textmate@10.0.2': {}
+
+  '@standard-schema/spec@1.0.0': {}
 
   '@swc/helpers@0.5.15':
     dependencies:
@@ -2365,12 +2363,6 @@ snapshots:
 
   bail@2.0.2: {}
 
-  balanced-match@1.0.2: {}
-
-  brace-expansion@2.0.1:
-    dependencies:
-      balanced-match: 1.0.2
-
   braces@3.0.3:
     dependencies:
       fill-range: 7.1.1
@@ -2424,7 +2416,7 @@ snapshots:
 
   commander@9.2.0: {}
 
-  cross-spawn@7.0.5:
+  cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
       shebang-command: 2.0.0
@@ -2458,14 +2450,19 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  docube@0.5.1(typescript@5.9.2):
+  docube@0.6.2(typescript@5.9.2):
     dependencies:
-      effect: 3.7.2
+      effect: 3.18.4
       typescript: 5.9.2
 
-  docube@0.6.1(typescript@5.9.2):
+  docube@0.6.3(typescript@5.9.2):
     dependencies:
-      effect: 3.7.2
+      effect: 3.18.4
+      typescript: 5.9.2
+
+  docube@0.6.4(typescript@5.9.2):
+    dependencies:
+      effect: 3.18.4
       typescript: 5.9.2
 
   dom-serializer@2.0.0:
@@ -2488,7 +2485,10 @@ snapshots:
 
   eastasianwidth@0.2.0: {}
 
-  effect@3.7.2: {}
+  effect@3.18.4:
+    dependencies:
+      '@standard-schema/spec': 1.0.0
+      fast-check: 3.23.2
 
   emoji-regex@10.4.0: {}
 
@@ -2541,7 +2541,7 @@ snapshots:
 
   extend@3.0.2: {}
 
-  fast-check@3.22.0:
+  fast-check@3.23.2:
     dependencies:
       pure-rand: 6.1.0
 
@@ -2549,9 +2549,9 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  foreground-child@3.2.1:
+  foreground-child@3.3.1:
     dependencies:
-      cross-spawn: 7.0.5
+      cross-spawn: 7.0.6
       signal-exit: 4.1.0
 
   fsevents@2.3.3:
@@ -2565,13 +2565,13 @@ snapshots:
 
   github-slugger@2.0.0: {}
 
-  glob@11.0.0:
+  glob@11.0.3:
     dependencies:
-      foreground-child: 3.2.1
-      jackspeak: 4.0.1
-      minimatch: 10.0.1
+      foreground-child: 3.3.1
+      jackspeak: 4.1.1
+      minimatch: 10.0.3
       minipass: 7.1.2
-      package-json-from-dist: 1.0.0
+      package-json-from-dist: 1.0.1
       path-scurry: 2.0.0
 
   globals@15.15.0: {}
@@ -2749,11 +2749,9 @@ snapshots:
 
   isexe@2.0.0: {}
 
-  jackspeak@4.0.1:
+  jackspeak@4.1.1:
     dependencies:
       '@isaacs/cliui': 8.0.2
-    optionalDependencies:
-      '@pkgjs/parseargs': 0.11.0
 
   jiti@2.5.1: {}
 
@@ -2844,7 +2842,7 @@ snapshots:
       strip-ansi: 7.1.0
       wrap-ansi: 9.0.0
 
-  lru-cache@11.0.0: {}
+  lru-cache@11.2.2: {}
 
   lucide-react@0.453.0(react@19.1.0):
     dependencies:
@@ -2899,9 +2897,9 @@ snapshots:
 
   mimic-function@5.0.1: {}
 
-  minimatch@10.0.1:
+  minimatch@10.0.3:
     dependencies:
-      brace-expansion: 2.0.1
+      '@isaacs/brace-expansion': 5.0.0
 
   minipass@7.1.2: {}
 
@@ -2976,7 +2974,7 @@ snapshots:
       '@oxlint/win32-arm64': 1.13.0
       '@oxlint/win32-x64': 1.13.0
 
-  package-json-from-dist@1.0.0: {}
+  package-json-from-dist@1.0.1: {}
 
   parse5@7.1.2:
     dependencies:
@@ -2986,7 +2984,7 @@ snapshots:
 
   path-scurry@2.0.0:
     dependencies:
-      lru-cache: 11.0.0
+      lru-cache: 11.2.2
       minipass: 7.1.2
 
   picocolors@1.1.1: {}
