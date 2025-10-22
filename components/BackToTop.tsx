@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 
 const BASE_CN =
   'flex items-center fixed bottom-8 end-4 z-50 rounded-md bg-background/35 bg-clip-padding backdrop-blur-lg'
-const MD_BASE_CN = 'md:sticky md:end-auto md:float-end md:me-1'
+const MD_BASE_CN = 'md:sticky md:ms-auto'
 const ANIMATE_CN = 'transition duration-500 ease-in-out'
 const VISIBLE_CN = 'translate-y-0 opacity-100'
 const INVISIBLE_CN = 'translate-y-14 opacity-0'
