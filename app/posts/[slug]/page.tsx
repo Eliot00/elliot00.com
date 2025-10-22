@@ -18,6 +18,7 @@ import { COPY_BUTTON_ID } from '@/lib/copyButtonSlotTransformer'
 import { ExternalLink } from '@/components/ExternalLink'
 import { BackToTopButton } from '@/components/BackToTop'
 import { lightFormat } from 'date-fns'
+import { AdBlock } from '@/components/Ads'
 
 type Props = {
   params: Promise<{ slug: string }>
@@ -84,6 +85,7 @@ export default async function PostDetail(props: Props) {
         </Link>
       </div>
       <Copyright slug={slug} title={title} />
+      <AdBlock />
       <Comment />
     </>
   )
