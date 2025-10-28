@@ -3,17 +3,9 @@ import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import Footer from '@/components/Footer'
 import AdSense from '@/components/AdSense'
-import { LXGW_WenKai_TC } from 'next/font/google'
 import './globals.css'
 import { Header } from '@/components/Header'
 import { COMMON_CONTAINER_CLASS_NAME } from '@/lib/constants'
-
-const lxgw = LXGW_WenKai_TC({
-  variable: '--font-lxgw-serif',
-  weight: ['400', '700'],
-  subsets: ['latin'],
-  display: 'optional',
-})
 
 export const metadata: Metadata = {
   title: 'Elliot - 致虛極 守靜篤',
@@ -33,11 +25,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh-CN" className={`${lxgw.variable} antialiased scroll-smooth`}>
+    <html lang="zh-CN" className="antialiased scroll-smooth">
       <head>
         <AdSense pid="4587152222007322" />
       </head>
-      <body className="font-serif">
+      <body>
         <Header />
         <main className={COMMON_CONTAINER_CLASS_NAME}>{children}</main>
         <Footer />

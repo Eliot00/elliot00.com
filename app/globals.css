@@ -24,7 +24,6 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-separator: var(--separator);
-  --font-serif: var(--font-lxgw-serif);
 }
 
 @media (prefers-color-scheme: dark) {
