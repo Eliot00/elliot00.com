@@ -5,6 +5,8 @@ import ProjectsWall from '@/components/ProjectLink'
 import ReadMore from '@/components/ReadMore'
 import { AdBlock } from '@/components/Ads'
 import { Separator } from '@/components/Divider'
+import Link from 'next/link'
+import { RssIcon } from 'lucide-react'
 
 export default function Home() {
   const posts = allPosts
@@ -19,6 +21,10 @@ export default function Home() {
         <h1 className="my-4 inline-block text-4xl font-bold font-serif sm:my-8 sm:text-5xl">
           編碼與禪
         </h1>
+        <Link href="/rss" className="inline-block mx-4 text-primary">
+          <RssIcon className="scale-125 stroke-accent stroke-3" />
+        </Link>
+        <p>自由軟件創作者</p>
       </section>
       <Separator />
       <section className="my-4">

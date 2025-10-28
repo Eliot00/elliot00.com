@@ -1,8 +1,8 @@
-import { GithubIcon, MastodonIcon, RssIcon } from '@/components/icons'
+import { GithubIcon, XIcon } from '@/components/icons'
 import { COMMON_CONTAINER_CLASS_NAME } from '@/lib/constants'
 
 const ICON_CLASS =
-  'inline-block transition ease-in-out hover:rotate-6 hover:scale-110'
+  'inline-block transition ease-in-out hover:rotate-6 hover:scale-110 hover:text-primary'
 
 export default function Footer() {
   return (
@@ -14,11 +14,8 @@ export default function Footer() {
         <a className={ICON_CLASS} href="https://github.com/Eliot00">
           <GithubIcon />
         </a>
-        <a className={ICON_CLASS} href="https://mastodon.social/@CoderElliot">
-          <MastodonIcon />
-        </a>
-        <a className={ICON_CLASS} href="/rss">
-          <RssIcon />
+        <a className={ICON_CLASS} href="https://x.com/CoderElliot">
+          <XIcon />
         </a>
       </div>
     </footer>
