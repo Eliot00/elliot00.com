@@ -1,0 +1,318 @@
+#+title: 完全掌握定長滑動窗口
+#+tags: 算法 滑動窗口
+#+series: 刷题笔记
+#+created_at: 2025-11-01T13:01:51.168224+08:00
+#+published_at: 2025-11-01T17:33:30.345919+08:00
+#+summary: 本文通过多个LeetCode题目实例，系统讲解了滑动窗口算法的应用。文章详细展示了如何在不同场景下使用滑动窗口的三步走套路：右指针进窗口、更新答案、左指针出窗口。涵盖了定长窗口、变长思想、循环数组处理等多种情况，并提供了完整的Scheme代码实现。
+#+cover: https://r2.elliot00.com/algorithm/sliding-window.png
+
+* [[https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/][1456. 定长子串中元音的最大数目]]
+
+根據題目要求，需要從字符串s中找出長度爲k的子串中可能包含的最大元音字母數，最容易想到的方法就是依次遍歷所有可能的子字符串，統計每個子字符串的元音數，比較得出最大值。這樣做的時間複雜度是​=O(kn)=​，有沒有可能做到​=O(n)=​？
+
+** 思路
+
+#+attr_html: :alt 滑動窗口
+[[https://r2.elliot00.com/algorithm/sliding-window.png]]
+
+如圖所示，如果題目要求子串長度是3，如果先遍歷第一個子串“abc”，可以得出這個子串中有一個元音“a”，記錄這個結果；第二個子串是“bci”，再遍歷這個子串，發現最後一個字母“i”是元音，問題出現了，在上一次遍歷中已經知道了前兩個字母“bc”中沒有元音，怎麼節省重複的遍歷？
+
+假設現在剛剛完成第一個子串的遍歷，這時我們得到的答案是1，如果把整個字符串想象成一個滑軌，在這個滑軌上有一個長度（或寬度？）爲3的窗戶，它最右邊是“c”，最左邊是“a”，窗戶內的字符已經統計過，現在將窗戶向右推動一格，最右邊就新加入了字符“i”，而最左邊則離開了字符“a”。
+
+可以發現在第一個子串之後，可以像移動窗戶一樣，窗戶的左右兩端同時向右移動，每次移動，如果右邊是元音，將計數加一，如果左邊是元音，因爲它離開了窗口，所以將計數減一。等到窗口最右邊到了原字符串的末尾就可以停止了。相當於只遍歷一次，時間複雜度爲​=O(n)=​。
+
+具體到代碼裏，可以用兩個指針表示這個窗口的左右端，滑動窗口的步驟爲：
+
+1. 右邊進窗口：判斷當前右指針指向的字符是否是元音，更新局部計數，右移指針。如果窗口大小不足，重複第1步
+2. 更新答案：在本題更新方法是​~ans = max(ans, local_count)~
+3. 左邊出窗口：更新局部計數（是元音，減一，否則不變），左指針右移
+
+** 代码
+
+具體用代碼來表示這個過程：
+
+#+BEGIN_SRC scheme
+(define (max-vowels s k)
+  (define (vowel? c)
+    (member c '(#\a #\e #\i #\o #\u)))
+
+  (let loop ((ans 0) ; 答案
+             (vowel 0) ; 窗口內的元音計數
+             (index 0)) ; 窗口右端
+    (if (< index (string-length s))
+      (let* ((window-not-full? (< index (- k 1)))
+             (current-vowel? (vowel? (string-ref s index)))
+             (new-vowel (if current-vowel? (+ vowel 1) vowel)))
+        (if window-not-full? ; 檢查窗口是否展開
+          (loop ans new-vowel (+ index 1)) ; 窗口未展開，重複第一步
+          (loop (max ans new-vowel) ; 更新答案
+                ;; 左出，如果左端是元音，需要將窗口內元音計數減一
+                (if (vowel? (string-ref s (+ (-  index k) 1)))
+                    (- new-vowel 1)
+                    new-vowel)
+                (+ index 1))))
+      ans)))
+#+END_SRC
+
+實際代碼裏可以不用維持兩個指針變量，因爲窗口大小是固定的，右指針減窗口大小再加一就是左指針了。
+
+* [[https://leetcode.cn/problems/maximum-average-subarray-i/][643. 子数组最大平均数 I]]
+
+** 思路
+
+完成上一題後，可以試試這一題是否能套進之前滑動窗口的套路中去。另外還有個小技巧，由於k是固定的，要求的是平均值最大，那麼可以不必在每個窗口下求平均值，只要找出最大的窗口和，最後再除以k算平均值就可以。
+
+1. 右進：更新局部和，加上右端值，右移指針。如果窗口大小不足，重複第1步
+2. 更新答案：比較窗口內的和與全局最大和，保留更大的一個
+3. 左出：窗口和減去左端值，左指針右移
+
+** 代碼
+
+#+BEGIN_SRC scheme
+(define (find-max-average nums k)
+  (let loop ((max-sum -inf.0) ; 全局最大和
+             (s 0) ; 窗口內的和
+             (i 0)) ; 右指針
+    (if (< i (vector-length nums))
+        (let ((new-s (+ s (vector-ref nums i)))
+              (window-not-full? (< i (- k 1))))
+          (if window-not-full?
+              (loop max-sum new-s (+ i 1)) ; 窗口未滿
+              (loop
+               (max max-sum new-s) ; 更新最大和
+               (- new-s (vector-ref nums (+ (- i k) 1))) ; 左端點離開窗口
+               (+ i 1))))
+      (/ max-sum k))))
+#+END_SRC
+
+* [[https://leetcode.cn/problems/minimum-recolors-to-get-k-consecutive-black-blocks/][2379. 得到 K 个黑块的最少涂色次数]]
+
+** 思路
+首先分析題目可知，本質上是要數窗口內字符‘W’的數量，找出最少的窗口。繼續往三步走套：
+
+1. 右進：如果右端是W，更新局部計數，右移指針。如果窗口大小不足，重複第1步
+2. 更新答案：比較窗口內的計數和全局計數，保留更小的一個
+3. 左出：如果左端是W，局部計數減一，否則不變，左端右移。
+
+
+** 代碼
+
+#+BEGIN_SRC scheme
+(define (minimum-recolors blocks k)
+  (let loop ((min-w-count +inf.0) ; 初始值設成正無窮，方便比較
+             (w-count     0)
+             (i           0))
+    (if (< i (string-length blocks))
+        ;; 右進
+        (let ((local-w-count (if (char=? (string-ref blocks i) #\W)
+                                 (+ w-count 1)
+                                 w-count)))
+          (if (< i (- k 1)) ; 判斷窗口大小是否足夠
+              (loop min-w-count local-w-count (+ i 1))
+              (loop (min min-w-count local-w-count) ; 更新答案
+                    ;; 左出
+                    (if (char=? (string-ref blocks (+ (- i k) 1)) #\W)
+                        (- local-w-count 1)
+                        local-w-count)
+                    (+ i 1))))
+        min-w-count)))
+#+END_SRC
+
+* [[https://leetcode.cn/problems/maximum-points-you-can-obtain-from-cards/][1423. 可获得的最大点数]]
+
+** 思路
+題目要求只能從開頭或末尾取走牌，似乎和固定窗口滑動沒有關係了，但是如果反過來想，那就是要找一個大小爲n-k的定長窗口，窗口內數的和最小，這就相當於是從前後拿走了和最大的牌了。
+
+三步走：
+
+1. 右進：更新局部計數，右移指針。如果窗口大小不足，重複第1步
+2. 更新答案：比較窗口內的計數和全局計數，保留更小的一個
+3. 左出：局部計數減去左端值，左指針右移。
+
+給讀者一個小挑戰，嘗試獨立寫出代碼
+
+** 思路二
+在反向思考後，可以再換個思路
+
+考慮所有可能的取法：
+- 取前k張牌
+- 前k-1個加後1個
+- 前k-2個加後2個
+- ……
+- 前2個加後k-2個
+- 前1個加後k-1個
+- 後k個
+
+生活中你可能見過那種圓柱浴室，裏面的窗帘可以繞着圈子拉，把題目中的數組想象成首尾相連的軌道，一個k長的窗帘在這個軌道上滑動。但是，第一次展開窗口後，窗口是向“左邊”移動的。
+
+用代碼去描述，可以先求出前k個數的和，從i=1開始枚舉到i=k，每次將當前和增加 =cardPoints[n - i] - cardPoints[k - i]=
+
+** 代碼
+
+#+BEGIN_SRC scheme
+(define (max-score cardPoints k)
+  (let ((n (vector-length cardPoints))
+        (init-sum (let loop ((i 0)
+                             (s 0))
+                    (if (eq? i k)
+                        s
+                        (loop (+ i 1) (+ s (vector-ref cardPoints i)))))))
+    (let loop ((i 1)
+               (cur-sum init-sum)
+               (max-sum init-sum))
+      (if (> i k)
+          max-sum
+          (let ((new-sum (+ (- cur-sum (vector-ref cardPoints (- k i)))
+                            (vector-ref cardPoints (- n i)))))
+            (loop (+ i 1)
+                  new-sum
+                  (max max-sum new-sum)))))))
+#+END_SRC
+
+* [[https://leetcode.cn/problems/k-radius-subarray-averages/][2090. 半径为 k 的子数组平均值]]
+
+** 思路
+仍然使用三步走套路，但是要注意窗口大小不是題目中的k，左右指針和k的關係要注意
+
+1. 右進：更新局部和，右移指針。如果窗口大小不足，重複第1步
+2. 更新答案：更新到答案數組的​=i - k=​位
+3. 左出：局部計數減去左端值，左指針右移。
+
+** 代碼
+
+#+BEGIN_SRC scheme
+(define (get-averages nums k)
+  (let* ((len (vector-length nums))
+         (win-size (+ (* k 2) 1))
+         (ans (make-vector len -1)))
+    (let loop ((index 0)
+               (pre-sum 0))
+      (if (< index len)
+          (let ((sum (+ pre-sum (vector-ref nums index)))) ; 右側進窗口，記錄和
+            (if (< index (* k 2))
+                (loop (+ index 1) sum) ; 構建窗口
+                (begin
+                  (vector-set! ans (- index k) (/ sum win-size)) ; 更新答案
+                  (loop (+ index 1)
+                        ;; 出窗口
+                        (- sum (vector-ref nums (- index (* k 2))))))))
+          ans))))
+#+END_SRC
+
+* [[https://leetcode.cn/problems/grumpy-bookstore-owner/description/][1052. 爱生气的书店老板]]
+** 思路
+
+由題目知，grumpy爲0時，顧客一定滿意，老板使用控制技能，在minutes內不生氣，只會使結果加上grumpy爲1對應的顧客數，那麼如果算出grumpy爲0的顧客數，再滑動窗口，找出grumpy爲1的顧客數最多的窗口，加起來就得到結果。
+
+** 代碼
+
+實作可以不用先遍歷一次求在不控制情緒情況下的顧客和，因爲只需要在最後用到這個值，在滑動窗口的同時累加就可以
+
+#+BEGIN_SRC scheme
+(define (max-satisfied customers grumpy minutes)
+  (let ((len (vector-length customers)))
+    (let loop ((origin-sum 0) ; 記錄不控制情緒情況下，滿意顧客數
+               (extra-sum 0) ; 記錄控制情緒所能獲得的最大顧客數
+               (s 0) ; 當前窗口通過控制情緒可以使其滿意的顧客數
+               (i 0))
+      (if (< i len)
+          ;; 進窗口
+          (let* ((angry? (eq? (vector-ref grumpy i) 1))
+                 (current-customers (vector-ref customers i))
+                 (new-origin-sum (+ origin-sum (if angry? 0 current-customers))) ; 如果沒生氣，更新origin-sum
+                 (new-s (+ s (if angry? current-customers 0)))) ; 如果生氣，更新s
+            (if (< i (- minutes 1))
+                ;; 展開窗口
+                (loop new-origin-sum
+                      origin-sum
+                      new-s
+                      (+ i 1))
+                (loop new-origin-sum
+                      ;; 更新答案
+                      (max extra-sum new-s)
+                      ;; 出窗口
+                      (if (eq? (vector-ref grumpy (+ (- i minutes) 1)) 1)
+                          (- new-s (vector-ref customers (+ (- i minutes) 1)))
+                          new-s)
+                      (+ i 1))))
+          (+ origin-sum extra-sum)))))
+#+END_SRC
+
+* [[https://leetcode.cn/problems/defuse-the-bomb/description/][1652. 拆炸弹]]
+
+** 思路
+
+這一題乍一看好像不知道怎麼去構建窗口，沒關係，先列出例子中所有的索引，試着找出關係
+
+n = 4, k = 3:
+
+| i | a | b | c |
+|---+---+---+---|
+| 0 | 1 | 2 | 3 |
+| 1 | 2 | 3 | 0 |
+| 2 | 3 | 0 | 1 |
+| 3 | 0 | 1 | 2 |
+
+看到循環數組，首先想到應該有模運算，可以發現， \(c = (i + k) \mod n\)
+
+如果把a到c看作一個滑動窗口，按從左往右滑動排序後表格如下：
+
+| window    | i（答案第i位） |
+|-----------+----------------|
+| (0, 1, 2) |              3 |
+| (1, 2, 3) |              0 |
+| (2, 3, 0) |              1 |
+| (3, 0, 1) |              2 |
+
+那在滑動過程中，能從右指針推出應該更新答案的第幾位嗎？可以的，按前面c也就是右指針和i的關係，做逆運算： \(i = (right - k) \mod n\)
+
+再看看題目裏例子三k = -2的情況，是否有不同
+
+n = 4, k = -2
+
+k是負數，但是窗口長度（或寬度）肯定只能是正數2，還是一樣從左往右滑動
+
+| window    | i（答案第i位） |
+|-----------+----------------|
+| (0, 1)    |              2 |
+| (1, 2)    |              3 |
+| (2, 3)    |              0 |
+| (3, 0)    |              1 |
+
+因爲題目規定k爲負數時，算當前索引前k個數的和，所以右指針加1就是索引，但注意不能溢出，還是需要模運算： \(i = (right + 1) \mod n\)
+
+這樣一來問題就簡單了，除了k等於0時直接返回全0數組，其他情況只要維護一個長爲​=abs(k)=​的窗口，向右滑動，根據右端點索引和答案索引的關係，去更新相應的答案就可以了。
+
+** 代碼
+
+#+BEGIN_SRC scheme
+(define (decrypt code k)
+  (let* ((n (vector-length code))
+         (ans (make-vector n 0))
+         (abs-k (abs k)))
+    (if (eq? k 0)
+        ans ; k等於0直接返回全0數組
+        (let loop ((sum 0)
+                   (right 0)
+                   (left 0))
+          (if (< left n)
+              ;; 進窗口
+              (let ((new-sum(+ sum (vector-ref code (modulo right n)))))
+                (if (< right (- abs-k 1))
+                    (loop new-sum
+                          (+ right 1)
+                          left) ; 先展開窗口
+                    (begin
+                      ;; 更新答案
+                      (vector-set! ans
+                                   (if (> k 0) ; 根據k和右指針決定更新答案數組哪一位
+                                       (modulo (- right k) n)
+                                       (modulo (+ right 1) n))
+                                   new-sum)
+                      ;; 出窗口
+                      (loop (- new-sum (vector-ref code left))
+                            (+ right 1)
+                            (+ left 1)))))
+              ans)))))
+#+END_SRC
+
