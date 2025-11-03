@@ -49,7 +49,7 @@ export default async function PostDetail(props: Props) {
         className={`${COMMON_PROSE_CLASS_NAME} ${MJX_CLASS_NAME} lg:prose-h1:text-center prose-pre:relative prose-pre:border prose-pre:border-solid prose-pre:border-border`}
       >
         <header>
-          <h1>{title}</h1>
+          <h1 className="font-serif">{title}</h1>
           <div className="not-prose flex flex-col justify-center items-start gap-2 lg:gap-4 lg:items-center lg:flex-row text-secondary-foreground mx-auto my-6">
             <span className="text-center">
               起筆於：
