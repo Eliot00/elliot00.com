@@ -6,7 +6,7 @@
 #+summary: 本文通过多个LeetCode题目实例，系统讲解了滑动窗口算法的应用。文章详细展示了如何在不同场景下使用滑动窗口的三步走套路：右指针进窗口、更新答案、左指针出窗口。涵盖了定长窗口、变长思想、循环数组处理等多种情况，并提供了完整的Scheme代码实现。
 #+cover: https://r2.elliot00.com/algorithm/sliding-window.png
 
-* [[https://leetcode.cn/problems/maximum-number-of-vowels-in-a-substring-of-given-length/][1456. 定长子串中元音的最大数目]]
+* 1456. 定长子串中元音的最大数目
 
 根據題目要求，需要從字符串s中找出長度爲k的子串中可能包含的最大元音字母數，最容易想到的方法就是依次遍歷所有可能的子字符串，統計每個子字符串的元音數，比較得出最大值。這樣做的時間複雜度是​=O(kn)=​，有沒有可能做到​=O(n)=​？
 
@@ -56,7 +56,7 @@
 
 實際代碼裏可以不用維持兩個指針變量，因爲窗口大小是固定的，右指針減窗口大小再加一就是左指針了。
 
-* [[https://leetcode.cn/problems/maximum-average-subarray-i/][643. 子数组最大平均数 I]]
+* 643. 子数组最大平均数 I
 
 ** 思路
 
@@ -85,7 +85,7 @@
       (/ max-sum k))))
 #+END_SRC
 
-* [[https://leetcode.cn/problems/minimum-recolors-to-get-k-consecutive-black-blocks/][2379. 得到 K 个黑块的最少涂色次数]]
+* 2379. 得到 K 个黑块的最少涂色次数
 
 ** 思路
 首先分析題目可知，本質上是要數窗口內字符‘W’的數量，找出最少的窗口。繼續往三步走套：
@@ -118,7 +118,7 @@
         min-w-count)))
 #+END_SRC
 
-* [[https://leetcode.cn/problems/maximum-points-you-can-obtain-from-cards/][1423. 可获得的最大点数]]
+* 1423. 可获得的最大点数
 
 ** 思路
 題目要求只能從開頭或末尾取走牌，似乎和固定窗口滑動沒有關係了，但是如果反過來想，那就是要找一個大小爲n-k的定長窗口，窗口內數的和最小，這就相當於是從前後拿走了和最大的牌了。
@@ -169,7 +169,7 @@
                   (max max-sum new-sum)))))))
 #+END_SRC
 
-* [[https://leetcode.cn/problems/k-radius-subarray-averages/][2090. 半径为 k 的子数组平均值]]
+* 2090. 半径为 k 的子数组平均值
 
 ** 思路
 仍然使用三步走套路，但是要注意窗口大小不是題目中的k，左右指針和k的關係要注意
@@ -199,7 +199,7 @@
           ans))))
 #+END_SRC
 
-* [[https://leetcode.cn/problems/grumpy-bookstore-owner/description/][1052. 爱生气的书店老板]]
+* 1052. 爱生气的书店老板
 ** 思路
 
 由題目知，grumpy爲0時，顧客一定滿意，老板使用控制技能，在minutes內不生氣，只會使結果加上grumpy爲1對應的顧客數，那麼如果算出grumpy爲0的顧客數，再滑動窗口，找出grumpy爲1的顧客數最多的窗口，加起來就得到結果。
@@ -238,7 +238,7 @@
           (+ origin-sum extra-sum)))))
 #+END_SRC
 
-* [[https://leetcode.cn/problems/defuse-the-bomb/description/][1652. 拆炸弹]]
+* 1652. 拆炸弹
 
 ** 思路
 
