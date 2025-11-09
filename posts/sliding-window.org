@@ -1,0 +1,203 @@
+#+title: 完全掌握不定長滑動窗口
+#+tags: 算法 滑動窗口
+#+series: 刷题笔记
+#+created_at: 2025-11-08T19:20:46.022068+08:00
+#+published_at: 2025-11-09T14:06:48.648404+08:00
+#+summary: 本文通過多個LeetCode題目實例，系統講解了不定長滑動窗口算法的應用。文章詳細展示了如何在不同場景下使用滑動窗口的兩步走套路：右指針擴展窗口並更新狀態，當條件不滿足時移動左指針收縮窗口。涵蓋了最大無重複子數組、最長無重複字符子串、刪除元素後全1子數組、最小長度子數組和乘積小於K子數組等多種情況，並提供了Python和Scheme兩種語言的代碼實現，展示了狀態記錄和指針一步到位等優化技巧。
+#+cover: https://r2.elliot00.com/algorithm/sliding-window.png
+
+* [[https://leetcode.cn/problems/maximum-erasure-value/description/][1695. 删除子数组的最大得分]]
+
+和[[/posts/fixed-size-sliding-window][上一篇]]中介紹的定長滑動窗口不同，本題沒有說要找一個特定長度的子數組，如果要暴力遍歷所有可能的子數組，算法時間複雜度將爲​=O(n^2)=​。能否將之前提到的三步走套用到這個問題上呢？
+
+不妨先跟着例子​~[4,2,4,5,6]~​看下，我用括號表示窗口，嘗試只移動右指針增大窗口，用ans表示最大的符合條件的子數組長度：
+
+(4) 2 4 5 6 這個窗口表示的子數組是符合元素不重複的條件的，ans更新爲1
+(4 2) 4 5 6 子數組[4, 2]仍然符合條件，ans更新爲2
+(4 2 4) 5 6 現在窗口內包含重複數字了
+
+在這裏停下，思考一下，如果在這左指針依然不動，顯然，再移動右指針得到的子數組還是不符合條件的。換句話說，當左指針不動，而右指針移動到一個位置使得題目要求的條件不滿足時，所有以當前左指針開始，右端在當前右指針之後的子數組也同時全部被排除了！既然排除了繼續移動右指針的必要，現在來試試移動左指針吧。
+
+4 (2 4) 5 6 現在窗口符合條件了，再移動右指針試試
+4 (2 4 5) 6 仍然符合條件，ans更新爲3
+4 (2 4 5 6) 符合條件，ans更新爲4，右指針已經不能再動了，而再移動左指針得到的子數組只會更短，因此4就是最終答案
+
+我將這類問題總結爲兩步：
+
+1. 移動右指針，更新某個狀態，如果滿足條件更新答案，如果不滿足條件，執行步驟2
+2. 移動左指針，更新某個狀態，如果滿足條件，執行步驟1，如果不滿足，重複步驟2
+
+這種邏輯適合用命令式寫法表達，這裏用Python來演示：
+
+#+BEGIN_SRC python
+class Solution:
+    def maximumUniqueSubarray(self, nums: List[int]) -> int:
+        # 用set來記錄是否重複
+        record = set()
+
+        left = 0
+
+        # 窗口內的和
+        s = 0
+        ans = 0
+
+        # 實際上for i in nums就可以，這裏只是爲了清楚表示左右指針，用了right索引
+        for right in range(len(nums)):
+            current = nums[right]
+            # 當前右指針下值出現在record，說明有重複了
+            while current in record:
+                # 移動左指針，更新狀態
+                record.remove(nums[left])
+                s -= nums[left]
+                left += 1
+            # 更新狀態，更新答案
+            record.add(current)
+            s += current
+            ans = max(ans, s)
+        return ans
+#+END_SRC
+
+* [[https://leetcode.cn/problems/longest-substring-without-repeating-characters/description/][3. 无重复字符的最长子串]]
+
+試着代入上一題所用的兩步，首先還是得有個狀態變量記錄是否有重複，這裏仍然用​~set~​，還有答案要求的是窗口長，可以用​~right - left + 1~​來算。
+
+#+BEGIN_SRC python
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        ans = left = 0
+        record = set()
+
+        for right, c in enumerate(s):
+            # 出現重複
+            while c in record:
+                # 更新狀態，移左指針
+                record.remove(s[left])
+                left += 1
+
+            # 沒有重複，移右指針，更新record
+            record.add(c)  # 加入 c
+
+            # 更新答案
+            ans = max(ans, right - left + 1)
+
+        return ans
+#+END_SRC
+
+但是只是針對這一題，可以想一想，當右側進窗口，出現重複時，說明必然是這個新進入窗口的字符和前面窗口內相同的字符重複了，那麼是否可以用一個表記錄窗口內每一個字符上一次出現的位置，出現重複時，左指針不就可以直接移動到重複字符上次出現位置的右邊了嗎？
+
+#+BEGIN_SRC scheme
+(define (length-of-longest-substring s)
+  ;; 題目規定了字符完全在ASCII範圍內，所以可以用128位的數組來記錄
+  (let ((last-seen (make-vector 128 -1))
+        (len (string-length s)))
+    (let loop ((left 0)
+               (right 0)
+               (ans 0))
+      (if (< right len)
+          (let* ((current-char (string-ref s right))
+                 ;; 字符轉成ASCII碼
+                 (char-ascii (char->integer current-char))
+                 (char-last-index (vector-ref last-seen char-ascii))
+                 ;; 如果有重複，左指針可以一步到位移動到重複字符後面
+                 (new-left (max left (+ char-last-index 1))))
+            ;; 右入窗口，更新last-seen，更新答案
+            (vector-set! last-seen char-ascii right)
+            (loop new-left
+                  (+ right 1)
+                  (max ans (+ (- right new-left) 1))))
+          ans))))
+#+END_SRC
+
+* [[https://leetcode.cn/problems/longest-subarray-of-1s-after-deleting-one-element/description/][1493. 删掉一个元素以后全为 1 的最长子数组]]
+
+這一題就是要找一個最長的，最多有一個0的子數組，返回這個子數組長度減一。
+狀態量可以是窗口內零的計數，不超過1時，移動右指針，否則移動左指針。
+
+#+BEGIN_SRC python
+class Solution:
+    def longestSubarray(self, nums: List[int]) -> int:
+        ans = count = left = 0
+        for right, x in enumerate(nums):
+            # 移右，更新計數
+            if x == 0:
+                count += 1
+            while count > 1:
+                # 不滿足條件，移左，更新計數
+                count -= (1 if nums[left] == 0 else 0)
+                left += 1
+            ans = max(ans, right - left)
+        return ans
+#+END_SRC
+
+由於這一題要求是要麼有一個零，要麼沒有零，如果右指針下出現多餘的零，那麼左指針就要移動到窗口內上一個零的右邊。所以這一題也是可以一步更新左指針的：
+
+#+BEGIN_SRC scheme
+(define (longest-subarray nums)
+  (let ((len (vector-length nums)))
+    (let loop ((last-zero -1) ; 記錄上一次出現0的位置
+               (left 0)
+               (right 0)
+               (ans 0))
+      (if (< right len)
+          (let* ((current-zero? (eq? (vector-ref nums right) 0))
+                 ;; 不符合條件時直接將左指針移到上一次0的右邊去
+                 (new-left (if current-zero?
+                               (max (+ last-zero 1) left)
+                               left)))
+            (loop (if current-zero? right last-zero)
+                  new-left
+                  (+ right 1)
+                  (max ans (- right new-left))))
+          ans))))
+#+END_SRC
+
+* [[https://leetcode.cn/problems/minimum-size-subarray-sum/description/][209. 长度最小的子数组]]
+
+問題從求符合條件的最長的子數組，變成了求符合條件的最短子數組，但是解題思路其實還是一樣的。只是具體步驟變爲：
+
+1. 移動窗口右指針，更新窗口內和，不滿足條件，重複步驟1，符合條件，執行步驟2
+2. 移動左指針，窗口和減去左側值，更新答案（窗口長度），直到不符合條件時再執行步驟1
+
+#+BEGIN_SRC python
+class Solution:
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        n = len(nums)
+        impossible = n + 1
+
+        ans = impossible
+        s = left = 0
+
+        for right, x in enumerate(nums):
+            s += x
+            while s >= target:
+                ans = min(ans, right - left + 1)
+                s -= nums[left]
+                left += 1
+
+        return 0 if ans == impossible else ans
+#+END_SRC
+
+題外話，每次求最小值時，都會將答案初始化爲無窮大或一個不可能達到的最大值；求最大值時則反過來初始化爲無窮小，這種特殊值在數學上叫作​*單位元*​。簡單說這種值和另一個值a做運算，總是得到a。
+
+* [[https://leetcode.cn/problems/subarray-product-less-than-k/description/][713. 乘积小于 K 的子数组]]
+
+這次要求的是符合條件的子數組數量，思路是一貫的，先移動右指針，窗口积超過了K，移動左指針。當窗口符合條件時，右指針不變，顯然以當窗口左端點右邊直到右端點的任一點做左端點得到的子數組都是符合條件的子數組，也就是說答案就是當前窗口的長度​~right - left + 1~​。
+
+#+BEGIN_SRC python
+class Solution:
+    def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
+        # 排除特殊情況
+        if k <= 1:
+            return 0
+
+        product = 1
+        ans = left = 0
+        for right, x in enumerate(nums):
+            product *= x
+            while product >= k:
+                product //= nums[left]
+                left += 1
+            ans += right - left + 1
+        return ans
+#+END_SRC
+
