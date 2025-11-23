@@ -1,0 +1,246 @@
+#+title: 相向双指针（一）
+#+tags: 算法 双指针
+#+series: 刷题笔记
+#+created_at: 2025-11-23T16:08:06.382900+08:00
+#+published_at: 2025-11-23T18:51:13.984468+08:00
+#+summary: 本文系统讲解了相向双指针算法的基本原理和实际应用。相向双指针通过在数组或字符串的两端设置指针，让它们向中间移动来解决问题，这种模式特别适合处理对称性、反转和双向遍历的场景。
+#+cover: https://r2.elliot00.com/algorithm/opposite-direction-two-points.png
+
+#+ATTR_HTML: :alt Opposite-direction Two Points
+[[https://r2.elliot00.com/algorithm/opposite-direction-two-points.png]]
+
+* [[https://leetcode.cn/problems/reverse-string/][344. 反转字符串]]
+
+先来一道送分题，只要在数组的头尾各放一个指针，交换指针下的元素，之后两个指针同时向中心移动就可以反转数组了。
+
+如果数组元素个数是单数，那么中间的元素不用处理；如果是偶数个元素，两个指针分别在中间两个元素上做最后一次交换就可以停止，所以循环条件是​=left < right=​：
+
+#+BEGIN_SRC python
+def reverse_string(s):
+    left = 0
+    right = len(s) - 1
+    while left < right:
+        temp = s[left]
+        s[left] = s[right]
+        s[right] = temp
+        left += 1
+        right -= 1
+#+END_SRC
+
+交换的部分使用的是通用写法，要利用Python的特性可以直接用​~x, y = y, x~​的交换写法。
+
+* [[https://leetcode.cn/problems/reverse-vowels-of-a-string/][345. 反转字符串中的元音字母]]
+
+送分题结束，再来一首热身题。本题实际只需要在上一题的基础上，额外做一个是否是元音的判断，只有两个指针下都是元音才交换字符。
+
+#+BEGIN_SRC python
+def reverse_vowels(s):
+    l, r = 0, len(s) - 1
+    # python不能直接改字符串，所以先转成列表
+    chars = list(s)
+    vowels = set('aeiouAEIOU')
+
+    while l < r:
+        if s[l] not in vowels:
+            l += 1
+        elif s[r] not in vowels:
+            r -= 1
+        else:
+            # 都是元音，交换  
+            chars[l], chars[r] = chars[r], chars[l]
+            l += 1
+            r -= 1
+
+    return ''.join(chars)
+#+END_SRC
+
+* [[https://leetcode.cn/problems/minimum-length-of-string-after-deleting-similar-ends/description/][1750. 删除字符串两端相同字符后的最短长度]]
+
+根据题目要求，循环条件需要加上左右指针下字符相同。内部可以用子循环，只要字符相同就一直移动指针，最后右指针减左指针加一就是剩余长度了。
+
+#+BEGIN_SRC python
+def minimum_length(s):
+    left, right = 0, len(s) - 1
+    while left < right and s[left] == s[right]:
+        c = s[left]
+        while left <= right and s[left] == c:
+            left += 1
+        while left <= right and s[right] == c:
+            right -= 1
+    return right - left + 1
+#+END_SRC
+
+* [[https://leetcode.cn/problems/watering-plants-ii/][2105. 给植物浇水 II]]
+
+这一题直接按着题目描述模拟就可以了。
+
+#+BEGIN_SRC python
+def minimum_refill(plants, capacity_a, capacity_b):
+    ans = 0
+
+    # a b 当前水量
+    a = capacity_a
+    b = capacity_b
+
+    # a b 当前位置
+    left = 0
+    right = len(plants) - 1
+
+    while left < right:
+        # a的水不够，补充水，答案加1
+        if a < plants[left]:
+            a = capacity_a
+            ans += 1
+        # a浇水，右移
+        a -= plants[left]
+        left += 1
+
+        # b的水不够，补水，答案加1
+        if b < plants[right]:
+            b = capacity_b
+            ans += 1
+        # b浇水，左移
+        b -= plants[right]
+        right -= 1
+
+    # a b 相遇，如果水不够答案再加1
+    if left == right and max(a, b) < plants[left]:
+        ans += 1
+    return ans
+#+END_SRC
+
+* [[https://leetcode.cn/problems/squares-of-a-sorted-array/description/][977. 有序数组的平方]]
+
+最简单的方式就是直接map平方再排序（有负数，必需再排序一次），但是题目既然提了数组是有序的，最好要利用上这个性质。
+
+#+BEGIN_QUOTE
+[!TIP]
+题目里的“非递增”和“非递减”是数学术语，不能按字面理解，直接将非递增理解为数组的后一个元素必然小于等于前一个，非递减理解为后一个一定大于等于前一个就好。
+#+END_QUOTE
+
+因为数组本身是非递减的，数组的负数部分的平方就是非递增的，而非负数部分的平方就是非递减的了。如果能找出数组中负数和非负数的分界，从这里开始用两个指针分别指向负数和非负数部分，每次把平方较小的推入结果数组中，之后移动指针就可以解决问题。
+
+先写一个函数用二分查找来找分界点（这里也是利用数组有序的特性）：
+
+#+BEGIN_SRC python
+import bisect
+
+def find_boundary(nums):
+    first_non_negative = bisect.bisect_left(nums, 0)
+    return first_non_negative - 1, first_non_negative
+#+END_SRC
+
+用i、j两个指针分别指向最后的负数和第一个非负数（没有负数也没关系，i初始化在-1，相当于单向遍历了）：
+
+#+BEGIN_SRC python
+def sorted_squares(nums):
+    i, j = find_boundary(nums)
+    ans = []
+    while i >= 0 or j < len(nums):
+        # 先处理两个边界情况
+        if i < 0:
+            ans.append(nums[j] ** 2)
+            j += 1
+        elif j == len(nums):
+            ans.append(nums[i] ** 2)
+            i -= 1
+        else:
+            x = nums[i] ** 2
+            y = nums[j] ** 2
+            # 小的先进，i向左移，j向右移
+            if x < y:
+                ans.append(x)
+                i -= 1
+            else:
+                ans.append(y)
+                j += 1
+    return ans
+#+END_SRC
+
+** 思路二
+
+如果把双指针分别放在数组开头和结尾，根据原数组的非递减特性，求平方后最大的数，不是在开头（有负数的情况）就是在结尾。那么先初始化一个和原数组等长的答案数组，从答案数组的末尾向开头遍历，每次比较原数组的开头和结尾平方的大小，就可以做归并排序，从右往左、从大到小更新答案。
+
+#+BEGIN_SRC python
+def sorted_squares(nums):
+    n = len(nums)
+    ans = [0] * n
+    left, right = 0, n - 1
+
+    # 倒着更新
+    for i in range(n - 1, -1, -1):
+        l_square = nums[left] ** 2
+        r_square = nums[right] ** 2
+        # 每次将较大的更新进答案
+        if l_square > r_square:
+            ans[i] = l_square
+            # 左边大就右移左指针，否则就左移右指针
+            left += 1
+        else:
+            ans[i] = r_square
+            right -= 1
+    return ans
+#+END_SRC
+
+在循环过程中，还可以利用原数组有序的特性，省略重复的平方运算，比如比较​=abs(nums[left]) > nums[right]=​，或者​=-nums[left] > nums[right]=​。
+
+* [[https://leetcode.cn/problems/bag-of-tokens/description/][948. 令牌放置]]
+
+直觉上，应该用最小的能量换分，直到能量不够，用分数换最大的能量。
+
+尝试先从小到大排序令牌，再用相向双指针，能量够就从左边最小的令牌换分，能量不够就从右边最大的令牌换能量。
+
+#+BEGIN_SRC python
+def bag_of_tokens_score(tokens, power):
+    tokens.sort()
+    score = 0
+    left, right = 0, len(tokens) - 1
+    while left <= right:
+        # 能量足够，换取分数
+        if power >= tokens[left]:
+            power -= tokens[left]
+            left += 1
+            score += 1
+        # 能量不够，兑换能量
+        elif score > 0:
+            power += tokens[right]
+            right -= 1
+            score -= 1
+        # 能量和分数都不足，直接退出
+        else:
+            break
+    return score
+#+END_SRC
+
+思路没感觉有问题，但是在测试用例​=[200, 100]=​上出错了，答案应该是1，但输出结果是0。仔细想想是因为在我的代码里只要分数足够而能量不足，就会消耗分数去换能量，但是没有考虑到如果兑换完能量后剩下的能量还是不够换分，那就白白亏掉了一分。
+
+再次确认下用积分换能量的条件：
+
+1. 当前能量小于左侧最小令牌，无法消耗能量得分
+2. 当前分数大于0
+3. 当前能量加上最左侧令牌能量大于等于右侧令牌（这样至少不会亏）
+4. 左右指针不能在同一个位置（一个令牌只能用一次）
+
+用代码表示：
+
+#+BEGIN_SRC python
+def bag_of_tokens_score(tokens, power):
+    tokens.sort()
+    score = 0
+    left, right = 0, len(tokens) - 1
+    while left <= right:
+        # 能量足够，换取分数
+        if power >= tokens[left]:
+            power -= tokens[left]
+            left += 1
+            score += 1
+        # 能量不够，兑换能量，但要兑换后还能再获得分数
+        elif score > 0 and right > left and (power + tokens[right]) >= tokens[left]:
+            power += tokens[right]
+            right -= 1
+            score -= 1
+        # 能量和分数都不足，直接退出
+        else:
+            break
+    return score
+#+END_SRC
