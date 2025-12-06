@@ -1,0 +1,354 @@
+#+title: 相向双指针（二）
+#+tags: 算法 双指针
+#+series: 刷题笔记
+#+created_at: 2025-12-06T17:50:28.612271+08:00
+#+published_at: 2025-12-06T19:35:10.192315+08:00
+#+summary: 本文系统讲解了相向双指针算法的基本原理和实际应用。相向双指针通过在数组或字符串的两端设置指针，让它们向中间移动来解决问题，这种模式特别适合处理对称性、反转和双向遍历的场景。
+#+cover: https://r2.elliot00.com/algorithm/opposite-direction-two-points.png
+
+* 167. 两数之和 II - 输入有序数组
+
+因为数组是有序的，如果从数组两头向中间遍历，两端数之和大于目标，说明要找一个更小的数，需要左移右指针；如果两端数之和小于目标，说明要找一个更大的数，需要右移左指针：
+
+#+BEGIN_SRC scheme
+(define (two-sum numbers target)
+  (let loop ((left 0)
+             (right (- (vector-length numbers) 1)))
+    (if (< left right)
+        (let ((sum (+ (vector-ref numbers left)
+                      (vector-ref numbers right))))
+          (cond
+           ((> sum target) (loop left (- right 1)))
+           ((< sum target) (loop (+ left 1) right))
+           (else (list left right))))
+        (list -1 -1))))
+#+END_SRC
+
+不过题目有个小陷阱，特别提到数组下标从1开始，只要最后返回的地方两个指针都加一就可以了。
+
+* 633. 平方数之和
+
+既然是找平方的和等于c的两个数，说明要找的两个数一定比c小，准确地说是要不超过根号c（向下取整），设为k。题目说明了是整数里找，整数有无限个，虽然确定了上限k，下限怎么定呢？注意-a的平方和a的平方是相同的，所以可以把这一题转换为在元素为0到k的整数数组中，找两个数平方和等于c，只是计数时不能忽略c刚好为-a的平方加a的平方的情况，循环条件应为​~left <= right~​。
+
+#+BEGIN_SRC scheme
+(define (judge-square-sum c)
+  (let loop ((left 0)
+             (right (inexact->exact (floor (sqrt c)))))
+    (if (<= left right)
+        (let ((sum (+ (* left left)
+                      (* right right))))
+          (cond
+           ((> sum c) (loop left (- right 1)))
+           ((< sum c) (loop (+ left 1) right))
+           (else #t)))
+        #f)))
+#+END_SRC
+
+
+* 2824. 统计和小于目标的下标对数目
+
+题目中的​~i < j~​条件容易引起误解，实际只是在说指针不能在同一个位置。可以排序再应用求两数和的方法，当左右指针下值相加小于target，说明当前左指针下数加​=[left + 1, right]=​指针下任一数（右指针下一定是区间内最大的），都小于target，也就是有​=right - left=​个下标对符合条件。
+
+#+BEGIN_SRC scheme
+(define (count-pairs nums target)
+  (let ((sorted (sort nums <)))
+    (let loop ((left 0)
+               (right (- (vector-length sorted) 1))
+               (ans 0))
+      (if (< left right)
+          (let ((sum (+ (vector-ref sorted left)
+                        (vector-ref sorted right))))
+            (if (< sum target)
+                (loop (+ left 1)
+                      right
+                      (+ ans (- right left)))
+                (loop left
+                      (- right 1)
+                      ans)))
+          ans))))
+#+END_SRC
+
+* 15. 三数之和
+
+需要找x,y,z和等於0，可以排序数组，遍历数组，以当前数为x，题目就变成了找y + z = -x的双指针问题了。
+
+先試試在有序的數組中，找y和z：
+
+#+BEGIN_SRC scheme
+(define (find-y-z nums x)
+  (let loop ((left 0)
+             (right (- (vector-length nums) 1))
+             (ans '()))
+    (if (< left right)
+        (let* ((y (vector-ref nums left))
+               (z (vector-ref nums right))
+               (sum (+ y z))
+               (neg-x (- x)))
+          (cond
+           ((> sum neg-x) (loop left (- right 1) ans))
+           ((< sum neg-x) (loop (+ left 1) right ans))
+           (else (loop (+ left 1)
+                       (- right 1)
+                       (cons (list y z) ans)))))
+        ans)))
+#+END_SRC
+
+將返回值改造下，返回xyz：
+
+#+BEGIN_SRC scheme
+(define (find-x-y-z nums x)
+  (let loop ((left 0)
+             (right (- (vector-length nums) 1))
+             (ans '()))
+    (if (< left right)
+        (let* ((y (vector-ref nums left))
+               (z (vector-ref nums right))
+               (sum (+ y z))
+               (neg-x (- x)))
+          (cond
+           ((> sum neg-x) (loop left (- right 1) ans))
+           ((< sum neg-x) (loop (+ left 1) right ans))
+           (else (loop (+ left 1)
+                       (- right 1)
+                       (cons (list x y z) ans)))))
+        ans)))
+#+END_SRC
+
+但是還要處理去重，如果遍歷nums，應該要跳過重複的x，雙指針的左端點也不應該每次都從0開始了
+
+#+BEGIN_SRC scheme
+(define (find-x-y-z nums x start)
+  (let loop ((left start)
+             (right (- (vector-length nums) 1))
+             (ans '()))
+    (if (< left right)
+        (let* ((y (vector-ref nums left))
+               (z (vector-ref nums right))
+               (sum (+ y z))
+               (neg-x (- x)))
+          (cond
+           ((> sum neg-x) (loop left (- right 1) ans))
+           ((< sum neg-x) (loop (+ left 1) right ans))
+           (else (loop (+ left 1)
+                       (- right 1)
+                       (cons (list x y z) ans)))))
+        ans)))
+
+(define (three-sum nums)
+  (let ((len (vector-length nums))
+        (sorted (sort nums <)))
+    (let loop ((i 0)
+               (result '()))
+      (if (< i len)
+          (if (and (> i 0)
+                   (eq? (vector-ref sorted i)
+                        (vector-ref sorted (- i 1))))
+              (loop (+ i 1) result)
+              (let ((new-ans (find-x-y-z sorted
+                                         (vector-ref sorted i)
+                                         (+ i 1))))
+                (loop (+ i 1)
+                      (append result new-ans))))
+          result))))
+#+END_SRC
+
+提交后没有通过，因为只跳过了重复的x，下面是最终代码：
+
+#+BEGIN_SRC scheme
+(define (find-x-y-z nums x start end)
+  (let loop ((left start)
+             (right end)
+             (ans '()))
+    (if (< left right)
+        (let* ((y (vector-ref nums left))
+               (z (vector-ref nums right))
+               (sum (+ y z))
+               (neg-x (- x)))
+          (cond
+           ((and (> left start)
+                 (eq? (vector-ref nums (- left 1)) y))
+            (loop (+ left 1) right ans))
+           ((and (< right end)
+                 (eq? (vector-ref nums (+ right 1)) z))
+            (loop left (- right 1) ans))
+           ((> sum neg-x) (loop left (- right 1) ans))
+           ((< sum neg-x) (loop (+ left 1) right ans))
+           (else (loop (+ left 1)
+                       (- right 1)
+                       (cons (list x y z) ans)))))
+        ans)))
+
+(define (three-sum nums)
+  (let ((len (vector-length nums))
+        (sorted (sort nums <)))
+    (let loop ((i 0)
+               (result '()))
+      (if (< i len)
+          (if (and (> i 0)
+                   (eq? (vector-ref sorted i)
+                        (vector-ref sorted (- i 1))))
+              (loop (+ i 1) result)
+              (let ((new-ans (find-x-y-z sorted
+                                         (vector-ref sorted i)
+                                         (+ i 1)
+                                         (- len 1))))
+                (loop (+ i 1)
+                      (append result new-ans))))
+          result))))
+#+END_SRC
+
+還能做一些優化，按升序排序後，如果xyz和大於0了，後面的數再相加只會更大，可以直接跳出循環過程，但算法時間複雜度​=O(N^2)=​不能再優化了。
+
+* 16. 最接近的三数之和
+
+在求解过程中要维护一个表示最小差距的变量：
+
+#+BEGIN_SRC scheme
+(define (three-sum-closest nums target)
+  (let ((len (vector-length nums))
+        (sorted (sort nums <))
+        (answer +inf.0)
+        (min-gap +inf.0))
+    (let outer-loop ((i 0))
+      (when (< i len)
+        ;; 跳过重复的i
+        (if (and (> i 0)
+                 (eq? (vector-ref sorted i)
+                      (vector-ref sorted (- i 1))))
+            (outer-loop (+ i 1))
+            (let ((x (vector-ref sorted i)))
+              (let inner-loop ((j (+ i 1))
+                               (k (- len 1)))
+                (when (< j k)
+                  (let* ((y (vector-ref sorted j))
+                         (z (vector-ref sorted k))
+                         (sum (+ x y z))
+                         (gap (abs (- sum target))))
+                    ;; 差距更小，更新答案
+                    (when (< gap min-gap)
+                      (set! min-gap gap)
+                      (set! answer sum))
+                    (cond
+                     ((< sum target)
+                      (let loop ((new-j (+ j 1)))
+                        ;; 跳过重复
+                        (if (and (< new-j k)
+                                 (eq? (vector-ref sorted new-j)
+                                      (vector-ref sorted j)))
+                            (loop (+ new-j 1))
+                            (inner-loop new-j k))))
+                     ((> sum target)
+                      (let loop ((new-k (- k 1)))
+                        ;; 跳过重复
+                        (if (and (> new-k j)
+                                 (eq? (vector-ref sorted new-k)
+                                      (vector-ref sorted k)))
+                            (loop (- new-k 1))
+                            (inner-loop j new-k))))
+                     (else
+                      (set! answer sum)
+                      (set! min-gap 0))))))
+              (outer-loop (+ i 1))))))
+    answer))
+#+END_SRC
+
+* 923. 三数之和的多种可能
+
+题目要求最后答案要做模运算，先定义要模的常量：
+
+#+BEGIN_SRC scheme
+(define MOD 1000000007)
+#+END_SRC
+
+和三数之和比，不用去重，但是要想出怎么算所有的可能。
+
+假设按求三数之和的方法，固定第一个数，双指针刚刚找到了满足条件的两个数，这时有两种情况：
+
+1. 两个数相等，由于已经排序了，说明双指针之间所有数都一样，可能的组合就是​=C(k, 2)=​，k是这个数的计数。并且这时双指针循环可以结束，因为中间没有不同的数了。
+2. 两个数不相等，设区间内和左指针下数相同的有m个，和右指针下数相同的有n个，那就是从m中取1个，再从n中取1个，有m * n种组合。另外在区间中间，可能还有符合条件的其它数，所以双指针循环还要继续。
+
+第一种情况可以直接跳出双指针循环，第二种情况需要两边分别计数，先为第二种情况写一个函数：
+
+#+BEGIN_SRC scheme
+(define (count-rest-two arr left right)
+  (let ((a (vector-ref arr left))
+        (b (vector-ref arr right)))
+    (let loop ((start (+ left 1))
+               (end (- right 1))
+               (l-count 1)
+               (r-count 1))
+      (if (<= start end)
+          (cond
+           ((eq? a (vector-ref arr start))
+            (loop (+ start 1)
+                  end
+                  (+ l-count 1)
+                  r-count))
+           ((eq? b (vector-ref arr end))
+            (loop start
+                  (- end 1)
+                  l-count
+                  (+ r-count 1)))
+           (else (* l-count r-count)))
+          (* l-count r-count)))))
+#+END_SRC
+
+注意这里在一个循环过程中求两边计数，最后左右指针相遇时，指针下的数可能刚好和前一个相同，如果用小于判断出循环，结果就不对了。也可以把这个函数写成两边分别循环求计数。
+
+考虑到计算完在双指针中间可能还有解，可以把计数完后双指针的位置也返回出来用于下一次双指针过程，稍作修改：
+
+#+BEGIN_SRC scheme
+(use-modules (srfi srfi-11))
+
+(define (count-rest-two arr left right)
+  (let ((a (vector-ref arr left))
+        (b (vector-ref arr right)))
+    (let loop ((start (+ left 1))
+               (end (- right 1))
+               (l-count 1)
+               (r-count 1))
+      (if (<= start end)
+          (cond
+           ((eq? a (vector-ref arr start))
+            (loop (+ start 1)
+                  end
+                  (+ l-count 1)
+                  r-count))
+           ((eq? b (vector-ref arr end))
+            (loop start
+                  (- end 1)
+                  l-count
+                  (+ r-count 1)))
+           (else (values start end (* l-count r-count))))
+          (values start end (* l-count r-count))))))
+
+(define (three-sum-multi arr target)
+  (let ((len (vector-length arr))
+        (sorted (sort arr <)))
+    (let outer-loop ((i 0)
+                     (ans 0))
+      (if (< i (- len 2))
+          (let loop ((left (+ i 1))
+                     (right (- len 1))
+                     (ans ans))
+            (if (< left right)
+                (let ((sum (+ (vector-ref sorted i)
+                              (vector-ref sorted left)
+                              (vector-ref sorted right))))
+                  (cond
+                   ((> sum target) (loop left (- right 1) ans))
+                   ((< sum target) (loop (+ left 1) right ans))
+                   (else
+                    (if (eq? (vector-ref sorted left)
+                             (vector-ref sorted right))
+                        (let ((count (+ (- right left) 1)))
+                          (outer-loop (+ i 1)
+                                      (+ ans
+                                         (quotient (* count (- count 1)) 2))))
+                        (let-values (((new-left new-right new-count) (count-rest-two sorted left right)))
+                          (loop new-left
+                                new-right
+                                (+ ans new-count)))))))
+                (outer-loop (+ i 1) ans)))
+          (modulo ans MOD)))))
+#+END_SRC

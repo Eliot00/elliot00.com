@@ -9,7 +9,7 @@
 #+ATTR_HTML: :alt Opposite-direction Two Points
 [[https://r2.elliot00.com/algorithm/opposite-direction-two-points.png]]
 
-* [[https://leetcode.cn/problems/reverse-string/][344. 反转字符串]]
+* 344. 反转字符串
 
 先来一道送分题，只要在数组的头尾各放一个指针，交换指针下的元素，之后两个指针同时向中心移动就可以反转数组了。
 
@@ -29,7 +29,7 @@ def reverse_string(s):
 
 交换的部分使用的是通用写法，要利用Python的特性可以直接用​~x, y = y, x~​的交换写法。
 
-* [[https://leetcode.cn/problems/reverse-vowels-of-a-string/][345. 反转字符串中的元音字母]]
+* 345. 反转字符串中的元音字母
 
 送分题结束，再来一首热身题。本题实际只需要在上一题的基础上，额外做一个是否是元音的判断，只有两个指针下都是元音才交换字符。
 
@@ -54,7 +54,7 @@ def reverse_vowels(s):
     return ''.join(chars)
 #+END_SRC
 
-* [[https://leetcode.cn/problems/minimum-length-of-string-after-deleting-similar-ends/description/][1750. 删除字符串两端相同字符后的最短长度]]
+* 1750. 删除字符串两端相同字符后的最短长度
 
 根据题目要求，循环条件需要加上左右指针下字符相同。内部可以用子循环，只要字符相同就一直移动指针，最后右指针减左指针加一就是剩余长度了。
 
@@ -70,7 +70,7 @@ def minimum_length(s):
     return right - left + 1
 #+END_SRC
 
-* [[https://leetcode.cn/problems/watering-plants-ii/][2105. 给植物浇水 II]]
+* 2105. 给植物浇水 II
 
 这一题直接按着题目描述模拟就可以了。
 
@@ -109,7 +109,7 @@ def minimum_refill(plants, capacity_a, capacity_b):
     return ans
 #+END_SRC
 
-* [[https://leetcode.cn/problems/squares-of-a-sorted-array/description/][977. 有序数组的平方]]
+* 977. 有序数组的平方
 
 最简单的方式就是直接map平方再排序（有负数，必需再排序一次），但是题目既然提了数组是有序的，最好要利用上这个性质。
 
@@ -184,7 +184,7 @@ def sorted_squares(nums):
 
 在循环过程中，还可以利用原数组有序的特性，省略重复的平方运算，比如比较​=abs(nums[left]) > nums[right]=​，或者​=-nums[left] > nums[right]=​。
 
-* [[https://leetcode.cn/problems/bag-of-tokens/description/][948. 令牌放置]]
+* 948. 令牌放置
 
 直觉上，应该用最小的能量换分，直到能量不够，用分数换最大的能量。
 
