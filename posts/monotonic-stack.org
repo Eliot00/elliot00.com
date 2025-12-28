@@ -1,0 +1,125 @@
+#+title: 单调栈
+#+tags: 算法 单调栈
+#+series: 刷题笔记
+#+created_at: 2025-12-28T11:53:01.407450+08:00
+#+published_at: 2025-12-28T15:52:43.717040+08:00
+#+summary: 单调栈通过维护温度值的单调性，将寻找“下一个更高温度”的时间复杂度从 O(n²) 优化至 O(n)，其核心在于避免了重复比较并确保每个元素只入栈出栈一次。
+
+参考题目：[[https://leetcode.cn/problems/daily-temperatures/description/][739. 每日温度]]
+
+* 暴力法
+
+使用暴力方法做这题很简单，首先拆解出一个子问题：给你一个索引i和一个数组a，找出数组中i之后第一个大于a[i]的数的索引j，没有就返回0。
+
+#+BEGIN_SRC scheme
+(define (find-first-larger i a)
+  (let loop ((j (+ i 1)))
+    (cond
+     ;; 到最后还没有找到，返回0
+     ((= j (vector-length a)) 0)
+     ;; a[j] > a[i]，返回j
+     ((> (vector-ref a j) (vector-ref a i)) j)
+     ;; 否则继续往后找
+     (else (loop (+ j 1))))))
+#+END_SRC
+
+剩下的事情就是遍历原数组，对每一个索引i调用​~find-first-larger~​，组合得到新的数组就是答案了。
+
+暴力做法的时间复杂度是​=O(n^2)=​，有没有方法在线性时间解决问题呢？
+
+* 单调栈
+
+可以先尝试用动态规划的思路，假设当前在原数组任意位置，有哪些可能的状态？
+
+1. 当前数前面的数都已经找到了答案
+2. 当前数前面还有数没有找到答案
+
+首先分析情况一，如果说刚刚遍历到当前数，还没有做任何操作，而前方没有任何未找到答案的数，那只能说明当前数是第一个数。
+
+所以情况二才是需要重点分析的，如果前方有数没有找到答案，这些数会有什么性质？
+
+如果在遍历过程中将没找到答案的数按顺序记录下来，这些数有可能是​[2, 4, 3]吗？​*不可能*​，为什么呢？因为题目指明了要找每一个数的下一个更大的数，如果2后面有4的话，2不可能被归类在没有答案的部分。也就是说如果按从左到右的顺序记录当前还没找到答案的数，这些数一定是​*非递增*​的。
+
+那么如果当前数x小于等于这个记录中最右边的数y，也就意味着当前数x不可能是y的答案，更加不可能是记录中其它数的答案。至此在当前位置除了将当前数也加入未找到答案的记录中就无事可做了。
+
+反之如果当前数x大于y，那么可以说y的答案就是当前数x，可以将y从未找到答案的记录中删去，但是还不知道当前数是否有可能仍然是剩下的记录中的数的答案，所以还要重复这个比较过程，直接剩下记录最右边也就是记录中最小的数都大于等于当前数x。
+
+总结描述一下过程，设当前数为x，未找到答案的数的记录称为pending：
+
+1. 若pending为空，将x存入pending，遍历下一个数
+2. pending不为空，将最新存入pending的数取出，设为y，与x比较：
+   - 若x > y，则，从pending中删去y，y的答案记为x，重复步骤1、2
+   - 否则，将x存入pending，遍历下一个数
+
+可见这个pending需要用一个​*后入先出*​的数据结构，那么最合适的就是栈了。又由于之前已经证明，pending内的元素具有单调性，所以这种结构被称为单调栈。
+
+注意到这里有一个内层循环，但是时间复杂度并不是​=O(n^2)=​，即使考虑极端情况​~[100, 99, 98, 97, 96]~​，也顶多每个元素入栈出栈一次，最终时间复杂度还是​=O(n)=​的。
+
+另外题目要求的是几天后会出现一个更高温度，pending可以用来存索引，更新答案是用当前索引减去栈顶存储的索引就可以了。
+
+#+BEGIN_SRC scheme
+(define (daily-temperatures temperatures)
+  (let* ((n (vector-length temperatures))
+         (ans (make-vector n 0)))
+    (let loop ((i 0)
+               ;; 用链表做栈
+               (pending '()))
+      (if (< i n)
+          (if (null? pending)
+              ;; pending为空，进入下一步
+              (loop (+ i 1)
+                    ;; 为了更新答案方便，pending实际存的是索引
+                    (cons i pending))
+              (let* ((x (vector-ref temperatures i))
+                     (j (car pending))
+                     (y (vector-ref temperatures j)))
+                (if (> x y)
+                    (begin
+                      (vector-set! ans j (- i j))
+                      (loop i (cdr pending)))
+                    (loop (+ i 1)
+                          (cons i pending)))))
+          ans))))
+#+END_SRC
+
+还有一种倒着遍历的思路，代码写出来似乎没有从左到右遍历易懂，但是描述却非常形象：
+
+将题目给的数组想象成连续的山峰的高度，如​~[2, 4, 5, 1, 2, 6]~​，倒着遍历，将遍历过程想象成爬山，假设当前爬到高度为4的山峰，那么​~[5, 1, 2, 6]~​是已经爬过的，现在你人站在山上向后看，是不是只能看到高度为5和6的两座山峰呢？因为比5矮的两座被挡住了嘛。
+
+说回题目，也就是说处在4的位置上，只有6和5才有资格继续做可能的答案。
+
+推广一下，如果用pending记录有可能作为前面的数字的答案的数，pending一定是​*非递减*​的。
+
+具体地说，倒着遍历数组，设当前数x，用pending记录可能作为前面数字答案的数：
+
+1. pending为空，将当前数推入pending
+2. pending不为空，比较x和于pending栈顶的数y
+   - x大于等于y，y就不可能是前面某个数的答案，将y弹出，重复步骤1、2
+   - 否则，y就是x的答案，更新答案，x还有可能是前面某个数的答案，x推入pending
+
+#+BEGIN_SRC scheme
+(define (daily-temperatures temperatures)
+  (let* ((n (vector-length temperatures))
+         (ans (make-vector n 0)))
+    (let loop ((i (- n 1))
+               (pending '()))
+      (if (> i -1)
+          (if (null? pending)
+              (loop (- i 1)
+                    (cons i pending))
+              (let* ((x (vector-ref temperatures i))
+                     (j (car pending))
+                     (y (vector-ref temperatures j)))
+                (if (>= x y)
+                    (loop i
+                          (cdr pending))
+                    (begin
+                      (vector-set! ans i (- j i))
+                      (loop (- i 1)
+                            (cons i pending))))))
+          ans))))
+#+END_SRC
+
+* 总结
+
+和暴力做法相比，单调栈做法是充分利用了单调性来节省多余的计算。不论单调栈pending存储的是待找到答案的部分（从左到右遍历），还是可能作为答案的部分（从右到左遍历）。用暴力法，如果给你待找到答案的部分，你可能会逐个与当前数作比较，但是只要能想到利用单调性，如未找到答案部分一定是非递增的，那么只用将栈顶元素也就是最小的元素与当前数作比较了。
