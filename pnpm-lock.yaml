@@ -38,11 +38,11 @@ importers:
         version: 0.33.5
     devDependencies:
       '@docube/common':
-        specifier: ^0.9.6
-        version: 0.9.6(typescript@5.9.2)
+        specifier: ^0.9.8
+        version: 0.9.8(typescript@5.9.2)
       '@docube/org':
-        specifier: ^0.7.6
-        version: 0.7.6(typescript@5.9.2)
+        specifier: ^0.7.9
+        version: 0.7.9(typescript@5.9.2)
       '@shikijs/rehype':
         specifier: ^3.12.0
         version: 3.12.0
@@ -146,18 +146,18 @@ packages:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
 
-  '@docube/common@0.9.5':
-    resolution: {integrity: sha512-bhnVudvVbds7Vj1M2lp+MrEKbCusOINSpjhDFWwYdRv1py+0frHsVPY9UGxyUV12zlAy7LLp/FHrlvckohq/ig==}
-    peerDependencies:
-      typescript: ^5.0.0
-
   '@docube/common@0.9.6':
     resolution: {integrity: sha512-JvtTc58uvw2/prNVQb95uMYJPIzgpbcWNUXZVXfoasbMEmyEphjhq3Bs2ZLAQNiY44gfm/ElS0gBIlf+9FWpJQ==}
     peerDependencies:
       typescript: ^5.0.0
 
-  '@docube/org@0.7.6':
-    resolution: {integrity: sha512-WGhEHCMDQ1jJQrMzQ+SZ6DAbKZYRYXIKtFPyCMT0zm5YlVmiVzrEwHgKyDshsCyBS3132I5Ah4XO6Uf1VQnyKA==}
+  '@docube/common@0.9.8':
+    resolution: {integrity: sha512-vliVMC0rSJFxN88Mpup48TOTOtrcSky5+HbCNDuOoOui14nzdqpoxTfAGfxjl3kPP7pW8g3N1pxxBFIL4RykDg==}
+    peerDependencies:
+      typescript: ^5.0.0
+
+  '@docube/org@0.7.9':
+    resolution: {integrity: sha512-/b/bPBl0sSgqfOZR5C9whfx+lI9/rGtzWyMeiJGGfRN5OjbWHrpsifLN5w0rycYGYkI+lmjUT6aY3L3tWygO5A==}
 
   '@emnapi/runtime@1.4.5':
     resolution: {integrity: sha512-++LApOtY0pEEz1zrd9vy1/zXVaVJJ/EbAF3u0fXIzPJEDtnITsBGbbK0EkM72amhl/R5b+5xx0Y/QhcVOpuulg==}
@@ -1031,11 +1031,6 @@ packages:
   devlop@1.1.0:
     resolution: {integrity: sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==}
 
-  docube@0.6.2:
-    resolution: {integrity: sha512-0gaPoeXCZDz3/ETx/RL9ea4Rx78IZFTn1T0wQ9DreflBTYNgL4pArHt97NNVdQ0gUt8M9qu0/JwASdLV2RGqyA==}
-    peerDependencies:
-      typescript: ^5.0.0
-
   docube@0.6.3:
     resolution: {integrity: sha512-3ex4bGjj2PGzlbUjwgzuigxepjjEsgvZdXkh4b64aXvF/h5zNiY112L5/wegKDQGg8sOEsnFmptxvk2kuSXCPw==}
     peerDependencies:
@@ -1136,6 +1131,10 @@ packages:
     resolution: {integrity: sha512-2Nim7dha1KVkaiF4q6Dj+ngPPMdfvLJEOpZk/jKiUAkqKebpGAWQXAq9z1xu9HKu5lWfqw/FASuccEjyznjPaA==}
     engines: {node: 20 || >=22}
     hasBin: true
+
+  glob@13.0.0:
+    resolution: {integrity: sha512-tvZgpqk6fz4BaNZ66ZsRaZnbHvP/jG3uKJvAZOwEVUL4RTA5nJeeLYfyN9/VA8NX/V3IBG+hkeuGpKjvELkVhA==}
+    engines: {node: 20 || >=22}
 
   globals@15.15.0:
     resolution: {integrity: sha512-7ACyT3wmyp3I61S4fG682L0VA2RGD9otkqGJIwNUMF1SWUombIIk+af1unuDYgMm082aHYwD+mzJvv9Iu8dsgg==}
@@ -1399,6 +1398,10 @@ packages:
 
   minimatch@10.0.3:
     resolution: {integrity: sha512-IPZ167aShDZZUMdRk66cyQAW3qr0WzbHkPdMYa8bzZhlHhO3jALbKdxcaak7W9FfT2rZNpQuUu4Od7ILEpXSaw==}
+    engines: {node: 20 || >=22}
+
+  minimatch@10.1.1:
+    resolution: {integrity: sha512-enIvLvRAFZYXJzkCYG5RKmPfrFArdLv+R+lbQ53BmIMLIry74bjKzX6iHAm8WYamJkhSSEabrWN5D97XnKObjQ==}
     engines: {node: 20 || >=22}
 
   minipass@7.1.2:
@@ -1840,15 +1843,6 @@ snapshots:
 
   '@alloc/quick-lru@5.2.0': {}
 
-  '@docube/common@0.9.5(typescript@5.9.2)':
-    dependencies:
-      camelcase: 8.0.0
-      docube: 0.6.2(typescript@5.9.2)
-      effect: 3.18.4
-      glob: 11.0.3
-      pluralize-esm: 9.0.5
-      typescript: 5.9.2
-
   '@docube/common@0.9.6(typescript@5.9.2)':
     dependencies:
       camelcase: 8.0.0
@@ -1858,10 +1852,19 @@ snapshots:
       pluralize-esm: 9.0.5
       typescript: 5.9.2
 
-  '@docube/org@0.7.6(typescript@5.9.2)':
+  '@docube/common@0.9.8(typescript@5.9.2)':
     dependencies:
-      '@docube/common': 0.9.5(typescript@5.9.2)
-      docube: 0.6.3(typescript@5.9.2)
+      camelcase: 8.0.0
+      docube: 0.6.4(typescript@5.9.2)
+      effect: 3.18.4
+      glob: 13.0.0
+      pluralize-esm: 9.0.5
+      typescript: 5.9.2
+
+  '@docube/org@0.7.9(typescript@5.9.2)':
+    dependencies:
+      '@docube/common': 0.9.6(typescript@5.9.2)
+      docube: 0.6.4(typescript@5.9.2)
       effect: 3.18.4
       rehype-stringify: 10.0.1
       unified: 11.0.5
@@ -2488,11 +2491,6 @@ snapshots:
     dependencies:
       dequal: 2.0.3
 
-  docube@0.6.2(typescript@5.9.2):
-    dependencies:
-      effect: 3.18.4
-      typescript: 5.9.2
-
   docube@0.6.3(typescript@5.9.2):
     dependencies:
       effect: 3.18.4
@@ -2610,6 +2608,12 @@ snapshots:
       minimatch: 10.0.3
       minipass: 7.1.2
       package-json-from-dist: 1.0.1
+      path-scurry: 2.0.0
+
+  glob@13.0.0:
+    dependencies:
+      minimatch: 10.1.1
+      minipass: 7.1.2
       path-scurry: 2.0.0
 
   globals@15.15.0: {}
@@ -2936,6 +2940,10 @@ snapshots:
   mimic-function@5.0.1: {}
 
   minimatch@10.0.3:
+    dependencies:
+      '@isaacs/brace-expansion': 5.0.0
+
+  minimatch@10.1.1:
     dependencies:
       '@isaacs/brace-expansion': 5.0.0
 
