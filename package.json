@@ -63,5 +63,14 @@
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2"
   },
-  "packageManager": "pnpm@10.4.1"
+  "packageManager": "pnpm@10.4.1",
+  "pnpm": {
+    "overrides": {
+      "glob@>=11.0.0 <11.1.0": ">=11.1.0",
+      "mdast-util-to-hast@>=13.0.0 <13.2.1": ">=13.2.1",
+      "tar@<=7.5.2": ">=7.5.3",
+      "tar@<=7.5.3": ">=7.5.4",
+      "lodash@>=4.0.0 <=4.17.22": ">=4.17.23"
+    }
+  }
 }
