@@ -1,0 +1,142 @@
+#+title: 接雨水
+#+tags: 算法
+#+series: 刷题笔记
+#+created_at: 2026-03-01T15:40:32.779300+08:00
+#+published_at: 2026-03-01T16:06:41.181556+08:00
+#+summary: 这篇文章介绍了三种计算接雨水问题的方法：单调栈解法通过寻找“凹”形区域并以水平切片方式计算水量，前后缀分解通过预先计算每个位置左右两侧的最大柱子高度来确定垂直切片的水量，而相向双指针法则在优化空间复杂度的同时，通过双指针相向遍历实时更新最大高度并累加水量。
+
+* 单调栈解法
+
+延续[[/posts/monotonic-stack][单调栈]]的思路，运用空间想象力，要想接住雨水，必须要找到一个「凹」形区域。如果从左向右遍历，先是遍历到一些从高到低的柱子，直到遇到一个比当前最低的柱子高的柱子，并且栈里还有柱子（要注意至少有三根柱子，数字0也看作高度0的柱子），就意味着「凹」形区域形成了。
+
+首先用一个单调栈维护递减的柱子高度。如图所示，当找到这样一个可以接水的区域时，可以以水平切片的方式，逐步求出当前柱子到栈顶柱子间水平切片可以装的水量。
+
+#+ATTR_HTML: :alt 单调栈示意图
+[[https://r2.elliot00.com/algorithm/trap-mono-stack.png]]
+
+每一个水平切片都是一个矩形，面积是宽高相乘，宽度是当前柱子索引减去左侧柱子索引再加1；高度根据木桶效应，应当取当前柱子和左侧柱子高度较小的那个，同时不能忘记，要减去已经算过的上一层高度。
+
+汇总一下信息：
+
+1. 单调栈维护​*高度递减*​的柱子（为了方便计算，可以保存索引）
+2. 遇到比栈顶高的柱子，出栈，根据前面提到的水平切片计算方法，更新答案
+3. 直到​*栈空*​或​*栈里只有一根柱子*​或当前柱子​*比栈顶矮*​，继续遍历下一个柱子
+
+代码：
+
+#+BEGIN_SRC scheme
+(define (trap height)
+  (let loop ((height height)
+             (i 0)
+             ;; 保存索引和高度
+             (stack '())
+             (ans 0))
+    (if (null? height)
+        ans
+        (let ((h (car height)))
+          (cond ((null? stack) ; 栈空，入栈
+                 (loop (cdr height) (1+ i) (cons (cons i h) stack) ans))
+                ((< h (cdr (car stack))) ; 更矮的柱子，入栈
+                 (loop (cdr height) (1+ i) (cons (cons i h) stack) ans))
+                (else
+                 (let ((pre-h (cdr (car stack))) ; 上一层的高
+                       (pop-stack (cdr stack))) ; 栈顶出栈后剩下的栈
+                   (if (null? pop-stack)
+                       ;; 柱子不够形成凹形区域，继续向后找
+                       (loop (cdr height) (1+ i) (cons (cons i h) pop-stack) ans)
+                       (let* ((left (car pop-stack))
+                              (left-i (car left))
+                              (left-h (cdr left))
+                              (width (- i left-i 1))
+                              (height-diff (- (min left-h h) pre-h)))
+                         (loop height
+                               i
+                               pop-stack
+                               (+ ans (* width height-diff))))))))))))
+                               #+END_SRC
+
+* 前后缀分解
+
+#+ATTR_HTML: :alt 前后缀分解示意图
+[[https://r2.elliot00.com/algorithm/trap-pre-suf.png]]
+
+也可以竖着去切片，每次算竖着的一格可以装多少水，那么每个矩形区域的宽度就固定了，但是怎么知道高度呢？
+
+以图中第三个矩形为例，作为一个大的可以接水的区域的一部分，这整个区域的水面高度肯定是取决于整个区域两端柱子中较矮的那个。从第3个矩形的位置向左右两边看，水面高度应该取决于向左能看到的最高柱子以向右能看到的最高柱子中较矮的那个，在这个例子中是最后一个柱子。
+
+如果能知道每一个位置上，向左看最高的柱子以向右看最高的柱子，不就可以据此算出当前位置能接的水了吗？
+
+写两个函数，根据输入的列表，一次性算出每个位置前向和后向的最高柱子：
+
+#+BEGIN_SRC scheme
+(define (prefix-max lst)
+  (let loop ((lst lst)
+             (max-val -1)
+             (result '()))
+    (if (null? lst)
+        (reverse result)
+        (let ((new-max (max max-val (car lst))))
+          (loop (cdr lst) new-max (cons new-max result))))))
+
+(define (suffix-max lst)
+  (let loop ((lst (reverse lst))
+             (max-val -1)
+             (result '()))
+    (if (null? lst)
+        result
+        (let ((new-max (max max-val (car lst))))
+          (loop (cdr lst) new-max (cons new-max result))))))
+#+END_SRC
+
+剩下要做的就是同时遍历三个列表，求出每个位置的水量再加总就可以了：
+
+#+BEGIN_SRC scheme
+(define (trap height)
+  (let loop ((pre-max (prefix-max height))
+             (suf-max (suffix-max height))
+             (height height)
+             (ans 0))
+    (if (null? height)
+        ans
+        (let ((p (car pre-max))
+              (s (car suf-max))
+              (h (car height)))
+          (loop (cdr pre-max)
+                (cdr suf-max)
+                (cdr height)
+                (+ ans (- (min p s) h)))))))
+#+END_SRC
+
+* 相向双指针
+
+注意到上一个方法用了两个列表存前缀最大和后缀最大，空间复杂度是​=O(n)=​，能否优化？
+
+可以维护两个指针，从柱子的头尾相向遍历，总是移动较矮的那一端，移动的同时记录当前最大并更新答案。
+
+#+BEGIN_SRC scheme
+(define (trap height)
+  (let ((n (vector-length height)))
+    (let loop ((left 0)
+               (right (- n 1))
+               (pre-max 0)
+               (suf-max 0)
+               (ans 0))
+      (if (< left right)
+          (let ((new-pre-max (max pre-max (vector-ref height left)))
+                (new-suf-max (max suf-max (vector-ref height right))))
+            ;; 哪边矮动哪边，动一格，算一格
+            (if (< new-pre-max new-suf-max)
+                (loop (+ left 1)
+                      right
+                      new-pre-max
+                      new-suf-max
+                      ;; 如果当前柱子就是最高，就是加上0，等于没有更新答案
+                      ;; 否则一减就是水的高度，宽度是1，不用乘
+                      (+ ans (- new-pre-max (vector-ref height left))))
+                (loop left
+                      (- right 1)
+                      new-pre-max
+                      new-suf-max
+                      (+ ans (- new-suf-max (vector-ref height right))))))
+          ans))))
+#+END_SRC
