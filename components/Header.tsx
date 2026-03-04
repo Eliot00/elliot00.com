@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import Image from 'next/image'
 import logo from '@/app/icon.svg'
 import { COMMON_CONTAINER_CLASS_NAME } from '@/lib/constants'
+import { lxgw_wenkai_tc } from '@/app/fonts'
 
 const LINKS = [
   {
@@ -33,7 +34,9 @@ export function Header() {
       <Link href="/" className="w-8 h-8">
         <Image src={logo} alt="logo" />
       </Link>
-      <nav className="flex flex-col gap-2 sm:flex-row sm:gap-4 font-bold text-lg">
+      <nav
+        className={`flex flex-col gap-2 sm:flex-row sm:gap-4 ${lxgw_wenkai_tc.className} font-bold text-lg`}
+      >
         {LINKS.map((link) => (
           <Link
             className={`${pathname === link.href ? ACTIVE_NAV_CLASS : ''} hover:text-primary`}

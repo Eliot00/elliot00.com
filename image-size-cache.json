@@ -115,5 +115,13 @@
   "https://r2.elliot00.com/algorithm/sliding-window.png": {
     "width": 512,
     "height": 344
+  },
+  "https://r2.elliot00.com/algorithm/trap-mono-stack.png": {
+    "width": 1224,
+    "height": 862
+  },
+  "https://r2.elliot00.com/algorithm/opposite-direction-two-points.png": {
+    "width": 1022,
+    "height": 483
   }
 }
