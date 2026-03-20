@@ -29,7 +29,7 @@
     "@types/react": "19.1.2",
     "@types/react-dom": "19.1.2",
     "docube": "^0.6.4",
-    "effect": "^3.19.12",
+    "effect": "^3.20.0",
     "globals": "^15.15.0",
     "html-react-parser": "^5.2.17",
     "husky": "^9.1.7",
