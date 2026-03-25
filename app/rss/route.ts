@@ -1,46 +1,34 @@
 import { allPosts } from '@docube/generated'
-import rehypeParse from 'rehype-parse'
-import rehypeSanitize from 'rehype-sanitize'
-import rehypeStringify from 'rehype-stringify'
-import { unified } from 'unified'
 
 export const dynamic = 'force-static'
 
 const baseUrl = 'https://elliot00.com'
 
-const processor = unified()
-  .use(rehypeParse, { fragment: true })
-  .use(rehypeSanitize)
-  .use(rehypeStringify)
+function escapeXml(unsafe: string): string {
+  if (!unsafe) return ''
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;')
+}
 
 export async function GET() {
-  const sanitizedPosts = await Promise.all(
-    allPosts.map(async (post) => {
-      const file = await processor.process(post.body)
-      const body = String(file)
-      return { ...post, body }
-    })
-  )
-
-  const itemsXml = sanitizedPosts
+  const itemsXml = allPosts
     .sort((a, b) => {
-      if (new Date(a.publishedAt) > new Date(b.publishedAt)) {
-        return -1
-      }
-      return 1
+      return (
+        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      )
     })
     .map(
       (post) =>
         `<item>
-          <title>${post.title}</title>
+          <title>${escapeXml(post.title)}</title>
           <link>${baseUrl}/posts/${post._meta.slug}</link>
-          <description>${post.summary}</description>
+          <description>${escapeXml(post.summary)}</description>
           <pubDate>${new Date(post.publishedAt).toUTCString()}</pubDate>
-          <content:encoded>
-          <![CDATA[
-            ${post.body}
-          ]]>
-          </content:encoded>
+          <guid>${baseUrl}/posts/${post._meta.slug}</guid>
         </item>`
     )
     .join('\n')
