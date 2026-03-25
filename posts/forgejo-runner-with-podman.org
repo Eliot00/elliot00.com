@@ -1,0 +1,58 @@
+#+title: Forgejo Runner结合Rootless Podman使用
+#+tags: Podman 工具
+#+series: 随笔
+#+created_at: 2026-03-25T11:24:54.871420+08:00
+#+published_at: 2026-03-25T13:37:17.990563+08:00
+#+summary: 本文补充了Forgejo Runner官方文档中缺少的Podman配置细节，包括启用linger、配置podman.socket和systemd服务文件等关键步骤。
+
+Forgejo Runner官方文档对于如何结合Podman使用的描述有些简陋，直接按着文档操作容易出错，本文将作为补充，供需要使用Podman配合Forgejo Runner的开发者参考。
+
+首先第一步是下载安装forgejo-runner，并且创建专门用来运行runner的用户，这一步照着官方文档操作没有问题，但是注意在创建用户后，需要执行：
+
+#+BEGIN_SRC shell
+sudo loginctl enable-linger runner
+#+END_SRC
+
+这样后续才能让用户长期启用应用级systemd服务。
+
+所有后续的操作都应该切换到runner用户来做。
+
+#+BEGIN_SRC shell
+# 生成配置文件
+forgejo-runner generate-config > config.yml
+
+# 注册runner
+forgejo-runner register
+#+END_SRC
+
+然后需要执行一次​~systemctl --user enable --now podman.socket~​。
+
+最后编辑​=~/.config/systemd/user/forgejo.runner.service=​文件：
+
+#+BEGIN_SRC systemd
+[Unit]
+Description=Forgejo Runner
+Documentation=https://forgejo.org/docs/latest/admin/actions/
+After=podman.socket
+Requires=podman.socket
+
+[Service]
+ExecStart=/usr/local/bin/forgejo-runner daemon --config /home/runner/config.yml
+ExecReload=/bin/kill -s HUP $MAINPID
+WorkingDirectory=/home/runner
+Restart=on-failure
+TimeoutSec=0
+RestartSec=10
+Environment="DOCKER_HOST=unix:///run/user/$(id -u)/podman/podman.sock"
+Environment="XDG_RUNTIME_DIR=/run/user/$(id -u)"
+
+[Install]
+WantedBy=default.target
+#+END_SRC
+
+启用服务：
+
+#+BEGIN_SRC shell
+systemctl --user daemon-reload
+systemctl --user enable --now forgejo-runner.service
+#+END_SRC
