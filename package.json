@@ -35,7 +35,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^16.3.2",
     "oxlint": "^1.51.0",
-    "postcss": "^8.5.8",
+    "postcss": "^8.5.10",
     "prettier": "^3.8.1",
     "probe-image-size": "^7.2.3",
     "rehype-autolink-headings": "^7.1.0",
