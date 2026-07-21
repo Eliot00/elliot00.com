@@ -1,0 +1,32 @@
+#+title: Ant Design Pro自定义菜单Icon
+#+tags: 前端 React
+#+series: 随笔
+#+created_at: 2026-07-21T20:52:52.333669+08:00
+#+published_at: 2026-07-21T21:25:18.614328+08:00
+#+summary: umi icons支持路由配置自定义图标，无需额外API。
+
+Ant Design Pro菜单要使用自定义icon，搜到的方法基本都是通过​~layout~​的​~menuItemRender~​之类的API。最近浏览文档，发现umi文档表示路由配置兼容[[https://umijs.org/docs/api/config#icons][icons]]功能，但是实测在开启该功能的前提下，生成的布局代码不能正常加载icon。
+
+直接在umi代码库内搜索相关代码，发现umi的icons功能，是使用esbuild提取相关的字符串字面量实现的，于是在生成布局时额外加一段输出​~<Icon icon="${icon}" />~​的逻辑，相关[[https://github.com/umijs/umi/pull/13396][PR]]已被合并，之后要使用自定义图标，可以先打开icons功能：
+
+#+BEGIN_SRC typescript
+icons: {},
+#+END_SRC
+
+之后routes中就可以：
+
+#+BEGIN_SRC typescript
+export default [
+  {
+    path: '/welcome',
+    name: 'welcome',
+    icon: 'lucide:house',
+    component: './Welcome',
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    icon: 'local:crown',
+  },
+]
+#+END_SRC
