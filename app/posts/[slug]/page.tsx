@@ -9,6 +9,7 @@ import reactParse, { Text } from 'html-react-parser'
 import CopyCodeButton from '@/components/typography/CopyCodeButton'
 import Comment from '@/components/Comment'
 import SmartImage from '@/components/typography/SmartImage'
+// @ts-ignore No type
 import 'rehype-callouts/theme/obsidian'
 import {
   COMMON_LINK_CLASS_NAME,

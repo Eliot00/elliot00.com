@@ -10,7 +10,7 @@ export function copyButtonSlotTransformer(): ShikiTransformer {
         type: 'element',
         tagName: 'figure',
         properties: {
-          className: 'relative',
+          className: ['relative'],
         },
         children: [
           node,
