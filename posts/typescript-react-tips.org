@@ -1,5 +1,5 @@
 #+title: 关于TypeScript结合React开发的一些技巧
-#+tags: React TypeScript
+#+filetags: :React:TypeScript:
 #+series: 奇技淫巧
 #+created_at: 2022-03-12T08:11:20.213926+00:00
 #+published_at: 2022-03-19T11:15:36.359039+00:00

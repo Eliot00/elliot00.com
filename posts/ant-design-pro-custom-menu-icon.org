@@ -1,5 +1,5 @@
 #+title: Ant Design Pro自定义菜单Icon
-#+tags: 前端 React
+#+filetags: :前端:React:
 #+series: 随笔
 #+created_at: 2026-07-21T20:52:52.333669+08:00
 #+published_at: 2026-07-21T21:25:18.614328+08:00

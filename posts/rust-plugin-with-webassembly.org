@@ -1,5 +1,5 @@
 #+title: 通过WebAssembly实现插件机制
-#+tags: Rust
+#+filetags: :Rust:
 #+series: 随笔
 #+created_at: 2021-02-22T14:55:33.976744+00:00
 #+published_at: 2021-02-22T14:55:33.976744+00:00

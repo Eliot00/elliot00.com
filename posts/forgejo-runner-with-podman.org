@@ -1,5 +1,5 @@
 #+title: Forgejo Runner结合Rootless Podman使用
-#+tags: Podman 工具
+#+filetags: :Podman:工具:
 #+series: 随笔
 #+created_at: 2026-03-25T11:24:54.871420+08:00
 #+published_at: 2026-03-25T13:37:17.990563+08:00

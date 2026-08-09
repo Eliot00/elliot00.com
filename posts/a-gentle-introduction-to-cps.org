@@ -1,5 +1,5 @@
 #+title: CPS变换浅析
-#+tags: CPS LISP
+#+filetags: :CPS:LISP:
 #+series: MAKE LISP GREAT AGAIN
 #+created_at: 2025-02-22T09:39:04.689422+08:00
 #+published_at: 2025-02-23T14:25:50.485070+08:00

@@ -1,5 +1,5 @@
 #+title: Django+React全栈开发：MTV初试
-#+tags: Django
+#+filetags: :Django:
 #+series: Django+React全栈开发
 #+created_at: 2020-04-21T02:40:35.423+00:00
 #+published_at: 2021-04-10T08:47:40.429112+00:00

@@ -1,5 +1,5 @@
 #+title: 探索Emacs字體設定
-#+tags: 工具 Emacs
+#+filetags: :工具:Emacs:
 #+series: 百宝箱
 #+created_at: 2025-09-20T12:25:29.998871+08:00
 #+published_at: 2025-09-21T18:06:23.017021+08:00

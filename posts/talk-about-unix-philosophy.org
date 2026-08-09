@@ -1,5 +1,5 @@
 #+title: 软件开发之道——聊聊UNIX哲学
-#+tags: UNIX哲学 软件工程
+#+filetags: :UNIX哲学:软件工程:
 #+series: 随笔
 #+created_at: 2024-03-18T07:54:07.503327+00:00
 #+published_at: 2024-03-22T22:05:55.838431+08:00

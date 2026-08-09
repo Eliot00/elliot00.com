@@ -1,5 +1,5 @@
 #+title: 简单探索Rust Web开发
-#+tags: Rust
+#+filetags: :Rust:
 #+series: 随笔
 #+created_at: 2020-11-21T10:25:53.887+00:00
 #+published_at: 2020-12-19T05:40:36.000308+00:00
