@@ -1,5 +1,5 @@
 #+title: 给tauri做条件编译实现真全平台
-#+tags: 前端 JavaScript
+#+filetags: :前端:JavaScript:
 #+series: 奇技淫巧
 #+created_at: 2024-04-15T02:00:03.917491+00:00
 #+published_at: 2024-04-15T03:03:00.339568+00:00

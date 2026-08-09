@@ -1,5 +1,5 @@
 #+title: Django+React全栈开发：JWT
-#+tags: REST Django
+#+filetags: :REST:Django:
 #+series: Django+React全栈开发
 #+created_at: 2020-05-17T11:52:05.918+00:00
 #+published_at: 2021-07-05T15:03:21.508905+00:00

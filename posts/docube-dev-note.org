@@ -1,5 +1,5 @@
 #+title: 开发docube问题记录
-#+tags: Org TypeScript
+#+filetags: :Org:TypeScript:
 #+series: 车轮滚滚
 #+created_at: 2024-08-31T16:04:55.883150+08:00
 #+published_at: 2024-09-01T15:10:07.030439+08:00

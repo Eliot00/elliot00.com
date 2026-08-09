@@ -61,12 +61,17 @@ async function main() {
       rehypeCallouts,
     ],
     contentTransform: (converted) => {
-      const { published_at, created_at, tags, ...rest } = converted
+      // `#+filetags: :a:b:c:` is the org-mode-native way to declare file tags,
+      // so they can be searched from Emacs (org-tags-view / org-agenda).
+      const { published_at, created_at, filetags, ...rest } = converted
       return {
         ...rest,
         publishedAt: published_at,
         createdAt: created_at,
-        tags: String(tags).trim().split(' '),
+        tags: String(filetags ?? '')
+          .trim()
+          .split(':')
+          .filter(Boolean),
       }
     },
   })

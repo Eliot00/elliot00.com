@@ -1,5 +1,5 @@
 #+title: Django+React全栈开发：自定义验证与授权
-#+tags: REST Django
+#+filetags: :REST:Django:
 #+series: Django+React全栈开发
 #+created_at: 2020-05-02T06:20:18.967+00:00
 #+published_at: 2021-04-17T12:04:51.568562+00:00
