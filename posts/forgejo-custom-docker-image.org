@@ -1,0 +1,82 @@
+#+title: Forgejo使用自定义镜像
+#+filetags: :Docker:工具:
+#+series: 随笔
+#+created_at: 2026-08-20T15:43:07.769739+08:00
+#+published_at: 2026-08-20T18:11:16.162985+08:00
+#+summary: 本文针对 Forgejo Runner 重复 apt 安装导致耗时过长的问题，利用阿里云免费 ACR 构建预装常用工具的自定义镜像，替换默认镜像后 CI 时间从 15 分钟缩至 10 分钟内，并提醒构建后及时取消 GitHub 授权。
+
+Forgejo Runner默认的镜像是​~node:24-bookworm~​，每次跑自动部署任务都需要跑一遍​~apt update~​和​~apt install rsync~​，我的服务器基本都在国内，每次至少要15分钟，非常麻烦。
+
+配置片断如下：
+
+#+BEGIN_SRC yaml
+jobs:
+  deploy:
+    runs-on: docker
+    container:
+      image: code.forgejo.org/oci/node:24-bookworm
+    steps:
+      - name: Checkout code
+        uses: https://data.forgejo.org/actions/checkout@v6
+
+      - name: Update apt and install dependencies
+        run: |
+          export DEBIAN_FRONTEND=noninteractive
+          apt-get -qq update
+          apt-get install -y \
+            openssh-client \
+            rsync
+          rm -rf /var/lib/apt/lists/*
+#+END_SRC
+
+那有没有办法自定义一个镜像，把所有需要的程序预先装好，避免每次CICD都要重装呢？下面提供一个亲测有效的免费方案。
+
+阿里云有一个个人免费的[[https://www.aliyun.com/product/acr][容器镜像服务 ACR]]服务，首先需要准备一个GitHub仓库，写入Dockerfile并提交：
+
+#+BEGIN_SRC docker
+FROM data.forgejo.org/oci/node:24-trixie
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y \
+        openssh-client \
+        rsync \
+        cmake \
+        git \
+    && rm -rf /var/lib/apt/lists/*
+
+    ENV DEBIAN_FRONTEND=
+#+END_SRC
+
+提交后在阿里云控制台新建一个个人实例并创建镜像仓库，会提示绑定代码源，可以绑定GitHub、Bitbucket（实测不可用）、GitLab，绑定后选择对应的仓库，为避免网络问题，一定要勾选「海外机器构建」。
+
+#+attr_html: :alt 阿里云截图
+[[https://r2.elliot00.com/misc/ali-console.webp]]
+
+创建完镜像仓库后，在本地代码仓库执行​~git tag -a release-v0.1.0~​，推送到GitHub。阿里云的构建规则默认是根据tag名称来的，一旦出错，没法重新构建，只能再push一个tag上去，所以在前一步最好选择海外构建。
+
+最后回到部署Forgejo Runner的机器上，修改配置的label部分：
+
+#+BEGIN_SRC yaml
+runner:
+  labels:
+    - capybara:docker://<aliyuny构建完后给到的镜像地址>:<版本，如tag是release-v0.1.0这里就是0.1.0>
+#+END_SRC
+
+这个label的结构是​=<label-name>:<label-type>://<default-image>=​，不管是Docker还是Podman，label-type部分都是docker。
+
+重启Runner服务，之后action配置文件只需要配置​~runs-on~​就可以让任务跑在自定义的镜像上了：
+
+#+BEGIN_SRC yaml
+jobs:
+  deploy:
+    runs-on: capybara
+    # container配置也可以去掉
+    # container:
+    #   image: code.forgejo.org/oci/node:24-bookworm
+#+END_SRC
+
+之后我所有的自动部署任务都可以在10分钟内跑完。
+
+最后完成后可以去GitHub将阿里云绑定取消，阿里云不知道为什么直接申请了全部仓库读写权限。
